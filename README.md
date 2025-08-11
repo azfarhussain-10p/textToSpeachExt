@@ -1,573 +1,527 @@
-# 🚀 Full Guide to Using Claude Code
+# 🔊 Intelligent Text-to-Speech Browser Extension
 
-Everything you need to know to crush building anything with Claude Code! This guide takes you from installation through advanced context engineering, subagents, hooks, and parallel agent workflows.
+A production-ready, cross-browser extension that transforms any web text into speech with AI-powered explanations. Select text from articles, blogs, social media posts, or any website and listen in your preferred language with customizable voices and intelligent content explanation.
 
-## 📋 Prerequisites
+## ✨ Key Features
 
-- Terminal/Command line access
-- Node.js installed (for Claude Code installation)
-- GitHub account (for GitHub CLI integration)
-- Text editor (VS Code recommended)
+### 🎤 Universal Text-to-Speech
+- **Smart Text Selection**: Select any text on any website
+- **Multi-Language Support**: Listen in 15+ languages including English, Urdu, Arabic, Spanish, French, German, Hindi
+- **Voice Customization**: Choose from different voices, accents, speaking rates, and pitch
+- **Audio Controls**: Play, pause, stop, and resume functionality
+- **Cross-Platform**: Works on Chrome, Firefox, Safari, and Edge (desktop & mobile)
 
-## 🔧 Installation
+### 🤖 AI-Powered Explanations
+- **Intelligent Analysis**: Get explanations of complex content using advanced AI models
+- **Real-World Examples**: Contextual examples to enhance understanding
+- **Multiple AI Providers**: Groq (free) and Claude API integration with automatic fallbacks
+- **Privacy-First**: User consent required for all AI processing
 
-**macOS/Linux:**
-```bash
-npm install -g @anthropic-ai/claude-code
-```
+### 🎨 Smart User Interface
+- **Contextual Overlay**: Appears near selected text with smart positioning
+- **Mobile-Optimized**: Touch-friendly controls and responsive design
+- **Accessibility**: Full keyboard navigation and screen reader support
+- **Internationalization**: Support for RTL languages and cultural preferences
 
-**Windows (WSL recommended):**
-See detailed instructions in [install_claude_code_windows.md](./install_claude_code_windows.md)
+## 🚀 Quick Start
 
-**Verify installation:**
-```bash
-claude --version
-```
+### Prerequisites
+- Node.js 18+ installed
+- Browser with extension support (Chrome 88+, Firefox 78+, Safari 14+, Edge 88+)
+- API keys for AI services (optional but recommended)
 
----
-
-## ✅ TIP 1: CREATE AND OPTIMIZE CLAUDE.md FILES
-
-Set up context files that Claude automatically pulls into every conversation, containing project-specific information, commands, and guidelines.
-
-```bash
-mkdir your-folder-name && cd your-folder-name
-claude
-```
-
-Use the built-in command:
-```
-/init
-```
-
-Or create your own CLAUDE.md file based on the template in this repository. See `CLAUDE.md` for a Python specific example structure that includes:
-- Project awareness and context rules
-- Code structure guidelines
-- Testing requirements
-- Task completion workflow
-- Style conventions
-- Documentation standards
-
-### Advanced Prompting Techniques
-
-**Power Keywords**: Claude responds to certain keywords with enhanced behavior (information dense keywords):
-- **IMPORTANT**: Emphasizes critical instructions that should not be overlooked
-- **Proactively**: Encourages Claude to take initiative and suggest improvements
-- **Ultra-think**: Can trigger more thorough analysis (use sparingly)
-
-**Essential Prompt Engineering Tips**:
-- Avoid prompting for "production-ready" code - this often leads to over-engineering
-- Prompt Claude to write scripts to check its work: "After implementing, create a validation script"
-- Avoid backward compatibility unless specifically needed - Claude tends to preserve old code unnecessarily
-- Focus on clarity and specific requirements rather than vague quality descriptors
-
-### File Placement Strategies
-
-Claude automatically reads CLAUDE.md files from multiple locations:
+### Development Setup
 
 ```bash
-# Root of repository (most common)
-./CLAUDE.md              # Checked into git, shared with team
-./CLAUDE.local.md        # Local only, add to .gitignore
+# Clone the repository
+git clone https://github.com/azfarhussain-10p/textToSpeachExt.git
+cd textToSpeachExt
 
-# Parent directories (for monorepos)
-root/CLAUDE.md           # General project info
-root/frontend/CLAUDE.md  # Frontend-specific context
-root/backend/CLAUDE.md   # Backend-specific context
+# Install dependencies
+npm install
 
-# Reference external files for flexibility
-echo "Follow best practices in: ~/company/engineering-standards.md" > CLAUDE.md
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your API keys (optional)
+
+# Start development mode
+npm run dev:chrome    # For Chrome development
+npm run dev:firefox   # For Firefox development
+npm run dev:safari    # For Safari development
 ```
 
-**Pro Tip**: Many teams keep their CLAUDE.md minimal and reference a shared standards document. This makes it easy to:
-- Switch between AI coding assistants
-- Update standards without changing every project
-- Share best practices across teams
-
-*Note: While Claude Code reads CLAUDE.md automatically, other AI coding assistants can use similar context files (such as .cursorrules for Cursor)*
-
----
-
-## ✅ TIP 2: SET UP PERMISSION MANAGEMENT
-
-Configure tool allowlists to streamline development while maintaining security for file operations and system commands.
-
-**Method 1: Interactive Allowlist**
-When Claude asks for permission, select "Always allow" for common operations.
-
-**Method 2: Use /permissions command**
-```
-/permissions
-```
-Then add:
-- `Edit` (for file edits)
-- `Bash(git commit:*)` (for git commits)
-- `Bash(npm:*)` (for npm commands)
-- `Read` (for reading files)
-- `Write` (for creating files)
-
-**Method 3: Create project settings file**
-Create `.claude/settings.local.json`:
-```json
-{
-  "allowedTools": [
-    "Edit",
-    "Read",
-    "Write",
-    "Bash(git add:*)",
-    "Bash(git commit:*)",
-    "Bash(npm:*)",
-    "Bash(python:*)",
-    "Bash(pytest:*)"
-  ]
-}
-```
-
-**Security Best Practices**:
-- Never allow `Bash(rm -rf:*)` or similar destructive commands
-- Use specific command patterns rather than `Bash(*)`
-- Review permissions regularly
-- Use different permission sets for different projects
-
-*Note: All AI coding assistants have permission management - some built-in, others require manual approval for each action.*
-
----
-
-## ✅ TIP 3: MASTER CUSTOM SLASH COMMANDS
-
-Slash commands are the key to adding your own workflows into Claude Code. They live in `.claude/commands/` and enable you to create reusable, parameterized workflows.
-
-### Built-in Commands
-- `/init` - Generate initial CLAUDE.md
-- `/permissions` - Manage tool permissions
-- `/clear` - Clear context between tasks
-- `/agents` - Manage subagents
-- `/help` - Get help with Claude Code
-
-### Custom Command Example
-
-**Repository Analysis**:
-```
-/primer
-```
-Performs comprehensive repository analysis to prime Claude Code on your codebase so you can start implemention fixes or new features and it has all the necessary context to do so.
-
-### Creating Your Own Commands
-
-1. Create a markdown file in `.claude/commands/`:
-```markdown
-# Command: analyze-performance
-
-Analyze the performance of the file specified in $ARGUMENTS.
-
-## Steps:
-1. Read the file at path: $ARGUMENTS
-2. Identify performance bottlenecks
-3. Suggest optimizations
-4. Create a benchmark script
-```
-
-2. Use the command:
-```
-/analyze-performance src/heavy-computation.js
-```
-
-Commands can use `$ARGUMENTS` to receive parameters and can invoke any of Claude's tools.
-
-*Note: Other AI coding assistants can use these commands as regular prompts - just copy the command content and paste it with your arguments.*
-
----
-
-## ✅ TIP 4: INTEGRATE MCP SERVERS
-
-Connect Claude Code to Model Context Protocol (MCP) servers for enhanced functionality. Learn more in the [MCP documentation](https://docs.anthropic.com/en/docs/claude-code/mcp).
-
-**Add Serena MCP Server** - The most powerful coding toolkit:
-
-Make sure you [install uvx](https://docs.astral.sh/uv/getting-started/installation/#standalone-installer) first. Here is how you do that in WSL with Windows:
-```bash
-sudo snap install astral-uv --classic
-```
-
-Then add Serena using the command:
-```bash
-# Install Serena for semantic code analysis and editing
-claude mcp add serena -- uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant --project $(pwd)
-```
-
-[Serena](https://github.com/oraios/serena) transforms Claude Code into a fully-featured coding agent with:
-- Semantic code retrieval and analysis
-- Advanced editing capabilities using Language Server Protocol (LSP)
-- Support for Python, TypeScript/JavaScript, PHP, Go, Rust, C/C++, Java
-- Free and open-source alternative to subscription-based coding assistants
-
-**Manage MCP servers:**
-```bash
-# List all configured servers
-claude mcp list
-
-# Get details about a specific server
-claude mcp get serena
-
-# Remove a server
-claude mcp remove serena
-```
-
-**Coming Soon**: Archon V2 (HUGE Overhaul) - A comprehensive knowledge and task management backbone for AI coding assistants - enabling true human-AI collaboration on code for the first time.
-
-*Note: MCP is integrated with every major AI coding assistant and the servers are managed in a very similar way.*
-
----
-
-## ✅ TIP 5: CONTEXT ENGINEERING WITH EXAMPLES
-
-Transform your development workflow from simple prompting to comprehensive context engineering - providing AI with all the information needed for end-to-end implementation.
-
-### Quick Start
-
-The PRP (Product Requirements Prompt) framework is a simple 3-step strategy for context engineering:
+### Building for Production
 
 ```bash
-# 1. Define your requirements with examples and context
-# Edit INITIAL.md to include example code and patterns
+# Build for all browsers
+npm run build:all
 
-# 2. Generate a comprehensive PRP
-/generate-prp INITIAL.md
+# Build for specific browser
+npm run build:chrome
+npm run build:firefox
+npm run build:safari
 
-# 3. Execute the PRP to implement your feature
-/execute-prp PRPs/your-feature-name.md
+# Package for distribution
+npm run package:all
 ```
 
-### Defining Your Requirements
+## 📋 Installation Guide
 
-Your INITIAL.md should always include:
+### Chrome Web Store Installation
+1. Visit the [Chrome Web Store](https://chrome.google.com/webstore) (link coming soon)
+2. Click "Add to Chrome"
+3. Confirm permissions when prompted
 
-```markdown
-## FEATURE
-Build a user authentication system
+### Firefox Add-ons Installation
+1. Visit [Firefox Add-ons](https://addons.mozilla.org) (link coming soon)
+2. Click "Add to Firefox"
+3. Follow installation prompts
 
-## EXAMPLES
-- Authentication flow: `examples/auth-flow.js`
-- Similar API endpoint: `src/api/users.js` 
-- Database schema pattern: `src/models/base-model.js`
-- Validation approach: `src/validators/user-validator.js`
+### Safari Extensions Installation
+1. Download from Mac App Store (coming soon)
+2. Enable in Safari Preferences > Extensions
 
-## DOCUMENTATION
-- JWT library docs: https://github.com/auth0/node-jsonwebtoken
-- Our API standards: `docs/api-guidelines.md`
+### Manual Installation (Development)
+1. Build the extension: `npm run build:chrome`
+2. Open Chrome Extensions page: `chrome://extensions/`
+3. Enable "Developer mode"
+4. Click "Load unpacked" and select `dist/chrome` folder
 
-## OTHER CONSIDERATIONS
-- Use existing error handling patterns
-- Follow our standard response format
-- Include rate limiting
+## 🛠️ Configuration
+
+### Environment Variables
+
+Create a `.env` file in the project root:
+
+```env
+# AI Service Configuration
+GROQ_API_KEY=your_groq_api_key_here        # Free tier available
+CLAUDE_API_KEY=your_claude_api_key_here    # Optional, paid service
+
+# Development Settings
+NODE_ENV=development                        # or production
+DEBUG_MODE=true                            # Enable debug logging
+ANALYTICS_ENABLED=false                    # Privacy-first analytics
+
+# Extension Settings
+DEFAULT_LANGUAGE=en-US                     # Default TTS language
+DEFAULT_RATE=1.0                          # Default speech rate
+SELECTION_THRESHOLD=10                     # Minimum characters for overlay
 ```
 
-### Critical PRP Strategies
+### Extension Settings
 
-**Examples**: The most powerful tool - provide code snippets, similar features, and patterns to follow
+Users can customize the extension through the settings panel:
 
-**Validation Gates**: Ensure comprehensive testing and iteration until all tests pass
+- **Voice Settings**: Language, voice, rate, pitch
+- **AI Features**: Enable/disable explanations, choose AI provider
+- **Privacy**: Control data sharing and analytics
+- **UI Preferences**: Overlay position, auto-hide timing
+- **Accessibility**: Keyboard shortcuts, screen reader compatibility
 
-**No Vibe Coding**: Validate PRPs before executing them and the code after execution!
+## 🏗️ Architecture Overview
 
-The more specific examples you provide, the better Claude can match your existing patterns and style.
+### Core Components
 
-*Note: Context engineering works with any AI coding assistant - the PRP framework and example-driven approach are universal principles.*
-
----
-
-## ✅ TIP 6: LEVERAGE SUBAGENTS FOR SPECIALIZED TASKS
-
-Subagents are specialized AI assistants that operate in separate context windows with focused expertise. They enable Claude to delegate specific tasks to experts, improving quality and efficiency.
-
-### Understanding Subagents
-
-Each subagent:
-- Has its own context window (no pollution from main conversation)
-- Operates with specialized system prompts
-- Can be limited to specific tools
-- Works autonomously on delegated tasks
-
-### Example Subagents in This Repository
-
-**Documentation Manager** (`.claude/agents/documentation-manager.md`):
-- Automatically updates docs when code changes
-- Ensures README accuracy
-- Maintains API documentation
-- Creates migration guides
-
-**Validation Gates** (`.claude/agents/validation-gates.md`):
-- Runs all tests after changes
-- Iterates on fixes until tests pass
-- Enforces code quality standards
-- Never marks tasks complete with failing tests
-
-### Creating Your Own Subagents
-
-1. Use the `/agents` command or create a file in `.claude/agents/`:
-
-```markdown
----
-name: security-auditor
-description: "Security specialist. Proactively reviews code for vulnerabilities and suggests improvements."
-tools: Read, Grep, Glob
----
-
-You are a security auditing specialist focused on identifying and preventing security vulnerabilities...
-
-## Core Responsibilities
-1. Review code for OWASP Top 10 vulnerabilities
-2. Check for exposed secrets or credentials
-3. Validate input sanitization
-4. Ensure proper authentication/authorization
-...
+```
+src/
+├── background/          # Extension background service worker
+│   ├── service-worker.js       # Main background script (Manifest V3)
+│   ├── permissions-manager.js  # Runtime permission handling
+│   └── api-coordinator.js     # AI API management
+│
+├── content/            # Content scripts injected into web pages
+│   ├── content-script.js      # Main content script entry point
+│   ├── text-selector.js       # Handles text selection events
+│   ├── overlay-manager.js     # Manages overlay UI lifecycle
+│   └── dom-utils.js           # DOM manipulation utilities
+│
+├── services/           # Core business logic
+│   ├── tts-service.js         # Text-to-speech functionality
+│   ├── ai-service.js          # AI explanation integration
+│   ├── language-service.js    # Multi-language support
+│   └── storage-service.js     # Extension storage management
+│
+├── ui/                 # User interface components
+│   ├── overlay/              # TTS control overlay
+│   ├── popup/               # Extension toolbar popup
+│   ├── settings/            # Settings page
+│   └── components/          # Reusable UI components
+│
+└── utils/              # Shared utilities
+    ├── browser-polyfill.js   # Cross-browser API compatibility
+    ├── error-handler.js      # Global error handling
+    └── performance-monitor.js # Performance tracking
 ```
 
-### Subagent Best Practices
+### Technology Stack
 
-**1. Focused Expertise**: Each subagent should have one clear specialty
+- **Frontend**: Vanilla JavaScript (ES2022), CSS3, HTML5
+- **Build System**: Webpack 5 with multi-browser configuration
+- **APIs**: Web Speech API, Chrome Extension APIs, WebExtensions API
+- **AI Integration**: Groq API (free), Claude API (paid), OpenAI compatibility
+- **Testing**: Jest (unit), Puppeteer (E2E), WebDriver (cross-browser)
+- **Development**: ESLint, Prettier, TypeScript definitions
 
-**2. Proactive Descriptions**: Use "proactively" in descriptions for automatic invocation:
-```yaml
-description: "Code reviewer. Proactively reviews all code changes for quality."
+## 🎯 Usage Examples
+
+### Basic Text-to-Speech
+
+1. **Select Text**: Highlight any text on a webpage
+2. **Access Controls**: TTS overlay appears automatically
+3. **Choose Options**: Select language, voice, and speed
+4. **Play Audio**: Click play button to start speech synthesis
+
+```javascript
+// Programmatic usage (for developers)
+const tts = new TTSService();
+await tts.speak('Hello world', {
+  language: 'en-US',
+  rate: 1.2,
+  pitch: 1.0
+});
 ```
 
-**3. Tool Limitations**: Only give subagents the tools they need:
-```yaml
-tools: Read, Grep  # No write access for review-only agents
+### AI-Powered Explanations
+
+1. **Select Complex Text**: Highlight technical or complex content
+2. **Request Explanation**: Click the "Explain" button in overlay
+3. **Review Response**: Get simplified explanation with examples
+4. **Listen to Explanation**: Use TTS on the explanation text
+
+```javascript
+// AI explanation API
+const aiService = new AIService();
+const explanation = await aiService.explainText(
+  'Quantum entanglement is a quantum mechanical phenomenon...',
+  { context: 'scientific article', difficulty: 'beginner' }
+);
 ```
 
-**4. Information Flow Design**: Understand how information flows from primary agent → subagent → primary agent. The subagent description is crucial because it tells your primary Claude Code agent when and how to use it. Include clear instructions in the description for how the primary agent should prompt this subagent.
+### Multi-Language Translation & Speech
 
-**5. One-Shot Context**: Subagents don't have full conversation history - they receive a single prompt from your primary agent. Design your subagents with this limitation in mind.
+1. **Select English Text**: Highlight text in English
+2. **Choose Target Language**: Select Urdu, Arabic, or other supported language
+3. **Generate Speech**: Listen to content in your preferred language
 
-Learn more in the [Subagents documentation](https://docs.anthropic.com/en/docs/claude-code/sub-agents).
+## 🧪 Development & Testing
 
-*Note: While other AI assistants don't have formal subagents, you can achieve similar results by creating specialized prompts and switching between different conversation contexts.*
+### Context Engineering with AI Assistants
 
----
-
-## ✅ TIP 7: AUTOMATE WITH HOOKS
-
-Hooks provide deterministic control over Claude Code's behavior through user-defined shell commands that execute at predefined lifecycle events.
-
-### Available Hook Events
-
-Claude Code provides several predefined actions you can hook into:
-- **PreToolUse**: Before tool execution (can block operations)
-- **PostToolUse**: After successful tool completion  
-- **UserPromptSubmit**: When user submits a prompt
-- **SubagentStop**: When a subagent completes its task
-- **Stop**: When the main agent finishes responding
-- **SessionStart**: At session initialization
-- **PreCompact**: Before context compaction
-- **Notification**: During system notifications
-
-Learn more in the [Hooks documentation](https://docs.anthropic.com/en/docs/claude-code/hooks).
-
-### Example Hook: Tool Usage Logging
-
-This repository includes a simple hook example in `.claude/hooks/`:
-
-**log-tool-usage.sh** - Logs all tool usage for tracking and debugging:
-```bash
-#!/bin/bash
-# Logs tool usage with timestamps
-# Creates .claude/logs/tool-usage.log
-# No external dependencies required
-```
-
-### Setting Up Hooks
-
-1. **Create hook script** in `.claude/hooks/`
-2. **Make it executable**: `chmod +x your-hook.sh`
-3. **Add to settings** in `.claude/settings.local.json`:
-
-```json
-{
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": ".*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": ".claude/hooks/log-tool-usage.sh"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-Hooks ensure certain actions always happen, rather than relying on the AI to remember - perfect for logging, security validations, and build triggers.
-
-*Note: Other AI assistants don't have hooks (though Kiro does!), I can almost guarantee they're coming soon for everyone else.*
-
----
-
-## ✅ TIP 8: GITHUB CLI INTEGRATION
-
-Set up the GitHub CLI to enable Claude to interact with GitHub for issues, pull requests, and repository management.
+This project is optimized for AI-assisted development using context engineering principles:
 
 ```bash
-# Install GitHub CLI
-# Visit: https://github.com/cli/cli#installation
+# Generate comprehensive implementation plan
+npx claude-code generate-prp INITIAL.md
 
-# Authenticate
-gh auth login
+# Execute the plan with full context
+npx claude-code execute-prp PRPs/text-to-speech-extension.md
 
-# Verify setup
-gh repo list
+# Validate implementation
+npm run test:all
+npm run lint:fix
+npm run typecheck
 ```
 
-### Custom GitHub Commands
-
-Use the `/fix-github-issue` command for automated fixes:
-
-```
-/fix-github-issue 123
-```
-
-This will:
-1. Fetch issue details
-2. Analyze the problem
-3. Search relevant code
-4. Implement the fix
-5. Run tests
-6. Create a PR
-
-*Note: GitHub CLI works with any AI coding assistant - just install it and the AI can use `gh` commands to interact with your repositories.*
-
----
-
-## ✅ TIP 9: SAFE YOLO MODE WITH DEV CONTAINERS
-
-Allow Claude Code to perform any action while maintaining safety through containerization. This enables rapid development without destructive behavior on your host machine.
-
-**Prerequisites:**
-- Install [Docker](https://www.docker.com/) 
-- VS Code (or compatible editors)
-
-**Security Features:**
-- Network isolation with whitelist
-- No access to host filesystem
-- Restricted outbound connections
-- Safe experimentation environment
-
-**Setup Process:**
-
-1. **Open in VS Code** and press `F1`
-2. **Select** "Dev Containers: Reopen in Container"
-3. **Wait** for container build
-4. **Open terminal** (`Ctrl+J`)
-5. **Authenticate** Claude Code in container
-6. **Run in YOLO mode**:
-   ```bash
-   claude --dangerously-skip-permissions
-   ```
-
-**Why Use Dev Containers?**
-- Test dangerous operations safely
-- Experiment with system changes
-- Rapid prototyping
-- Consistent development environment
-- No fear of breaking your system
-
----
-
-## ✅ TIP 10: PARALLEL DEVELOPMENT WITH GIT WORKTREES
-
-Use Git worktrees to enable multiple Claude instances working on independent tasks simultaneously, or automate parallel implementations of the same feature.
-
-### Manual Worktree Setup
+### Testing Strategy
 
 ```bash
-# Create worktrees for different features
-git worktree add ../project-auth feature/auth
-git worktree add ../project-api feature/api
+# Unit tests
+npm run test:unit              # Core functionality tests
+npm run test:unit:watch        # Watch mode for development
 
-# Launch Claude in each worktree
-cd ../project-auth && claude  # Terminal 1
-cd ../project-api && claude   # Terminal 2
+# Integration tests  
+npm run test:integration       # API integration tests
+npm run test:tts              # Text-to-speech specific tests
+npm run test:ai               # AI service tests
+
+# End-to-end tests
+npm run test:e2e:chrome       # Chrome browser testing
+npm run test:e2e:firefox      # Firefox browser testing
+npm run test:e2e:safari       # Safari browser testing
+
+# Cross-browser testing
+npm run test:cross-browser    # All browsers simultaneously
+
+# Performance testing
+npm run test:performance      # Memory and speed benchmarks
+npm run test:accessibility   # A11y compliance tests
 ```
 
-### Automated Parallel Agents
+### Code Quality Gates
 
-AI coding assistants are non-deterministic. Running multiple attempts increases success probability and provides implementation options.
-
-**Setup parallel worktrees:**
 ```bash
-/prep-parallel user-system 3
+# Linting and formatting
+npm run lint                  # ESLint validation
+npm run lint:fix             # Auto-fix issues
+npm run format               # Prettier formatting
+npm run format:check         # Check formatting
+
+# Type checking
+npm run typecheck            # TypeScript validation
+
+# Security audits
+npm run audit                # Dependency vulnerabilities
+npm run audit:fix            # Fix security issues
+
+# Extension validation
+npm run validate:manifest    # Manifest.json validation
+npm run validate:csp        # Content Security Policy check
+npm run validate:permissions # Permission usage analysis
 ```
 
-**Execute parallel implementations:**
-1. Create a plan file (`plan.md`)
-2. Run parallel execution:
+## 🔒 Privacy & Security
+
+### Privacy-First Design
+
+- **Minimal Data Collection**: Only collect data necessary for functionality
+- **User Consent**: Explicit consent required for AI processing
+- **Local Processing**: TTS works entirely offline when possible
+- **No Tracking**: No user behavior tracking or analytics without consent
+- **Secure Storage**: All settings stored locally in browser storage
+
+### Security Measures
+
+- **Content Security Policy**: Strict CSP prevents XSS attacks
+- **Permission Minimization**: Request only necessary browser permissions
+- **API Key Security**: Secure storage and rotation of API credentials
+- **Input Sanitization**: All user inputs sanitized before processing
+- **Cross-Origin Protection**: Prevent unauthorized cross-origin requests
+
+## 🌍 Internationalization
+
+### Supported Languages
+
+**Text-to-Speech Support:**
+- English (US, UK, AU, CA)
+- Arabic (SA, EG, UAE)
+- Spanish (ES, MX, AR)
+- French (FR, CA)
+- German (DE, AT)
+- Hindi (IN)
+- Urdu (PK, IN)
+- Portuguese (BR, PT)
+- Italian (IT)
+- Japanese (JP)
+- Korean (KR)
+- Chinese (CN, TW, HK)
+- Russian (RU)
+- Dutch (NL)
+- Swedish (SE)
+
+**UI Language Support:**
+All interface elements are localized and stored in `src/_locales/` directory.
+
+### Adding New Languages
+
+1. Create language file: `src/_locales/[language_code]/messages.json`
+2. Add voice mappings in: `src/services/language-service.js`
+3. Update language selector UI
+4. Test TTS functionality for the new language
+
+## 📊 Performance Benchmarks
+
+### Target Performance Metrics
+
+- **Extension Load Time**: < 500ms
+- **Overlay Display**: < 300ms after text selection
+- **TTS Start Delay**: < 200ms
+- **AI Response Time**: < 3 seconds
+- **Memory Usage**: < 50MB peak
+- **CPU Usage**: < 5% during playback
+
+### Browser Compatibility
+
+| Browser | Version | Status | Notes |
+|---------|---------|---------|-------|
+| Chrome | 88+ | ✅ Full Support | Manifest V3 native |
+| Firefox | 78+ | ✅ Full Support | WebExtensions API |
+| Safari | 14+ | ✅ Full Support | Safari Web Extensions |
+| Edge | 88+ | ✅ Full Support | Chromium-based |
+| Mobile Chrome | 90+ | ✅ Full Support | Touch-optimized |
+| Mobile Safari | 14+ | ⚠️ Limited | iOS restrictions |
+
+## 🛟 Troubleshooting
+
+### Common Issues
+
+**TTS Not Working**
+- Check browser TTS support: Visit `chrome://settings/accessibility`
+- Verify permissions: Ensure extension has access to current site
+- Test with different voice: Some voices may not be available
+
+**AI Explanations Failing**
+- Check API key configuration in extension settings
+- Verify internet connection for AI services
+- Try alternative AI provider (Groq → Claude)
+
+**Overlay Not Appearing**
+- Minimum text selection: Need at least 10 characters
+- Check for conflicting extensions
+- Verify content script injection on current site
+
+**Cross-Browser Issues**
+- Clear extension data and reinstall
+- Check browser version compatibility
+- Review console errors in developer tools
+
+### Debug Mode
+
+Enable debug mode for detailed logging:
+
+1. Open extension settings
+2. Enable "Debug Mode"
+3. Check browser console for detailed logs
+4. Export logs for support: Settings → Advanced → Export Debug Logs
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
+
+### Development Workflow
+
+1. Fork the repository
+2. Create feature branch: `git checkout -b feature/amazing-feature`
+3. Make changes with comprehensive tests
+4. Follow coding standards: `npm run lint:fix`
+5. Add documentation for new features
+6. Submit pull request with detailed description
+
+### Contribution Areas
+
+- **🐛 Bug Fixes**: Report and fix issues
+- **✨ New Features**: TTS improvements, new languages, UI enhancements
+- **🌍 Translations**: Add support for new languages
+- **📚 Documentation**: Improve guides and API documentation
+- **🧪 Testing**: Add test coverage for edge cases
+- **♿ Accessibility**: Improve screen reader and keyboard support
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- **Web Speech API**: Foundation for text-to-speech functionality
+- **Groq**: Free AI API for content explanations
+- **Claude API**: Advanced AI explanations and content analysis
+- **WebExtensions Community**: Cross-browser compatibility standards
+- **Accessibility Community**: Guidelines for inclusive design
+
+## 📞 Support
+
+### Getting Help
+
+- **📖 Documentation**: Check this README and [CLAUDE.md](CLAUDE.md)
+- **🐛 Bug Reports**: [Create an issue](https://github.com/azfarhussain-10p/textToSpeachExt/issues)
+- **💡 Feature Requests**: [Start a discussion](https://github.com/azfarhussain-10p/textToSpeachExt/discussions)
+- **💬 Community**: [Join our Discord](https://discord.gg/yourinvite) (coming soon)
+
+### Reporting Issues
+
+When reporting bugs, please include:
+- Browser name and version
+- Extension version
+- Steps to reproduce
+- Expected vs actual behavior
+- Console errors (if any)
+- Debug logs (if available)
+
+## 🗺️ Roadmap
+
+### Phase 1: Core Functionality (Current)
+- [x] Basic text selection and TTS
+- [x] Multi-language support
+- [x] Cross-browser compatibility
+- [x] AI explanation integration
+- [ ] Comprehensive testing suite
+
+### Phase 2: Advanced Features (Q3 2025)
+- [ ] Custom voice training
+- [ ] Offline AI explanations
+- [ ] Batch text processing
+- [ ] Reading progress tracking
+- [ ] Cloud synchronization
+
+### Phase 3: Enterprise Features (Q4 2025)
+- [ ] Team collaboration tools
+- [ ] Advanced analytics
+- [ ] Custom AI model integration
+- [ ] SSO authentication
+- [ ] API for third-party integrations
+
+### Phase 4: Mobile Apps (2026)
+- [ ] Native iOS app
+- [ ] Native Android app
+- [ ] Cross-platform synchronization
+- [ ] Wearable device support
+
+## 📈 Project Stats
+
+![GitHub stars](https://img.shields.io/github/stars/azfarhussain-10p/textToSpeachExt)
+![GitHub forks](https://img.shields.io/github/forks/azfarhussain-10p/textToSpeachExt)
+![GitHub issues](https://img.shields.io/github/issues/azfarhussain-10p/textToSpeachExt)
+![GitHub license](https://img.shields.io/github/license/azfarhussain-10p/textToSpeachExt)
+
+### Latest Release
+
+- **Version**: 1.0.0-beta (coming soon)
+- **Release Date**: TBD
+- **Download Count**: TBD
+- **Browser Support**: Chrome, Firefox, Safari, Edge
+
+## 🔧 Development Commands Reference
 
 ```bash
-/execute-parallel user-system plan.md 3
+# Installation and Setup
+npm install                    # Install dependencies
+cp .env.example .env          # Set up environment variables
+npm run setup                 # Initial project setup
+
+# Development
+npm run dev                   # Start development server
+npm run dev:chrome           # Chrome-specific development
+npm run dev:firefox          # Firefox-specific development
+npm run dev:safari           # Safari-specific development
+npm run watch                # Watch mode with auto-reload
+
+# Building
+npm run build                # Build for production
+npm run build:all           # Build for all browsers
+npm run build:chrome        # Build Chrome extension
+npm run build:firefox       # Build Firefox add-on
+npm run build:safari        # Build Safari extension
+
+# Testing
+npm run test                 # Run all tests
+npm run test:unit           # Unit tests only
+npm run test:integration    # Integration tests
+npm run test:e2e            # End-to-end tests
+npm run test:watch          # Watch mode testing
+npm run test:coverage       # Generate coverage report
+
+# Code Quality
+npm run lint                # Run ESLint
+npm run lint:fix           # Fix ESLint errors
+npm run format             # Format with Prettier
+npm run typecheck          # TypeScript validation
+npm run audit              # Security audit
+
+# Packaging and Distribution
+npm run package            # Package for all browsers
+npm run package:chrome     # Package Chrome extension
+npm run package:firefox    # Package Firefox add-on
+npm run package:safari     # Package Safari extension
+
+# Utilities
+npm run clean              # Clean build directories
+npm run analyze            # Bundle size analysis
+npm run docs:generate      # Generate API documentation
+npm run release            # Create new release
 ```
-
-**Select the best implementation:**
-```bash
-# Review results
-cat trees/user-system-*/RESULTS.md
-
-# Test each implementation
-cd trees/user-system-1 && npm test
-
-# Merge the best
-git checkout main
-git merge user-system-2
-```
-
-### Benefits
-
-- **No Conflicts**: Each instance works in isolation
-- **Multiple Approaches**: Compare different implementations
-- **Quality Gates**: Only consider implementations where tests pass
-- **Easy Integration**: Merge the best solution
 
 ---
 
-## 🎯 Quick Command Reference
+**Made with ❤️ by the Text-to-Speech Extension Team**
 
-| Command | Purpose |
-|---------|---------|
-| `/init` | Generate initial CLAUDE.md |
-| `/permissions` | Manage tool permissions |
-| `/clear` | Clear context between tasks |
-| `/agents` | Create and manage subagents |
-| `/primer` | Analyze repository structure |
-| `ESC` | Interrupt Claude |
-| `Shift+Tab` | Enter planning mode |
-| `/generate-prp INITIAL.md` | Create implementation blueprint |
-| `/execute-prp PRPs/feature.md` | Implement from blueprint |
-| `/prep-parallel [feature] [count]` | Setup parallel worktrees |
-| `/execute-parallel [feature] [plan] [count]` | Run parallel implementations |
-| `/fix-github-issue [number]` | Auto-fix GitHub issues |
-| `/prep-parallel [feature] [count]` | Setup parallel worktrees |
-| `/execute-parallel [feature] [plan] [count]` | Run parallel implementations |
-
----
-
-## 📚 Additional Resources
-
-- [Claude Code Documentation](https://docs.anthropic.com/en/docs/claude-code)
-- [Claude Code Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices)
-- [MCP Server Library](https://github.com/modelcontextprotocol)
-
----
-
-## 🚀 Next Steps
-
-1. **Start Simple**: Set up CLAUDE.md and basic permissions
-2. **Add Slash Commands**: Create custom commands for your workflow
-3. **Install MCP Servers**: Add Serena for enhanced coding capabilities
-4. **Implement Subagents**: Add specialists for your tech stack
-5. **Configure Hooks**: Automate repetitive tasks
-6. **Try Parallel Development**: Experiment with multiple approaches
-
-Remember: Claude Code is most powerful when you provide clear context, specific examples, and comprehensive validation. Happy coding! 🎉
+*Transform how you consume web content. Listen, learn, and understand like never before.*
