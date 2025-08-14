@@ -21,7 +21,13 @@
       "Bash(gh issue view:*)",
       "WebFetch(domain:docs.anthropic.com)",
       "mcp__serena",
-      "mcp__archon"
+      "mcp__archon",
+      "Bash(claude --version)",
+      "Bash(node:*)",
+      "Bash(npm --version)",
+      "Bash(echo $SHELL)",
+      "Bash(npm i:*)",
+      "Bash(sudo npm i -g @anthropic-ai/claude-code)"
     ],
     "deny": []
   }
