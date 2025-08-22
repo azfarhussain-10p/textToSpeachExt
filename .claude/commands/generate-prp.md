@@ -1,4 +1,4 @@
-# Create PRP
+# Create Production Ready Prompt
 
 ## Feature file: $ARGUMENTS
 

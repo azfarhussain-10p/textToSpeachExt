@@ -1,0 +1,195 @@
+{
+  "name": "intelligent-tts-extension",
+  "version": "1.0.0-beta.1",
+  "description": "A production-ready, cross-browser Text-to-Speech extension with AI-powered explanations",
+  "main": "src/background/service-worker.js",
+  "scripts": {
+    "setup": "npm install && cp .env.example .env",
+    "dev": "npm run dev:chrome",
+    "dev:chrome": "webpack --config build/webpack.chrome.js --mode development --watch",
+    "dev:firefox": "webpack --config build/webpack.firefox.js --mode development --watch",
+    "dev:safari": "webpack --config build/webpack.safari.js --mode development --watch",
+    "dev:edge": "webpack --config build/webpack.chrome.js --mode development --watch",
+    "build": "npm run build:all",
+    "build:all": "npm run build:chrome && npm run build:firefox && npm run build:safari",
+    "build:chrome": "webpack --config build/webpack.chrome.js --mode production",
+    "build:firefox": "webpack --config build/webpack.firefox.js --mode production",
+    "build:safari": "webpack --config build/webpack.safari.js --mode production",
+    "build:edge": "webpack --config build/webpack.chrome.js --mode production",
+    "watch": "npm run dev:chrome",
+    "clean": "rimraf dist/*",
+    "test": "npm run test:unit && npm run test:integration",
+    "test:unit": "jest --config jest.config.js",
+    "test:unit:watch": "jest --config jest.config.js --watch",
+    "test:unit:coverage": "jest --config jest.config.js --coverage",
+    "test:integration": "jest --config jest.integration.config.js",
+    "test:e2e": "npm run test:e2e:chrome",
+    "test:e2e:chrome": "jest --config jest.e2e.config.js --testNamePattern=chrome",
+    "test:e2e:firefox": "jest --config jest.e2e.config.js --testNamePattern=firefox",
+    "test:e2e:safari": "jest --config jest.e2e.config.js --testNamePattern=safari",
+    "test:e2e:all": "npm run test:e2e:chrome && npm run test:e2e:firefox && npm run test:e2e:safari",
+    "test:cross-browser": "npm run test:e2e:all",
+    "test:performance": "jest --config jest.performance.config.js",
+    "test:accessibility": "jest --config jest.a11y.config.js",
+    "test:tts": "jest --testNamePattern=\"TTS|TextToSpeech\"",
+    "test:ai": "jest --testNamePattern=\"AI|Explanation\"",
+    "lint": "eslint src/ tests/ --ext .js,.ts",
+    "lint:fix": "eslint src/ tests/ --ext .js,.ts --fix",
+    "format": "prettier --write src/ tests/ *.js *.json *.md",
+    "format:check": "prettier --check src/ tests/ *.js *.json *.md",
+    "typecheck": "tsc --noEmit",
+    "validate": "npm run lint && npm run format:check && npm run typecheck",
+    "audit": "npm audit && npm audit fix",
+    "audit:security": "npm audit --audit-level moderate",
+    "validate:manifest": "web-ext lint --source-dir dist/chrome --self-hosted",
+    "validate:csp": "node scripts/validate-csp.js",
+    "validate:permissions": "node scripts/validate-permissions.js",
+    "validate:icons": "node scripts/validate-icons.js",
+    "load:chrome": "node scripts/load-extension.js chrome",
+    "load:firefox": "web-ext run --source-dir dist/firefox",
+    "load:safari": "xcrun safari-web-extension-converter dist/safari --app-name 'TTS Extension'",
+    "package": "npm run package:all",
+    "package:all": "npm run package:chrome && npm run package:firefox && npm run package:safari",
+    "package:chrome": "cd dist/chrome && zip -r ../../releases/chrome-extension-v$npm_package_version.zip .",
+    "package:firefox": "cd dist/firefox && zip -r ../../releases/firefox-addon-v$npm_package_version.zip .",
+    "package:safari": "xcrun safari-web-extension-converter dist/safari --app-name 'TTS Extension' --bundle-identifier com.ttse.extension",
+    "analyze": "webpack-bundle-analyzer dist/chrome/main.js",
+    "analyze:chrome": "webpack --config build/webpack.chrome.js --mode production --analyze",
+    "analyze:firefox": "webpack --config build/webpack.firefox.js --mode production --analyze",
+    "docs": "npm run docs:generate && npm run docs:serve",
+    "docs:generate": "jsdoc -c jsdoc.config.json",
+    "docs:serve": "http-server docs/generated -p 8080",
+    "release": "npm run build:all && npm run test && npm run package:all",
+    "release:major": "npm version major && npm run release",
+    "release:minor": "npm version minor && npm run release",
+    "release:patch": "npm version patch && npm run release",
+    "publish:chrome": "webstore upload --source releases/chrome-extension-v$npm_package_version.zip --extension-id $CHROME_EXTENSION_ID",
+    "publish:firefox": "web-ext sign --source-dir dist/firefox --api-key $FIREFOX_API_KEY --api-secret $FIREFOX_API_SECRET",
+    "publish:all": "npm run publish:chrome && npm run publish:firefox",
+    "pre-commit": "npm run validate && npm run test:unit",
+    "prepare": "husky install",
+    "postinstall": "node scripts/setup-dev-environment.js"
+  },
+  "keywords": [
+    "browser-extension",
+    "text-to-speech",
+    "accessibility",
+    "ai",
+    "machine-learning",
+    "multilingual",
+    "chrome-extension",
+    "firefox-addon",
+    "safari-extension",
+    "web-speech-api",
+    "groq",
+    "claude-ai",
+    "context-engineering"
+  ],
+  "author": {
+    "name": "Azfar Hussain",
+    "email": "azfarhussain.10p@gmail.com",
+    "url": "https://github.com/azfarhussain-10p"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/azfarhussain-10p/textToSpeachExt.git"
+  },
+  "bugs": {
+    "url": "https://github.com/azfarhussain-10p/textToSpeachExt/issues"
+  },
+  "homepage": "https://github.com/azfarhussain-10p/textToSpeachExt#readme",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "dependencies": {
+    "webextension-polyfill": "^0.10.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.22.0",
+    "@babel/preset-env": "^7.22.0",
+    "@types/chrome": "^0.0.243",
+    "@types/firefox-webext-browser": "^111.0.0",
+    "@types/jest": "^29.5.0",
+    "@types/webextension-polyfill": "^0.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "babel-loader": "^9.1.0",
+    "clean-webpack-plugin": "^4.0.0",
+    "copy-webpack-plugin": "^11.0.0",
+    "css-loader": "^6.8.0",
+    "eslint": "^8.45.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-jest": "^27.2.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "eslint-plugin-webextensions": "^0.3.0",
+    "file-loader": "^6.2.0",
+    "html-loader": "^4.2.0",
+    "html-webpack-plugin": "^5.5.0",
+    "http-server": "^14.1.0",
+    "husky": "^8.0.0",
+    "jest": "^29.6.0",
+    "jest-environment-jsdom": "^29.6.0",
+    "jest-puppeteer": "^9.0.0",
+    "jsdoc": "^4.0.0",
+    "lint-staged": "^13.2.0",
+    "mini-css-extract-plugin": "^2.7.0",
+    "prettier": "^3.0.0",
+    "puppeteer": "^20.8.0",
+    "rimraf": "^5.0.0",
+    "style-loader": "^3.3.0",
+    "terser-webpack-plugin": "^5.3.0",
+    "typescript": "^5.1.0",
+    "web-ext": "^7.7.0",
+    "webpack": "^5.88.0",
+    "webpack-bundle-analyzer": "^4.9.0",
+    "webpack-cli": "^5.1.0",
+    "webstore-upload-cli": "^2.1.0"
+  },
+  "optionalDependencies": {
+    "playwright": "^1.36.0",
+    "selenium-webdriver": "^4.11.0"
+  },
+  "browserslist": [
+    "Chrome >= 88",
+    "Firefox >= 78",
+    "Safari >= 14",
+    "Edge >= 88"
+  ],
+  "lint-staged": {
+    "*.{js,ts}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,css,html}": [
+      "prettier --write"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged && npm run test:unit",
+      "pre-push": "npm run validate && npm run test"
+    }
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "coverageThreshold": {
+      "global": {
+        "branches": 85,
+        "functions": 85,
+        "lines": 85,
+        "statements": 85
+      }
+    }
+  },
+  "webExt": {
+    "sourceDir": "dist/firefox",
+    "run": {
+      "startUrl": ["https://example.com"]
+    },
+    "lint": {
+      "output": "json"
+    }
+  }
+}

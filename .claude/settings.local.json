@@ -1,4 +1,57 @@
 {
+  "env": {
+    "NODE_ENV": "development",
+    "EXTENSION_ENV": "development"
+  },
+  "includeCoAuthoredBy": true,
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/working-hook.sh",
+            "description": "Log file edits"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'input=$(cat); cmd=$(echo \"$input\" | grep -o \"\\\"command\\\":\\\"[^\\\"]*\\\"\" | cut -d\"\\\"\" -f4 2>/dev/null || echo \"\"); if [[ \"$cmd\" =~ (rm|delete).*(\\*|\\.env|credentials|secret) ]]; then echo \"{\\\"action\\\": \\\"block\\\", \\\"message\\\": \\\"Dangerous command blocked: $cmd\\\"}\"; else echo \"{}\"; fi'",
+            "description": "Block dangerous bash commands"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'input=$(cat); agent=$(echo \"$input\" | grep -o \"\\\"subagent_name\\\":\\\"[^\\\"]*\\\"\" | cut -d\"\\\"\" -f4 2>/dev/null || echo \"\"); if [[ \"$agent\" == \"validation-gates\" ]]; then echo \"Validation gates completed. Running final checks...\" >&2; fi; echo \"{}\"'",
+            "description": "Log when validation-gates subagent completes"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command", 
+            "command": "bash -c 'input=$(cat); prompt=$(echo \"$input\" | grep -o \"\\\"prompt\\\":\\\"[^\\\"]*\\\"\" | cut -d\"\\\"\" -f4 2>/dev/null || echo \"\"); if [[ \"$prompt\" =~ (test|validate|check) ]] && [[ ! \"$prompt\" =~ (skip|no|without).*(test|validation) ]]; then echo \"Reminder: Use the validation-gates subagent to ensure comprehensive testing.\" >&2; fi; echo \"{}\"'",
+            "description": "Remind about validation when testing is mentioned"
+          }
+        ]
+      }
+    ]
+  },
   "permissions": {
     "allow": [
       "Bash(grep:*)",
@@ -8,21 +61,56 @@
       "Bash(mv:*)",
       "Bash(mkdir:*)",
       "Bash(tree:*)",
-      "Bash(ruff:*)",
       "Bash(touch:*)",
       "Bash(chmod:*)",
       "Bash(cat:*)",
-      "Bash(ruff check:*)",
-      "Bash(pytest:*)",
-      "Bash(python:*)",
-      "Bash(python -m pytest:*)",
-      "Bash(python3 -m pytest:*)",
+      "Bash(cp:*)",
+      "Bash(rm:*)",
       "WebFetch(domain:*)",
       "Bash(gh issue view:*)",
+      "Bash(gh pr create:*)",
+      "Bash(gh pr view:*)",
       "WebFetch(domain:docs.anthropic.com)",
+      "WebFetch(domain:developer.chrome.com)",
+      "WebFetch(domain:developer.mozilla.org)",
+      "WebFetch(domain:developer.apple.com)",
       "mcp__serena",
-      "mcp__archon"
+      "mcp__archon",
+      "Bash(claude --version)",
+      "Bash(node:*)",
+      "Bash(npm:*)",
+      "Bash(yarn:*)",
+      "Bash(pnpm:*)",
+      "Bash(npx:*)",
+      "Bash(webpack:*)",
+      "Bash(vite:*)",
+      "Bash(jest:*)",
+      "Bash(playwright:*)",
+      "Bash(eslint:*)",
+      "Bash(prettier:*)",
+      "Bash(web-ext:*)",
+      "Bash(chrome:*)",
+      "Bash(firefox:*)",
+      "Bash(git:*)",
+      "Bash(zip:*)",
+      "Bash(unzip:*)",
+      "Bash(echo $SHELL)",
+      "Bash(dos2unix:*)",
+      "Bash(sudo apt:*)",
+      "Bash(sudo apt install:*)",
+      "Bash(claude --dangerously-skip-permissions)"
     ],
-    "deny": []
+    "deny": [
+      "Bash(rm -rf /)",
+      "Bash(rm -rf ~)",
+      "Bash(*rm -rf*node_modules*)",
+      "Bash(*eval*)",
+      "Bash(*curl*|*sh*)"
+    ],
+    "defaultMode": "acceptEdits"
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "input=$(cat); current_dir=$(echo \"$input\" | jq -r '.workspace.current_dir'); project_name=$(basename \"$current_dir\"); model=$(echo \"$input\" | jq -r '.model.display_name'); branch=$(cd \"$current_dir\" 2>/dev/null && git branch --show-current 2>/dev/null || echo 'no-git'); node_version=$(node --version 2>/dev/null || echo 'no-node'); printf \"\\033[36m🔧 TTS Extension\\033[0m \\033[2m│\\033[0m \\033[33m$project_name\\033[0m \\033[2m│\\033[0m \\033[32m$branch\\033[0m \\033[2m│\\033[0m \\033[35m$node_version\\033[0m \\033[2m│\\033[0m \\033[34m$model\\033[0m\""
   }
 }
