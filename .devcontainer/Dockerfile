@@ -3,7 +3,7 @@ FROM node:20
 ARG TZ
 ENV TZ="$TZ"
 
-# Install basic development tools and iptables/ipset
+# Install development tools, browser extension tools, and audio support
 RUN apt update && apt install -y less \
   git \
   procps \
@@ -19,7 +19,30 @@ RUN apt update && apt install -y less \
   iproute2 \
   dnsutils \
   aggregate \
-  jq
+  jq \
+  curl \
+  wget \
+  vim \
+  nano \
+  chromium-browser \
+  firefox-esr \
+  pulseaudio \
+  alsa-utils \
+  libasound2-dev \
+  xvfb \
+  libnss3-dev \
+  libgconf-2-4 \
+  libxss1 \
+  libxtst6 \
+  libgtk-3-0 \
+  libxrandr2 \
+  libasound2 \
+  libpangocairo-1.0-0 \
+  libatk1.0-0 \
+  libcairo1 \
+  libgdk-pixbuf2.0-0 \
+  libgtk-3-0 \
+  libgconf-2-4
 
 # Ensure default node user has access to /usr/local/share
 RUN mkdir -p /usr/local/share/npm-global && \
@@ -66,8 +89,28 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
   -a "export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" \
   -x
 
-# Install Claude
-RUN npm install -g @anthropic-ai/claude-code
+# Install Claude and TTS extension development tools
+RUN npm install -g @anthropic-ai/claude-code \
+  web-ext \
+  webstore-upload-cli \
+  playwright \
+  puppeteer \
+  jest \
+  eslint \
+  prettier \
+  typescript \
+  @types/chrome \
+  @types/firefox-webext-browser \
+  webpack \
+  webpack-cli
+
+# Install Playwright browsers
+RUN npx playwright install chromium firefox
+
+# Set up browser environment variables
+ENV CHROME_BIN=/usr/bin/chromium-browser
+ENV FIREFOX_BIN=/usr/bin/firefox-esr
+ENV DISPLAY=:99
 
 # Copy and set up firewall script
 COPY init-firewall.sh /usr/local/bin/
@@ -75,4 +118,15 @@ USER root
 RUN chmod +x /usr/local/bin/init-firewall.sh && \
   echo "node ALL=(root) NOPASSWD: /usr/local/bin/init-firewall.sh" > /etc/sudoers.d/node-firewall && \
   chmod 0440 /etc/sudoers.d/node-firewall
+
+# Create browser data directories
+RUN mkdir -p /home/node/.config/chromium /home/node/.mozilla && \
+  chown -R node:node /home/node/.config /home/node/.mozilla
+
 USER node
+
+# Set up TTS extension development environment
+RUN echo 'export PATH=$PATH:/usr/local/share/npm-global/bin' >> ~/.zshrc && \
+  echo 'export CHROME_BIN=/usr/bin/chromium-browser' >> ~/.zshrc && \
+  echo 'export FIREFOX_BIN=/usr/bin/firefox-esr' >> ~/.zshrc && \
+  echo 'export DISPLAY=:99' >> ~/.zshrc

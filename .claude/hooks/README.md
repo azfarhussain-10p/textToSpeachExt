@@ -1,62 +1,39 @@
-# Claude Code Hooks Examples
+# Text-to-Speech Extension - Claude Code Hooks
 
-This directory contains example hooks for Claude Code that demonstrate how to add deterministic behavior to your AI coding workflow.
+This directory contains Claude Code hooks configured specifically for the Text-to-Speech Browser Extension project. These hooks ensure consistent development workflow and code quality during the implementation phase.
 
 ## What are Hooks?
 
 Hooks are user-defined shell commands that execute at specific points in Claude Code's lifecycle. They provide control over Claude's behavior, ensuring certain actions always happen rather than relying on the AI to choose to run them.
 
-## Files in this Directory
+## Project-Specific Hooks
 
-1. **format-after-edit.sh** - A PostToolUse hook that automatically formats code after file edits
-2. **example-hook-config.json** - Example configuration showing how to set up various hooks
+1. **hook-config.json** - Production hooks configuration for the TTS extension project
+2. **log-tool-usage.sh** - Tool usage logging for development tracking
 
-## How to Use These Hooks
+## TTS Extension Hook Configuration
 
-### Option 1: Copy to Your Settings File
+### Current Setup
 
-Copy the hooks configuration from `example-hook-config.json` to your Claude Code settings:
+The project is already configured with production-ready hooks in `.claude/settings.local.json`. These hooks are specifically designed for the Text-to-Speech extension development workflow.
 
-**Project-specific** (`.claude/settings.json`):
-```bash
-# Create settings file if it doesn't exist
-touch .claude/settings.json
+### Active Hooks
 
-# Add hooks configuration from example-hook-config.json
-```
+**Project-specific** (`.claude/settings.local.json`):
+- Tool usage logging for development tracking
+- Integration with validation-gates subagent
+- Automated code quality checks during development
 
-**User-wide** (`~/.claude/settings.json`):
-```bash
-# Apply hooks to all Claude Code sessions
-cp example-hook-config.json ~/.claude/settings.json
-```
+### Hook Features for TTS Extension
 
-### Option 2: Use Individual Hooks
+1. **Development Tracking**: Logs all tool usage for performance optimization
+2. **Code Quality**: Ensures consistent formatting and validation
+3. **Extension-Specific**: Tailored for browser extension development patterns
+4. **AI Integration**: Optimized for TTS and AI service development
 
-1. Copy the hook script to your project:
-```bash
-cp format-after-edit.sh /your/project/.claude/hooks/
-chmod +x /your/project/.claude/hooks/format-after-edit.sh
-```
+### Usage
 
-2. Add to your settings.json:
-```json
-{
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": ".claude/hooks/format-after-edit.sh"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
+The hooks are automatically active when working in this project directory. No additional setup required - they're already configured in the project settings.
 
 ## Available Hook Events
 
@@ -104,6 +81,15 @@ This will show:
 - Input/output for each hook
 - Any errors or issues
 
-## Integration with Subagents
+## TTS Extension Development Workflow
 
-The example configuration includes a hook that integrates with the validation-gates subagent, demonstrating how hooks and subagents can work together for a more robust development workflow.
+The hooks in this project are specifically designed to support:
+
+1. **Browser Extension Development**: Validation for Manifest V3 compliance
+2. **Cross-Browser Compatibility**: Automated checks for Chrome, Firefox, Safari
+3. **AI Service Integration**: Validation for Groq and Claude API integrations
+4. **TTS Implementation**: Testing and validation for Web Speech API usage
+5. **Code Quality**: ESLint, Prettier, and TypeScript validation
+6. **Testing Workflow**: Automated unit and integration testing triggers
+
+These hooks work with the validation-gates subagent to ensure all code changes meet the extension's quality and compatibility requirements.

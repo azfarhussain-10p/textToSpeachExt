@@ -1,4 +1,4 @@
-# Execute BASE PRP
+# Execute Product Ready prompts
 
 Implement a feature using using the PRP file.
 

@@ -50,10 +50,16 @@ while read -r cidr; do
     ipset add allowed-domains "$cidr"
 done < <(echo "$gh_ranges" | jq -r '(.web + .api + .git)[]' | aggregate -q)
 
-# Resolve and add other allowed domains
+# Resolve and add TTS extension development domains
 for domain in \
     "registry.npmjs.org" \
     "api.anthropic.com" \
+    "api.groq.com" \
+    "console.groq.com" \
+    "addons.mozilla.org" \
+    "chrome.google.com" \
+    "chromewebstore.google.com" \
+    "clients2.google.com" \
     "sentry.io" \
     "statsig.anthropic.com" \
     "statsig.com"; do
@@ -100,13 +106,15 @@ iptables -A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 # Then allow only specific outbound traffic to allowed domains
 iptables -A OUTPUT -m set --match-set allowed-domains dst -j ACCEPT
 
-echo "Firewall configuration complete"
+echo "TTS Extension firewall configuration complete"
 echo "Verifying firewall rules..."
+
+# Test that blocked domains are blocked
 if curl --connect-timeout 5 https://example.com >/dev/null 2>&1; then
     echo "ERROR: Firewall verification failed - was able to reach https://example.com"
     exit 1
 else
-    echo "Firewall verification passed - unable to reach https://example.com as expected"
+    echo "✓ Firewall verification passed - unable to reach https://example.com as expected"
 fi
 
 # Verify GitHub API access
@@ -114,5 +122,39 @@ if ! curl --connect-timeout 5 https://api.github.com/zen >/dev/null 2>&1; then
     echo "ERROR: Firewall verification failed - unable to reach https://api.github.com"
     exit 1
 else
-    echo "Firewall verification passed - able to reach https://api.github.com as expected"
+    echo "✓ Firewall verification passed - able to reach https://api.github.com as expected"
 fi
+
+# Verify Groq API access (for TTS extension AI features)
+echo "Testing Groq API connectivity..."
+if curl --connect-timeout 5 -H "Authorization: Bearer test" https://api.groq.com/openai/v1/models >/dev/null 2>&1; then
+    echo "✓ Groq API accessible for TTS extension development"
+else
+    echo "⚠ Groq API test failed, but this may be due to auth rather than connectivity"
+fi
+
+# Verify Anthropic API access
+echo "Testing Anthropic API connectivity..."
+if curl --connect-timeout 5 https://api.anthropic.com >/dev/null 2>&1; then
+    echo "✓ Anthropic API accessible for TTS extension development"
+else
+    echo "⚠ Anthropic API test failed, but this may be due to auth rather than connectivity"
+fi
+
+# Verify Mozilla addons access (for Firefox extension development)
+echo "Testing Mozilla add-ons API connectivity..."
+if curl --connect-timeout 5 https://addons.mozilla.org >/dev/null 2>&1; then
+    echo "✓ Mozilla add-ons API accessible for Firefox extension development"
+else
+    echo "⚠ Mozilla add-ons API test failed"
+fi
+
+echo "🔥 TTS Extension firewall setup complete!"
+echo "Allowed services:"
+echo "  - GitHub (code repository and API)"
+echo "  - NPM registry (package management)"
+echo "  - Groq API (AI explanations for TTS)"
+echo "  - Anthropic Claude API (AI explanations)"
+echo "  - Mozilla Add-ons (Firefox extension publishing)"
+echo "  - Chrome Web Store (Chrome extension publishing)"
+echo "  - Host network (local development)"
