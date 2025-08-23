@@ -31,3 +31,13 @@ npm install -g @anthropic-ai/claude-code
 ```
 
 5. Now within your IDEs you can open a terminal with Ctrl + J (also use this hotkey to toggle it off) and you can click on the down arrow next to the plus to open an Ubuntu (WSL) terminal where you can run the "claude" command to start Claude Code.
+
+## Tip: Ensure that your Claude Code remains consistently updated
+
+```bash
+# Open WSL and run this command to update the Claude Code
+Claude update
+
+# Run this command to check the version of Claude Code
+Claude --version
+```
