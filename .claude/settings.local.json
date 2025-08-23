@@ -53,7 +53,11 @@
       "Bash(claude --dangerously-skip-permissions)",
       "Bash(for:*)",
       "Bash(do sed -i 's/\\r$//' \"$file\")",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(claude-code mcp:*)",
+      "Bash(claude mcp:*)",
+      "mcp__context__resolve-library-id",
+      "mcp__context__get-library-docs"
     ],
     "deny": [
       "Bash(rm -rf /)",
@@ -71,23 +75,19 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/hooks/tts-extension-hooks.sh",
-            "description": "Main TTS extension validation and quality checks"
+            "command": ".claude/hooks/tts-extension-hooks.sh"
           },
           {
             "type": "command",
-            "command": ".claude/hooks/manifest-validator.sh",
-            "description": "Validate Manifest V3 compliance for Chrome Web Store"
+            "command": ".claude/hooks/manifest-validator.sh"
           },
           {
             "type": "command",
-            "command": ".claude/hooks/ai-service-validator.sh",
-            "description": "Validate AI service integrations (Groq, Claude, OpenAI)"
+            "command": ".claude/hooks/ai-service-validator.sh"
           },
           {
             "type": "command",
-            "command": ".claude/hooks/cross-browser-checker.sh",
-            "description": "Check cross-browser compatibility"
+            "command": ".claude/hooks/cross-browser-checker.sh"
           }
         ]
       }
@@ -98,8 +98,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'input=$(cat); cmd=$(echo \"$input\" | jq -r \".tool_input.command // empty\"); if [[ \"$cmd\" =~ (rm|delete).*(\\*|\\.env|credentials|secret|api.*key) ]]; then echo \"{\\\"action\\\": \\\"block\\\", \\\"message\\\": \\\"🚨 Dangerous command blocked: $cmd - API keys and secrets must be protected\\\"}\"; else echo \"{}\"; fi'",
-            "description": "Block dangerous commands that could expose API keys or delete critical files"
+            "command": "bash -c 'input=$(cat); cmd=$(echo \"$input\" | jq -r \".tool_input.command // empty\"); if [[ \"$cmd\" =~ (rm|delete).*(\\*|\\.env|credentials|secret|api.*key) ]]; then echo \"{\\\"action\\\": \\\"block\\\", \\\"message\\\": \\\"🚨 Dangerous command blocked: $cmd - API keys and secrets must be protected\\\"}\"; else echo \"{}\"; fi'"
           }
         ]
       },
@@ -108,8 +107,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'input=$(cat); file=$(echo \"$input\" | jq -r \".tool_input.file_path // empty\"); if [[ \"$file\" == *\"manifest.json\"* ]]; then echo \"{\\\"action\\\": \\\"info\\\", \\\"message\\\": \\\"📋 Editing manifest.json - Remember: Manifest V3 is required for Chrome Web Store\\\"}\"; fi; echo \"{}\"'",
-            "description": "Remind about Manifest V3 when editing manifest files"
+            "command": "bash -c 'input=$(cat); file=$(echo \"$input\" | jq -r \".tool_input.file_path // empty\"); if [[ \"$file\" == *\"manifest.json\"* ]]; then echo \"{\\\"action\\\": \\\"info\\\", \\\"message\\\": \\\"📋 Editing manifest.json - Remember: Manifest V3 is required for Chrome Web Store\\\"}\"; fi; echo \"{}\"'"
           }
         ]
       }
@@ -119,13 +117,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'input=$(cat); agent=$(echo \"$input\" | jq -r \".subagent_name // empty\"); if [[ \"$agent\" == \"validation-gates\" ]]; then echo \"✅ Validation gates completed for TTS extension. Check logs at .claude/logs/\" >&2; fi; echo \"{}\"'",
-            "description": "Log when validation-gates subagent completes for TTS extension"
+            "command": "bash -c 'input=$(cat); agent=$(echo \"$input\" | jq -r \".subagent_name // empty\"); if [[ \"$agent\" == \"validation-gates\" ]]; then echo \"✅ Validation gates completed for TTS extension. Check logs at .claude/logs/\" >&2; fi; echo \"{}\"'"
           },
           {
             "type": "command",
-            "command": "bash -c 'input=$(cat); agent=$(echo \"$input\" | jq -r \".subagent_name // empty\"); if [[ \"$agent\" == \"documentation-manager\" ]]; then echo \"📚 Documentation updated. Remember to update README.md with any new TTS features\" >&2; fi; echo \"{}\"'",
-            "description": "Remind to update TTS documentation"
+            "command": "bash -c 'input=$(cat); agent=$(echo \"$input\" | jq -r \".subagent_name // empty\"); if [[ \"$agent\" == \"documentation-manager\" ]]; then echo \"📚 Documentation updated. Remember to update README.md with any new TTS features\" >&2; fi; echo \"{}\"'"
           }
         ]
       }
@@ -134,19 +130,16 @@
       {
         "hooks": [
           {
-            "type": "command", 
-            "command": "bash -c 'input=$(cat); prompt=$(echo \"$input\" | jq -r \".prompt // empty\"); if [[ \"$prompt\" =~ (test|validate|check) ]] && [[ ! \"$prompt\" =~ (skip|no|without).*(test|validation) ]]; then echo \"🧪 TTS Testing Reminder: Use validation-gates subagent for comprehensive testing including:\" >&2; echo \"  • Cross-browser compatibility (Chrome, Firefox, Safari, Edge)\" >&2; echo \"  • Manifest V3 compliance\" >&2; echo \"  • TTS functionality (speechSynthesis API)\" >&2; echo \"  • AI service integration\" >&2; echo \"  • Memory usage (<50MB)\" >&2; fi; echo \"{}\"'",
-            "description": "Remind about TTS-specific testing requirements"
+            "type": "command",
+            "command": "bash -c 'input=$(cat); prompt=$(echo \"$input\" | jq -r \".prompt // empty\"); if [[ \"$prompt\" =~ (test|validate|check) ]] && [[ ! \"$prompt\" =~ (skip|no|without).*(test|validation) ]]; then echo \"🧪 TTS Testing Reminder: Use validation-gates subagent for comprehensive testing including:\" >&2; echo \"  • Cross-browser compatibility (Chrome, Firefox, Safari, Edge)\" >&2; echo \"  • Manifest V3 compliance\" >&2; echo \"  • TTS functionality (speechSynthesis API)\" >&2; echo \"  • AI service integration\" >&2; echo \"  • Memory usage (<50MB)\" >&2; fi; echo \"{}\"'"
           },
           {
             "type": "command",
-            "command": "bash -c 'input=$(cat); prompt=$(echo \"$input\" | jq -r \".prompt // empty\"); if [[ \"$prompt\" =~ (tts|speech|voice|audio) ]]; then echo \"🎤 TTS Context: Remember to handle speechSynthesis API browser differences and implement proper error handling\" >&2; fi; echo \"{}\"'",
-            "description": "Add TTS-specific context to prompts"
+            "command": "bash -c 'input=$(cat); prompt=$(echo \"$input\" | jq -r \".prompt // empty\"); if [[ \"$prompt\" =~ (tts|speech|voice|audio) ]]; then echo \"🎤 TTS Context: Remember to handle speechSynthesis API browser differences and implement proper error handling\" >&2; fi; echo \"{}\"'"
           },
           {
             "type": "command",
-            "command": "bash -c 'input=$(cat); prompt=$(echo \"$input\" | jq -r \".prompt // empty\"); if [[ \"$prompt\" =~ (ai|groq|claude|openai|explanation) ]]; then echo \"🤖 AI Service Context: Groq (100 req/hr free), Claude (60 req/min), OpenAI (60 req/min). Implement rate limiting!\" >&2; fi; echo \"{}\"'",
-            "description": "Add AI service context and rate limits"
+            "command": "bash -c 'input=$(cat); prompt=$(echo \"$input\" | jq -r \".prompt // empty\"); if [[ \"$prompt\" =~ (ai|groq|claude|openai|explanation) ]]; then echo \"🤖 AI Service Context: Groq (100 req/hr free), Claude (60 req/min), OpenAI (60 req/min). Implement rate limiting!\" >&2; fi; echo \"{}\"'"
           }
         ]
       }
@@ -156,8 +149,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'echo \"🔊 TTS Extension Development Session Started\" >&2; echo \"📋 Project: Text-to-Speech Browser Extension\" >&2; echo \"🎯 Target Browsers: Chrome 88+, Firefox 78+, Safari 14+, Edge 88+\" >&2; echo \"🤖 AI Services: Groq (primary), Claude (secondary), OpenAI (tertiary)\" >&2; echo \"📚 Docs: Check CLAUDE.md and README.md for implementation patterns\" >&2; echo \"{}\"'",
-            "description": "Show TTS project context at session start"
+            "command": "bash -c 'echo \"🔊 TTS Extension Development Session Started\" >&2; echo \"📋 Project: Text-to-Speech Browser Extension\" >&2; echo \"🎯 Target Browsers: Chrome 88+, Firefox 78+, Safari 14+, Edge 88+\" >&2; echo \"🤖 AI Services: Groq (primary), Claude (secondary), OpenAI (tertiary)\" >&2; echo \"📚 Docs: Check CLAUDE.md and README.md for implementation patterns\" >&2; echo \"{}\"'"
           }
         ]
       }
@@ -167,8 +159,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'echo \"🏁 Session Complete. Remember to:\" >&2; echo \"  • Run tests: npm test\" >&2; echo \"  • Check bundle size: npm run analyze\" >&2; echo \"  • Validate manifest: npm run validate:manifest\" >&2; echo \"  • Test cross-browser: npm run test:e2e:all\" >&2; echo \"{}\"'",
-            "description": "Final reminders for TTS extension development"
+            "command": "bash -c 'echo \"🏁 Session Complete. Remember to:\" >&2; echo \"  • Run tests: npm test\" >&2; echo \"  • Check bundle size: npm run analyze\" >&2; echo \"  • Validate manifest: npm run validate:manifest\" >&2; echo \"  • Test cross-browser: npm run test:e2e:all\" >&2; echo \"{}\"'"
           }
         ]
       }
