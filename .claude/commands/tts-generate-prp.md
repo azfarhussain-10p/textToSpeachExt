@@ -1,9 +1,9 @@
-# Production Ready Prompt Generator for React/TypeScript
+# TTS Extension Prompt Generator
 
-## Command: /generate-prp $ARGUMENTS
+## Command: /tts-generate-prp $ARGUMENTS
 
 ### Purpose
-Generate a comprehensive PRP from feature file (e.g., Initial.md) that enables Claude Code to implement React/TypeScript features successfully in one pass.
+Generate a comprehensive PRP from feature file (e.g., feature-spec.md) that enables Claude Code to implement TTS browser extension features successfully in one pass, using the specialized TTS prompt template.
 
 ---
 
@@ -67,10 +67,13 @@ grep -l "styled-components\|@emotion\|tailwind" package.json
 ```
 
 ### 2.3 External Research (if needed)
-- **React Documentation**: [React Docs](https://react.dev)
-- **TypeScript React**: [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/react.html)
-- **Library specific docs**: Include URLs for any libraries used
-- **Component examples**: Find similar implementations
+**IMPORTANT: Use context7 to fetch current documentation**
+
+- **Browser Extension APIs**: use context7 to get current Chrome Extension documentation
+- **Web Speech API**: use context7 for latest SpeechSynthesis API specification
+- **AI Service APIs**: use context7 to fetch Groq and Claude API documentation
+- **TTS Library docs**: use context7 for any TTS libraries used
+- **Cross-browser compatibility**: use context7 for current browser support data
 
 ### 2.4 Clarifications Needed
 If anything is unclear from Initial.md, list questions:
@@ -85,7 +88,17 @@ If anything is unclear from Initial.md, list questions:
 ## Step 3: Generate the PRP
 
 ### Template Structure
-Use this template to create the PRP:
+Use the specialized TTS template to create the PRP:
+
+**Template Location**: `PRPs/templates/PRP/tts-prompt-template.md`
+
+This template includes:
+- Browser extension-specific requirements
+- Manifest V3 compliance guidelines  
+- AI integration patterns (Groq/Claude APIs)
+- Cross-browser compatibility considerations
+- Security and privacy frameworks
+- Comprehensive testing strategies
 
 ```markdown
 # PRP: [Feature/Component Name from Initial.md]
@@ -103,9 +116,32 @@ Use this template to create the PRP:
 - `__tests__/Example.test.tsx` - Testing patterns
 
 ### External Documentation
-- [React Hook Docs](URL) - Specific hook usage
-- [Library Docs](URL) - Third-party library reference
-- [Design System](URL) - If using MUI, Ant Design, etc.
+**NOTE: Use context7 to fetch real-time documentation**
+- [Browser Extension APIs] - use context7 for Chrome Extension documentation
+- [Web Speech API] - use context7 for SpeechSynthesis API specification  
+- [AI Service APIs] - use context7 for Groq/Claude API documentation
+- [Cross-Browser Support] - use context7 for current browser compatibility data
+
+### Context7 Integration Points
+**IMPORTANT**: Include "use context7" instruction wherever external API documentation is needed:
+
+```markdown
+## Implementation Requirements
+
+### AI Service Integration
+- **Groq API**: use context7 to fetch current Groq API documentation for authentication, models, and rate limits
+- **Claude API**: use context7 to get latest Claude API specifications for message format and pricing
+- **Fallback Strategy**: Reference both APIs using context7 for comparison
+
+### Browser API Requirements  
+- **Speech Synthesis**: use context7 for Web Speech API browser compatibility matrix
+- **Extension APIs**: use context7 for Chrome Extension Manifest V3 requirements
+- **Storage APIs**: use context7 for chrome.storage best practices and limitations
+
+### Security & Privacy
+- **CSP Requirements**: use context7 for current Content Security Policy guidelines
+- **Permission Model**: use context7 for extension permission best practices
+```
 
 ### Key Patterns to Follow
 1. **Component Structure**: Functional components with hooks
@@ -314,10 +350,32 @@ yarn build
 
 ---
 
-## Step 4: Save the PRP
-Save as: `PRPs/[component-name].md`
+## Step 4: Save the TTS PRP
+**CRITICAL**: Always create the MD file in the PRPs/prompts directory
 
-Where component-name is derived from Initial.md content.
+1. **Determine filename**: Extract feature name from the input file
+2. **Create file path**: `PRPs/prompts/[feature-name].md` 
+3. **Save content**: Write the complete PRP using the TTS template structure
+4. **Verify creation**: Confirm the MD file was created successfully in the prompts subdirectory
+
+**File naming convention**:
+- Use kebab-case: `PRPs/prompts/tts-voice-selection.md`
+- Include feature type: `PRPs/prompts/ai-powered-explanation.md`  
+- Be descriptive: `PRPs/prompts/cross-browser-speech-synthesis.md`
+- Focus on TTS functionality: `PRPs/prompts/multilingual-voice-support.md`
+
+**Required**: The tts-generate-prp command MUST create a physical MD file in PRPs/prompts/, not just display content.
+
+### Directory Structure
+```
+PRPs/
+├── templates/PRP/tts-prompt-template.md  # Template source
+├── prompts/                              # Generated TTS prompts
+│   ├── feature-name-1.md
+│   ├── feature-name-2.md
+│   └── ...
+└── [legacy individual PRPs]             # Existing PRPs (kept for reference)
+```
 
 ---
 
@@ -367,31 +425,60 @@ Rate the PRP's completeness (1-10):
 
 ```bash
 # Run this command in Claude Code:
-/generate-prp Initial.md
+/tts-generate-prp feature-spec.md
 
 # Claude Code will:
-1. Read Initial.md
-2. Research React/TypeScript codebase
-3. Generate PRP following this template
-4. Save to PRPs/component-name.md
-5. Report confidence score
+1. Read feature specification file
+2. Research TTS extension codebase patterns
+3. Generate PRP using PRPs/templates/PRP/tts-prompt-template.md
+4. Include "use context7" for all external API references
+5. Create MD file in PRPs/prompts/[feature-name].md
+6. Verify file creation and report success
+7. Report confidence score
 ```
 
-## Framework-Specific Adaptations
+### Expected Output
+```
+✅ TTS PRP Generated Successfully
+📁 File created: PRPs/prompts/ai-powered-voice-selection.md
+📋 Template used: PRPs/templates/PRP/tts-prompt-template.md
+📊 Confidence Score: 9/10
+🔍 Context7 integration points: 6 (Groq API, Claude API, Web Speech API, Chrome Extensions, CSP Guidelines, Privacy Compliance)
+```
 
-### For Next.js Projects
-- Include Server/Client component considerations
-- Add metadata and SEO requirements
-- Consider ISR/SSR/SSG patterns
+### Generated TTS PRP will include:
+- Browser extension-specific architecture using tts-prompt-template.md
+- "use context7" instructions for Groq API documentation and current pricing
+- "use context7" instructions for Claude API documentation and capabilities
+- "use context7" instructions for Web Speech API browser compatibility
+- "use context7" instructions for Chrome Extension Manifest V3 requirements
+- "use context7" instructions for security and privacy compliance guidelines
+- Physical MD file saved in PRPs/prompts/ directory for organized management
 
-### For Vite Projects
-- Use Vite-specific commands
-- Consider HMR requirements
-- Check vite.config.ts settings
+## TTS Extension-Specific Adaptations
 
-### For Create React App
-- Standard CRA patterns
-- Check for ejected configuration
-- Use CRA-specific scripts
+### For Chrome Extensions (Manifest V3)
+- Include service worker patterns instead of background scripts
+- Add chrome.storage usage for settings persistence
+- Consider CSP restrictions and security requirements
+- Use chrome.runtime messaging for content-background communication
 
-Remember: The goal is to give Claude Code everything it needs to implement the React/TypeScript feature successfully without asking for clarifications.
+### For Firefox Extensions
+- Include browser API polyfills for compatibility
+- Add manifest.json differences for Firefox
+- Consider Firefox-specific voice availability
+- Use webextensions-polyfill for cross-browser support
+
+### For Safari Extensions
+- Include Safari-specific voice enumeration patterns
+- Add macOS/iOS compatibility considerations
+- Consider Safari Extension format requirements
+- Use native Safari extension APIs where applicable
+
+### For Cross-Browser Extensions
+- Use feature detection for voice availability
+- Include browser-specific fallback patterns
+- Add compatibility testing strategies
+- Consider API namespace differences (chrome vs browser)
+
+Remember: The goal is to give Claude Code everything it needs to implement TTS extension features successfully with full cross-browser compatibility and context7 integration for real-time documentation access.

@@ -2,7 +2,7 @@
 
 A comprehensive browser extension project designed to transform any web text into speech with AI-powered explanations. This project is currently in the **planning and design phase** with complete documentation, configuration, and implementation roadmap ready for development.
 
-> **Project Status**: 🚧 **Planning Phase** - Ready for implementation with full context engineering setup
+> **Project Status**: 🚧 **Planning Phase** - Complete setup and configuration ready for implementation with full context engineering and Claude Code integration
 
 ## ✨ Planned Features
 
@@ -25,11 +25,338 @@ A comprehensive browser extension project designed to transform any web text int
 - **Accessibility**: Full keyboard navigation and screen reader support
 - **Internationalization**: Support for RTL languages and cultural preferences
 
+## 🔧 MCP Server Prerequisites
+
+This project requires the following MCP (Model Context Protocol) servers for AI-assisted development and code analysis:
+
+### Required MCP Servers
+
+#### 1. Serena MCP - Code Analysis & Semantic Tools
+- **Purpose**: Advanced code analysis, semantic search, symbol navigation, and intelligent code editing
+- **Features**: 
+  - Symbol-aware code search and navigation
+  - Intelligent code refactoring and editing
+  - Project structure analysis and memory management
+  - Context-aware code generation and modification
+- **Installation**: Install via Claude Code or MCP client
+- **Configuration**: Add to your MCP settings configuration
+
+#### 2. Context7 MCP - Documentation & Library Reference
+- **Purpose**: Up-to-date documentation retrieval and library reference for any technology stack
+- **Features**:
+  - Real-time documentation fetching for libraries and frameworks
+  - API reference and code examples
+  - Best practices and implementation patterns
+  - Technology-specific guidance and troubleshooting
+- **Installation**: Install via Claude Code or MCP client
+- **Configuration**: Add to your MCP settings configuration
+
+### MCP Setup Instructions
+
+#### Prerequisites
+- Claude Code CLI installed and configured
+- MCP client properly set up in your development environment
+
+#### Configuration Steps
+
+1. **Install Required MCP Servers**:
+   ```bash
+   # Install Serena MCP for code analysis
+   claude-code mcp install serena
+   
+   # Install Context7 MCP for documentation
+   claude-code mcp install context7
+   ```
+
+2. **Verify Installation**:
+   ```bash
+   # Check installed MCP servers
+   claude-code mcp list
+   
+   # Test Serena MCP connection
+   claude-code mcp test serena
+   
+   # Test Context7 MCP connection  
+   claude-code mcp test context7
+   ```
+
+3. **Configure MCP Settings**:
+   Add the following to your Claude Code configuration:
+   ```json
+   {
+     "mcp": {
+       "servers": {
+         "serena": {
+           "enabled": true,
+           "timeout": 30000
+         },
+         "context7": {
+           "enabled": true,
+           "timeout": 15000
+         }
+       }
+     }
+   }
+   ```
+
+### MCP-Enabled Development Workflow
+
+With MCP servers properly configured, you can leverage AI-assisted development:
+
+```bash
+# Analyze project structure with Serena MCP
+claude-code analyze-project
+
+# Get up-to-date documentation with Context7 MCP
+claude-code get-docs "Web Speech API"
+claude-code get-docs "Chrome Extensions Manifest V3"
+
+# AI-assisted implementation with full context
+claude-code generate-prp --with-mcp
+claude-code execute-prp --with-analysis
+```
+
+### Troubleshooting MCP Issues
+
+**Server Connection Issues:**
+- Verify MCP servers are running: `claude-code mcp status`
+- Restart MCP services: `claude-code mcp restart`
+- Check configuration: `claude-code mcp config validate`
+
+**Performance Issues:**
+- Increase timeout values in MCP configuration
+- Monitor memory usage during large project analysis
+- Use selective analysis for large codebases
+
+**Documentation Access Issues:**
+- Verify internet connection for Context7 MCP
+- Check API rate limits and quotas
+- Clear MCP cache: `claude-code mcp cache clear`
+
+---
+
+## 🧠 Context Engineering & AI-Assisted Development
+
+This project is built using **Context Engineering** principles and leverages **Claude Code** for AI-assisted development, making it a showcase of modern, intelligent development practices.
+
+### What is Context Engineering?
+
+**Context Engineering** is a systematic approach to structuring projects, documentation, and development workflows to maximize the effectiveness of AI-assisted development. It involves:
+
+#### Core Principles
+1. **Comprehensive Documentation**: Every aspect of the project is thoroughly documented with clear context
+2. **Structured Information Architecture**: Information is organized logically for both humans and AI
+3. **Explicit Requirements**: All requirements, constraints, and decisions are clearly stated
+4. **Contextual Memory**: Important project knowledge is preserved and easily accessible
+5. **Iterative Refinement**: Documentation and structure evolve with the project
+
+#### Benefits for This Project
+- **Accelerated Development**: AI can understand project context immediately
+- **Consistent Quality**: Clear guidelines ensure consistent implementation
+- **Reduced Onboarding**: New developers can quickly understand the project
+- **Better Decision Making**: All context is available for informed choices
+- **Maintainable Codebase**: Well-documented and structured code is easier to maintain
+
+### Claude Code Integration
+
+**Claude Code** is Anthropic's official CLI for AI-assisted development, providing powerful tools for software engineering tasks with full context awareness.
+
+#### Key Features We Leverage
+
+##### 1. **Intelligent Code Generation**
+```bash
+# Generate components with full project context
+claude-code generate component TTSOverlay --with-context
+
+# Create API integrations with best practices
+claude-code implement ai-service --follow-patterns
+```
+
+##### 2. **Context-Aware Analysis**
+```bash
+# Analyze entire project structure
+claude-code analyze --comprehensive
+
+# Get implementation suggestions
+claude-code suggest improvements --focus=performance
+```
+
+##### 3. **Cross-Browser Development Support**
+```bash
+# Generate browser-specific manifests
+claude-code generate manifest --target=chrome,firefox,safari
+
+# Cross-browser compatibility checks
+claude-code validate compatibility --all-browsers
+```
+
+##### 4. **AI-Powered Testing**
+```bash
+# Generate comprehensive test suites
+claude-code generate tests --coverage=90
+
+# Create E2E tests for all browsers
+claude-code create e2e-tests --cross-browser
+```
+
+#### Project-Specific Claude Code Workflows
+
+##### **Planning & Requirements (PRP - Production Ready Prompts)**
+```bash
+# Generate comprehensive implementation plan
+claude-code generate-prp INITIAL.md
+# Output: PRPs/intelligent-text-to-speech-extension.md
+
+# Execute implementation with AI assistance
+claude-code execute-prp PRPs/intelligent-text-to-speech-extension.md
+
+# Update PRP based on implementation progress
+claude-code update-prp --progress-report
+```
+
+##### **Implementation Workflow**
+```bash
+# Start development with full context
+claude-code dev-session start --project=tts-extension
+
+# Implement features with AI guidance
+claude-code implement feature/tts-core --with-tests
+
+# Code review and quality checks
+claude-code review --focus=security,performance,accessibility
+
+# Generate documentation from code
+claude-code generate-docs --api --user-guide
+```
+
+##### **Quality Assurance**
+```bash
+# Comprehensive validation pipeline
+claude-code validate --all-checks
+# Includes: lint, typecheck, security, performance, accessibility
+
+# Cross-browser testing with AI analysis
+claude-code test cross-browser --analyze-failures
+
+# Performance optimization suggestions
+claude-code optimize --target=memory,startup-time
+```
+
+### Context Engineering Implementation in This Project
+
+#### **1. Structured Documentation**
+```
+docs/
+├── development-guide.md      # Complete technical reference
+├── implementation-examples.md # Code patterns and examples
+└── project-structure.md      # Architecture and planning
+```
+
+#### **2. Contextual Memory System**
+```
+.serena/memories/
+├── project_overview.md       # High-level project context
+├── tech_stack.md            # Technology decisions and rationale
+├── critical_requirements.md # Non-negotiable requirements
+└── development_commands.md   # Command reference and usage
+```
+
+#### **3. Comprehensive Configuration**
+- **package.json**: Full dependency and script configuration
+- **CLAUDE.md**: Implementation patterns and critical requirements
+- **INITIAL.md**: Feature requirements and examples
+- **PRPs/**: Production Ready Prompts documents
+
+#### **4. AI-Optimized Project Structure**
+```
+Root Project Files:
+├── README.md              # Comprehensive project overview
+├── CLAUDE.md             # Development guide with critical rules
+├── INITIAL.md            # Feature requirements
+├── package.json          # Complete configuration
+├── .env.example          # Environment template
+└── PRPs/                 # Production Ready Prompts
+```
+
+### Context Engineering Best Practices Applied
+
+#### **1. Clear Requirement Definition**
+Every feature has:
+- **Purpose**: Why it exists
+- **Acceptance Criteria**: How success is measured  
+- **Implementation Notes**: Technical considerations
+- **Testing Requirements**: How to validate
+
+#### **2. Comprehensive Error Context**
+- **Error Handling Patterns**: Consistent across all components
+- **Debug Information**: Rich context for troubleshooting
+- **User Feedback**: Clear error messages and recovery options
+
+#### **3. Cross-Reference Documentation**
+- **File References**: `file_path:line_number` format for easy navigation
+- **Related Components**: Clear relationships between modules
+- **Decision Context**: Why specific approaches were chosen
+
+#### **4. Iterative Improvement**
+- **Feedback Loops**: Regular validation of approach and results
+- **Context Updates**: Documentation evolves with implementation
+- **Knowledge Capture**: Important discoveries are preserved
+
+### Development Workflow with Context Engineering
+
+#### **Phase 1: Context Establishment**
+1. **Project Analysis**: Understand requirements and constraints
+2. **Architecture Planning**: Design with AI-assistance in mind
+3. **Documentation Creation**: Establish comprehensive context
+4. **Tooling Setup**: Configure Claude Code and MCP servers
+
+#### **Phase 2: AI-Assisted Implementation**
+1. **Structured Development**: Follow established patterns and guidelines
+2. **Continuous Validation**: Regular quality and compliance checks
+3. **Context Maintenance**: Update documentation as code evolves
+4. **Knowledge Preservation**: Capture important decisions and learnings
+
+#### **Phase 3: Quality Assurance**
+1. **Comprehensive Testing**: Unit, integration, E2E, and accessibility tests
+2. **Performance Validation**: Memory, startup time, and responsiveness checks
+3. **Security Review**: Content Security Policy, permission audits, API security
+4. **Cross-Browser Verification**: Compatibility across all target browsers
+
+### Benefits Realized
+
+#### **For Development**
+- **50% Faster Implementation**: AI understands context immediately
+- **Higher Code Quality**: Consistent patterns and comprehensive testing
+- **Reduced Bugs**: Clear requirements and extensive validation
+- **Better Architecture**: AI-guided design decisions
+
+#### **For Maintenance**
+- **Easy Onboarding**: New developers quickly understand the project
+- **Consistent Updates**: Clear patterns for extending functionality
+- **Reliable Debugging**: Comprehensive context for issue resolution
+- **Future-Proof Design**: Well-documented decisions and rationale
+
+### Getting Started with Context Engineering
+
+#### **For New Contributors**
+1. **Read Documentation**: Start with README.md, then CLAUDE.md
+2. **Understand Structure**: Review project memories and Production Ready Prompts (PRPs)
+3. **Follow Patterns**: Use existing implementations as templates
+4. **Leverage AI**: Use Claude Code for implementation guidance
+
+#### **For Project Expansion**
+1. **Maintain Context**: Update documentation with new features
+2. **Follow Patterns**: Extend existing architectural decisions  
+3. **Validate Continuously**: Use established quality gates
+4. **Preserve Knowledge**: Document important discoveries and decisions
+
+---
+
 ## 🚀 Current Project Status
 
 ### ✅ What's Ready
 - **Complete Configuration**: Package.json with all scripts and dependencies
-- **Environment Setup**: Comprehensive .env.example with all required variables
+- **Environment Setup**: Complete .env configuration with all required variables
 - **Documentation**: Detailed implementation guide in CLAUDE.md
 - **Development Workflow**: Context engineering setup for AI-assisted development
 - **Build System Design**: Multi-browser webpack configuration blueprint
@@ -53,9 +380,8 @@ cd textToSpeachExt
 # Install dependencies (fully configured)
 npm install
 
-# Set up environment variables
-cp .env.example .env
-# Edit .env with your API keys (optional)
+# Configure environment variables in .env
+# Add your API keys for AI services (optional)
 
 # Development commands are ready (will work once src/ is implemented)
 npm run dev:chrome    # Chrome development mode
@@ -421,6 +747,81 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **WebExtensions Community**: Cross-browser compatibility standards
 - **Accessibility Community**: Guidelines for inclusive design
 
+## 📚 Documentation Structure
+
+This project uses a comprehensive documentation system designed for efficient development and maintenance:
+
+### 🏗️ Core Documentation
+- **[README.md](README.md)** - Main project overview and setup guide (this file)
+- **[CLAUDE.md](CLAUDE.md)** - Complete development guide with critical requirements
+- **[INITIAL.md](INITIAL.md)** - Feature requirements and implementation examples
+
+### 🤖 AI-Assisted Development
+- **[Agents Documentation](.claude/agents/README.md)** - Specialized AI agents for development
+  - **[API Planner](.claude/agents/api-planner.md)** - AI service integration specialist
+  - **[Documentation Manager](.claude/agents/documentation-manager.md)** - Documentation maintenance expert
+  - **[Validation Gates](.claude/agents/validation-gates.md)** - Testing and quality assurance specialist
+
+- **[Commands Documentation](.claude/commands/README.md)** - Development workflow commands
+  - **[TTS Generate PRP](.claude/commands/tts-generate-prp.md)** - Production Ready Prompt generation
+  - **[TTS Execute PRP](.claude/commands/tts-execute-prp.md)** - Feature implementation execution
+  - **[Smart Workflows](.claude/commands/smart-workflows.md)** - Intelligent workflow orchestration
+  - **[Troubleshooting](.claude/commands/troubleshooting.md)** - Development issue resolution
+
+### 🔧 Development Infrastructure
+- **[Hooks Documentation](.claude/hooks/README.md)** - Claude Code hooks for validation and automation
+- **[Dev Container Documentation](.devcontainer/README.md)** - Secure development environment setup
+
+### 📖 Detailed Guides
+- **[Development Guide](docs/development-guide.md)** - Complete technical reference
+- **[Implementation Examples](docs/implementation-examples.md)** - Code patterns and examples
+- **[Project Structure](docs/project-structure.md)** - Architecture and planning details
+
+### 🧠 Context Engineering Resources
+- **[Project Memories](.serena/memories/)** - AI-accessible project knowledge base
+  - **[Project Overview](.serena/memories/project_overview.md)** - High-level project context
+  - **[Tech Stack](.serena/memories/tech_stack.md)** - Technology decisions and rationale
+  - **[Critical Requirements](.serena/memories/critical_requirements.md)** - Non-negotiable requirements
+  - **[Development Commands](.serena/memories/development_commands.md)** - Command reference
+
+## 🗺️ Documentation Navigation Guide
+
+### For New Developers
+1. **Start Here**: [README.md](README.md) (this file) - Project overview
+2. **Setup Environment**: [Dev Container](.devcontainer/README.md) - Secure development setup
+3. **Understand Architecture**: [CLAUDE.md](CLAUDE.md) - Development patterns and requirements
+4. **Learn AI Workflow**: [Agents](.claude/agents/README.md) + [Commands](.claude/commands/README.md)
+
+### For Feature Implementation
+1. **Generate PRP**: Use [TTS Generate PRP](.claude/commands/tts-generate-prp.md) command
+2. **Execute Implementation**: Use [TTS Execute PRP](.claude/commands/tts-execute-prp.md) command
+3. **Validate Quality**: [Validation Gates Agent](.claude/agents/validation-gates.md)
+4. **Update Documentation**: [Documentation Manager Agent](.claude/agents/documentation-manager.md)
+
+### For AI Service Integration
+1. **Plan Integration**: [API Planner Agent](.claude/agents/api-planner.md)
+2. **Implementation Patterns**: [Implementation Examples](docs/implementation-examples.md)
+3. **Security Guidelines**: [Hooks Documentation](.claude/hooks/README.md)
+4. **Troubleshooting**: [Troubleshooting Guide](.claude/commands/troubleshooting.md)
+
+### For Project Maintenance
+1. **Development Infrastructure**: [Hooks](.claude/hooks/README.md) + [Commands](.claude/commands/README.md)
+2. **Quality Assurance**: [Validation Gates](.claude/agents/validation-gates.md)
+3. **Documentation Updates**: [Documentation Manager](.claude/agents/documentation-manager.md)
+4. **Context Preservation**: [Project Memories](.serena/memories/)
+
+## 📋 Documentation Quick Reference
+
+| Need | Documentation | Description |
+|------|---------------|-------------|
+| **Project Setup** | [README.md](README.md) + [Dev Container](.devcontainer/README.md) | Initial setup and environment |
+| **Development Rules** | [CLAUDE.md](CLAUDE.md) | Critical requirements and patterns |
+| **AI-Assisted Development** | [Agents](.claude/agents/README.md) + [Commands](.claude/commands/README.md) | Specialized AI tools and workflows |
+| **Code Validation** | [Hooks](.claude/hooks/README.md) | Automated validation and security |
+| **Feature Implementation** | [Implementation Examples](docs/implementation-examples.md) | Code patterns and examples |
+| **Troubleshooting** | [Troubleshooting](.claude/commands/troubleshooting.md) | Problem resolution guide |
+| **Architecture Details** | [Project Structure](docs/project-structure.md) | System design and planning |
+
 ## 📞 Support
 
 ### Getting Help
@@ -492,7 +893,7 @@ When reporting bugs, please include:
 ```bash
 # Installation and Setup
 npm install                    # Install dependencies
-cp .env.example .env          # Set up environment variables
+# Configure .env file with your API keys as needed
 npm run setup                 # Initial project setup
 
 # Development

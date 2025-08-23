@@ -73,7 +73,8 @@
       "FIREFOX_API_SECRET": "${localEnv:FIREFOX_API_SECRET}",
       "DEBUG_MODE": "true",
       "DEFAULT_LANGUAGE": "en-US",
-      "SELECTION_THRESHOLD": "10"
+      "SELECTION_THRESHOLD": "10",
+      "PROJECT_PHASE": "planning"
     },
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated",
     "workspaceFolder": "/workspace",

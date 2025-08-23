@@ -121,6 +121,48 @@
 - [ ] Touch interactions work properly
 - [ ] Performance on mobile devices verified
 
+### 🎤 TTS Extension-Specific Validation
+<!-- Required testing for Text-to-Speech browser extension features -->
+
+**Cross-Browser Extension Testing:**
+- [ ] **Chrome 88+**: Manifest V3 compliance, service worker functionality
+- [ ] **Firefox 78+**: WebExtensions API compatibility, voice enumeration
+- [ ] **Safari 14+**: Speech synthesis voice loading, macOS/iOS compatibility
+- [ ] **Edge 88+**: Chromium-based extension compatibility
+
+**Web Speech API Integration:**
+- [ ] Speech synthesis functionality across all browsers
+- [ ] Voice availability and enumeration testing
+- [ ] Speech rate, pitch, and volume consistency
+- [ ] Speech queue management and cancellation
+- [ ] Browser-specific voice loading patterns (Safari async behavior)
+
+**AI Service Integration (if applicable):**
+- [ ] **Groq API**: Rate limiting (100/hr), secure key storage, error handling
+- [ ] **Claude API**: Rate limiting (60/min), fallback mechanisms, privacy compliance
+- [ ] **Local Fallbacks**: Offline explanation generation when APIs unavailable
+- [ ] **Privacy Compliance**: User consent dialogs, data minimization, GDPR/CCPA
+
+**Browser Extension Security:**
+- [ ] **Content Security Policy**: No eval(), no inline scripts, CSP compliance
+- [ ] **API Key Security**: No hardcoded keys, secure chrome.storage usage
+- [ ] **Cross-Origin Requests**: Proper CORS handling, secure API communication
+- [ ] **Permission Model**: Minimal permissions, activeTab usage validation
+
+**Accessibility Compliance (WCAG 2.1 AA):**
+- [ ] Screen reader compatibility with speech synthesis
+- [ ] Keyboard navigation for TTS controls
+- [ ] High contrast mode support
+- [ ] Focus management during speech playback
+- [ ] ARIA labels for TTS interface elements
+
+**Performance Benchmarking:**
+- [ ] **Overlay Display**: <300ms after text selection
+- [ ] **Speech Start**: <500ms from user activation
+- [ ] **AI Explanations**: <3s response time (when available)
+- [ ] **Memory Usage**: <50MB peak during TTS operation
+- [ ] **Extension Load**: <500ms initial load time
+
 ---
 
 ## 🔒 Security Considerations

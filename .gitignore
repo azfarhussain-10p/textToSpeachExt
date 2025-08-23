@@ -13,13 +13,13 @@ out/
 *.crx
 *.xpi
 
-# Environment Variables and Secrets
-.env
+# Environment Variables and Secrets (keeping .env tracked for project configuration)
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
-.env.example.filled
+.env.backup
+.env.temp
 
 # API Keys and Secrets (specific to TTS extension)
 **/config/secrets.js
@@ -46,6 +46,11 @@ desktop.ini
 *~
 .vim/
 .netrwhist
+
+# Serena (MCP Server) Files
+.serena/
+.serena/memories/
+.serena/project.yml
 
 # Temporary Files
 *.tmp

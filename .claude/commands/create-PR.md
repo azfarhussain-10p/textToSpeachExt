@@ -318,31 +318,54 @@ git remote -v
 
 ## Advanced Usage
 
-### 1. Custom Templates
+### 1. TTS Extension Custom Templates
 
-Create `.claude/pr-templates/` directory:
+The project includes specialized PR templates optimized for TTS extension development:
 
 ```bash
-# Use custom template
-claude create-PR --template .claude/pr-templates/feature.md
+# Use TTS-specific feature template
+claude create-PR --template PRPs/templates/PR/feature-pr-template.md
+
+# Use TTS-specific bugfix template  
+claude create-PR --template PRPs/templates/PR/bugfix-pr-template.md
 ```
 
-**Template Example (.claude/pr-templates/feature.md):**
-```markdown
-## Feature Description
-<!-- Describe the feature being added -->
+**Available TTS Extension Templates:**
 
-## Implementation Details
-<!-- Technical implementation notes -->
+#### **Feature PR Template** (`PRPs/templates/PR/feature-pr-template.md`):
+- Comprehensive feature documentation structure
+- Cross-browser testing requirements (Chrome, Firefox, Safari, Edge)
+- AI service integration validation (Groq/Claude APIs)
+- Web Speech API considerations
+- Manifest V3 compliance checks
+- Accessibility testing (WCAG 2.1 AA)
+- Extension security requirements (CSP, API keys)
+- Performance benchmarking for TTS functionality
 
-## Testing Strategy
-<!-- How this feature was tested -->
+#### **Bug Fix PR Template** (`PRPs/templates/PR/bugfix-pr-template.md`):
+- Detailed root cause analysis framework
+- TTS-specific debugging procedures
+- Cross-browser bug reproduction steps
+- AI service error handling validation
+- Extension-specific monitoring and rollback procedures
+- Privacy and security impact assessment
+- Performance regression testing for speech synthesis
 
-## Breaking Changes
-<!-- Any breaking changes -->
+**TTS Extension Template Usage Examples:**
+```bash
+# Feature development with full TTS context
+claude create-PR \
+  --template PRPs/templates/PR/feature-pr-template.md \
+  --title "Feature: Multi-language Voice Selection" \
+  --reviewers "tts-team,accessibility-team" \
+  --labels "feature,tts,accessibility,cross-browser"
 
-## Documentation Updates
-<!-- Documentation that needs updating -->
+# Bug fix with comprehensive validation
+claude create-PR \
+  --template PRPs/templates/PR/bugfix-pr-template.md \
+  --title "Fix: Safari speech synthesis voice loading" \
+  --reviewers "tts-team,qa-team" \
+  --labels "bug,safari,speech-synthesis,cross-browser"
 ```
 
 ### 2. Scripted PR Creation

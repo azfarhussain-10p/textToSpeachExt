@@ -1,8 +1,8 @@
-# PRP Browser Extension Template v3 - Text-to-Speech Extension Standards
+# Production Ready Prompt for Browser Extension Template - Text-to-Speech Extension Standards
 
 ## Metadata
 ```yaml
-template_version: "3.0.0"
+template_version: "1.0.0"
 ai_optimization: "claude-4-compatible"
 methodology: "test-driven-development"
 architecture: "browser-extension-mvc"
@@ -30,48 +30,62 @@ Browser extension template optimized for AI agents to implement production-ready
 
 ---
 
-## 📋 Problem Definition
+## 📋 TTS Extension Feature Definition
 
 ### Goal Statement
-**[SMART Goal]**: [Specific, Measurable, Achievable, Relevant, Time-bound objective]
+**[SMART Goal]**: [Specific TTS feature with measurable success criteria, achievable with current browser APIs, relevant to user accessibility needs, time-bound implementation]
 
-**Business Context**: [Strategic business driver and market need]
+**Business Context**: [How this TTS feature improves web accessibility, user engagement, or content consumption]
 
-**Technical Scope**: [System boundaries and integration requirements]
+**Technical Scope**: [Browser extension boundaries, supported websites, AI service integrations, voice synthesis capabilities]
 
-### Why (Business Justification)
-- **Business Value**: [Quantifiable impact on revenue, cost reduction, or efficiency]
-- **User Impact**: [Direct benefits to end users with specific use cases]
-- **Strategic Alignment**: [How this supports broader organizational objectives]
-- **Risk Mitigation**: [Problems this solves and potential issues it prevents]
-- **Competitive Advantage**: [Market differentiation and positioning]
+### Why (TTS Feature Justification)
+- **Accessibility Value**: [Impact on users with reading difficulties, visual impairments, or learning differences]
+- **User Experience**: [Enhanced content consumption, multitasking capabilities, language learning support]
+- **Market Opportunity**: [Growing demand for audio content, accessibility compliance requirements]
+- **Technology Advantage**: [Leveraging modern Web Speech API, AI explanations, cross-browser compatibility]
+- **Privacy Leadership**: [User-controlled data, transparent AI usage, local processing where possible]
 
-### What (Functional Requirements)
-**Primary Features**:
-- [Core functionality with acceptance criteria]
+### What (TTS Functional Requirements)
+**Primary TTS Features**:
+- Text selection and speech synthesis with natural voices
+- Cross-browser compatibility (Chrome, Firefox, Safari, Edge)
+- Voice customization (rate, pitch, volume, language selection)
+- Accessibility compliance (keyboard navigation, screen reader support)
+
+**AI-Enhanced Features**:
+- Intelligent text explanations using Groq/Claude APIs
+- Context-aware content processing
+- Multi-language support with appropriate voice matching
+- Privacy-first AI integration with explicit user consent
 
 **Secondary Features**:
-- [Additional capabilities and enhancements]
+- Text highlighting during speech playback
+- Speech queue management for multiple selections
+- Offline functionality for core TTS features
+- Extension settings import/export
 
 **Non-Functional Requirements**:
-- **Performance**: [Response time, throughput, scalability targets]
-- **Security**: [Authentication, authorization, data protection requirements]
-- **Accessibility**: [WCAG compliance level and specific accommodations]
-- **Reliability**: [Uptime, error rates, recovery time objectives]
-- **Compliance**: [Regulatory and industry standards to meet]
+- **Performance**: Overlay appears within 300ms, TTS starts within 500ms
+- **Security**: Manifest V3 compliance, CSP adherence, no inline scripts
+- **Accessibility**: WCAG 2.1 AA compliance, full keyboard navigation
+- **Reliability**: Works on 95% of websites, graceful error handling
+- **Privacy**: No data collection without consent, secure API key storage
 
 ### Success Criteria & KPIs
 **Technical Metrics**:
-- [ ] **Performance**: Response time < [X]ms (95th percentile)
-- [ ] **Reliability**: Uptime > [X]% (SLA compliance)
-- [ ] **Security**: Zero critical vulnerabilities
-- [ ] **Quality**: Test coverage > [X]%, code quality score > [X]/10
-- [ ] **Accessibility**: WCAG 2.1 AA compliance verified
+- [ ] **Performance**: Overlay response time < 300ms (95th percentile)
+- [ ] **Cross-Browser**: Compatible with Chrome 88+, Firefox 78+, Safari 14+, Edge 88+
+- [ ] **Security**: Zero CSP violations, Manifest V3 compliant
+- [ ] **Quality**: Test coverage > 85%, cross-browser E2E tests passing
+- [ ] **Accessibility**: WCAG 2.1 AA compliance, keyboard navigation score 100%
 
-**Business Metrics**:
-- [ ] **User Adoption**: [X]% adoption rate within [timeframe]
-- [ ] **Efficiency**: [X]% improvement in [specific process]
-- [ ] **Cost Impact**: [Currency amount] saved/generated per [period]
+**User Experience Metrics**:
+- [ ] **Usability**: Less than 2 clicks to start TTS, intuitive overlay design
+- [ ] **Reliability**: TTS success rate > 95% across supported browsers
+- [ ] **AI Integration**: Explanation generation within 3 seconds
+- [ ] **Memory Efficiency**: Extension memory usage < 50MB during active use
+- [ ] **Voice Quality**: Support for 15+ languages with appropriate voice selection
 
 ---
 
@@ -84,6 +98,7 @@ security:
   - url: [OWASP Top 10 2023]
     sections: [Relevant security patterns for this feature]
     critical: [Authentication/authorization requirements]
+    note: "use context7 to fetch latest security guidelines"
   
   - file: [security/policies/data-protection.md]
     why: [PII handling and encryption standards]
@@ -94,6 +109,7 @@ architecture:
   
   - url: [12factor.net]
     sections: [Config, dependencies, backing services]
+    note: "use context7 to get current best practices"
 
 api_design:
   - file: [docs/api/rest-standards.md]
@@ -101,6 +117,29 @@ api_design:
   
   - url: [OpenAPI 3.1 Specification]
     sections: [Schema definition and validation]
+    note: "use context7 for latest API specification patterns"
+
+ai_services:
+  - provider: "Groq API Documentation" 
+    sections: [Authentication, rate limits, request/response formats]
+    note: "use context7 to fetch current Groq API docs and pricing"
+    critical: [Free tier limitations, model availability]
+  
+  - provider: "Claude API Documentation"
+    sections: [Authentication, message format, rate limits]
+    note: "use context7 to get latest Claude API specifications"
+    critical: [Pricing, model capabilities, content policies]
+
+browser_apis:
+  - spec: "Web Speech API"
+    sections: [SpeechSynthesis, SpeechSynthesisUtterance]
+    note: "use context7 for browser compatibility and limitations"
+    critical: [Cross-browser differences, voice availability]
+    
+  - spec: "Chrome Extension APIs"
+    sections: [chrome.storage, chrome.runtime, content scripts]
+    note: "use context7 for Manifest V3 requirements and migration guide"
+    critical: [Service worker limitations, CSP requirements]
 
 testing:
   - file: [docs/testing/test-pyramid.md]
@@ -1009,6 +1048,9 @@ class ExtensionComplianceTests {
 
 ## 📊 Observability & Monitoring
 
+### Performance Monitoring for TTS Extensions
+**IMPORTANT**: use context7 to get current browser performance APIs and monitoring best practices for extensions
+
 ### Logging Implementation
 ```python
 # Structured logging with security compliance
@@ -1102,3 +1144,258 @@ def track_metrics(operation: str):
                 ).inc()
                 return result
             except Exception as e:
+                status = "error"
+                raise
+            finally:
+                duration = time.time() - start_time
+                FEATURE_OPERATION_DURATION.labels(
+                    operation=operation,
+                    status=status
+                ).observe(duration)
+        
+        return wrapper
+    return decorator
+```
+
+---
+
+## 🎯 TTS Extension Implementation Checklist
+
+### Pre-Implementation Requirements
+**CRITICAL - Review Before Starting**:
+
+- [ ] **Context7 Documentation Access**: Ensure context7 tool is available for real-time API documentation
+- [ ] **Browser Compatibility Matrix**: use context7 for current Web Speech API support across browsers
+- [ ] **Manifest V3 Requirements**: use context7 for latest Chrome extension guidelines and requirements
+- [ ] **AI Service Documentation**: use context7 for current Groq API and Claude API specifications
+- [ ] **Accessibility Guidelines**: use context7 for WCAG 2.1 AA requirements and testing tools
+- [ ] **Privacy Regulations**: use context7 for current data privacy laws and browser extension compliance
+
+### Context7 Integration Points
+**IMPORTANT**: The following areas MUST use context7 for current documentation:
+
+```markdown
+## AI Service Integration
+**Groq API**: use context7 to fetch current Groq API documentation for:
+- Authentication methods and API key format
+- Rate limiting (currently 100 requests/hour for free tier)
+- Model availability (llama3-8b-8192, mixtral-8x7b-32768, etc.)
+- Request/response format and error handling
+- Pricing and usage quotas
+
+**Claude API**: use context7 to get latest Claude API specifications for:
+- Authentication and API key management
+- Message format and conversation structure
+- Rate limits and pricing tiers
+- Model capabilities (Claude-3-haiku, Claude-3-sonnet)
+- Content policies and safety guidelines
+
+## Browser Extension APIs
+**Chrome Extension APIs**: use context7 for Manifest V3 requirements:
+- Service worker limitations and best practices
+- chrome.storage API quotas and sync limitations
+- Content script injection patterns
+- Cross-origin request policies
+- CSP requirements and security restrictions
+
+**Web Speech API**: use context7 for browser compatibility:
+- speechSynthesis availability across browsers
+- Voice availability and language support
+- Platform-specific voice characteristics
+- Browser-specific rate and pitch limitations
+- Error handling patterns
+
+## Cross-Browser Compatibility
+**Firefox Extensions**: use context7 for WebExtension standards:
+- manifest.json differences from Chrome
+- Browser API polyfill requirements
+- Firefox-specific voice handling
+- AMO submission requirements
+
+**Safari Extensions**: use context7 for Safari-specific requirements:
+- Safari extension format and conversion
+- macOS/iOS voice integration
+- Safari-specific permissions and limitations
+- App Store submission process
+```
+
+### Implementation Phases
+
+#### Phase 1: Foundation & Core TTS (Week 1)
+```javascript
+// Essential Files to Create
+- src/manifest.json              // Manifest V3 configuration
+- src/background/service-worker.js // Background service worker
+- src/content/content-script.js  // Content script for text selection
+- src/shared/tts-service.js      // Web Speech API wrapper
+- src/content/tts-overlay.js     // TTS control overlay
+
+// Key Implementation Points
+✅ Manifest V3 compliance with proper permissions
+✅ Service worker message handling
+✅ Text selection detection and sanitization  
+✅ Basic TTS functionality with error handling
+✅ Responsive overlay with accessibility support
+```
+
+#### Phase 2: AI Integration & Privacy (Week 2)  
+```javascript
+// AI Service Files
+- src/background/ai-service.js   // Multi-provider AI integration
+- src/shared/privacy-manager.js  // Consent management
+- src/shared/rate-limiter.js     // API rate limiting
+
+// Privacy & Security Implementation
+✅ Explicit consent dialogs for AI services
+✅ API key secure storage (chrome.storage + encryption)
+✅ Rate limiting for Groq (100/hr) and Claude (60/min)
+✅ Request sanitization and response validation
+✅ Local fallback when AI services unavailable
+```
+
+#### Phase 3: Cross-Browser & Testing (Week 3)
+```javascript
+// Cross-Browser Support
+- build/webpack.chrome.js        // Chrome-specific build
+- build/webpack.firefox.js       // Firefox WebExtension build  
+- build/webpack.safari.js        // Safari extension build
+- src/shared/browser-compat.js   // Browser compatibility layer
+
+// Testing Implementation
+✅ Unit tests for all TTS functionality
+✅ Integration tests for AI service communication
+✅ Cross-browser E2E tests (Playwright)
+✅ Accessibility compliance tests
+✅ Performance benchmark tests
+```
+
+#### Phase 4: Polish & Store Submission (Week 4)
+```javascript
+// Store Preparation
+- assets/icons/                  // Icon sets for all stores
+- docs/privacy-policy.md         // Privacy policy documentation
+- docs/store-listings/           // Store submission materials
+
+// Final Quality Gates
+✅ All compliance tests passing
+✅ Performance metrics within targets
+✅ Accessibility audit complete
+✅ Security audit and penetration testing
+✅ Store submission packages prepared
+```
+
+### Testing Strategy Summary
+
+#### Automated Testing Pipeline
+```bash
+# Unit Tests (>85% coverage required)
+npm run test:unit
+npm run test:unit:coverage
+
+# Integration Tests  
+npm run test:integration
+npm run test:tts           # TTS-specific functionality
+npm run test:ai            # AI service integration
+
+# Cross-Browser E2E Tests
+npm run test:e2e:chrome
+npm run test:e2e:firefox  
+npm run test:e2e:safari
+npm run test:e2e:all
+
+# Compliance & Security Tests
+npm run test:accessibility # WCAG 2.1 AA compliance
+npm run test:security     # CSP, XSS, data validation
+npm run test:performance  # Memory, response times
+npm run validate:manifest # Extension store requirements
+```
+
+#### Manual Testing Checklist
+- [ ] **Text Selection**: Works on various websites (news, blogs, docs, PDFs)
+- [ ] **Voice Quality**: Natural speech across different languages and voices
+- [ ] **Overlay UX**: Intuitive positioning, keyboard navigation, touch support
+- [ ] **AI Explanations**: Accurate, helpful, appropriate response times
+- [ ] **Error Handling**: Graceful failures, helpful error messages
+- [ ] **Accessibility**: Screen reader compatibility, keyboard-only navigation
+- [ ] **Performance**: No memory leaks, fast startup, responsive interactions
+
+### Success Validation
+
+#### Technical Success Criteria
+```javascript
+// Performance Benchmarks
+const successMetrics = {
+  overlayShowTime: '<300ms',      // Overlay appears quickly
+  ttsStartDelay: '<500ms',        // Speech begins promptly
+  aiResponseTime: '<3000ms',      // AI explanations generate fast
+  memoryUsage: '<50MB',           // Efficient memory utilization
+  crossBrowserSupport: '4/4',     // All target browsers work
+  testCoverage: '>85%',           // Comprehensive test coverage
+  wcagCompliance: 'AA',           // Full accessibility compliance
+  storeApproval: '4/4'            // Approved on all extension stores
+};
+```
+
+#### User Experience Validation
+- **Usability**: New users can start TTS in under 2 clicks
+- **Reliability**: TTS works on 95% of websites without issues
+- **Accessibility**: Users with disabilities can fully access all features
+- **Privacy**: Users understand and control their data usage
+- **Performance**: Extension doesn't slow down browsing experience
+
+### Post-Launch Monitoring
+
+#### Key Metrics to Track
+```javascript
+// User Engagement
+- Daily active users
+- TTS usage frequency
+- AI explanation requests
+- Settings customization rates
+
+// Technical Performance  
+- Error rates by browser
+- API response times
+- Memory usage patterns
+- Extension load times
+
+// Business Impact
+- User retention rates
+- Accessibility feedback
+- Store ratings/reviews
+- Support ticket volume
+```
+
+### Emergency Response Plan
+
+#### Common Issues & Solutions
+1. **Web Speech API Fails**: Fallback to system voices, show clear error message
+2. **AI Service Downtime**: Switch to alternative provider or local fallback
+3. **CSP Violations**: Review and fix inline script usage, update manifest
+4. **Cross-Browser Issues**: Browser-specific fixes, feature detection
+5. **Performance Problems**: Memory optimization, code splitting, lazy loading
+
+#### Rollback Strategy
+- Maintain previous stable version in stores
+- Feature flags for gradual rollout
+- Quick disable mechanism for problematic features
+- Clear communication channels with users
+
+---
+
+## 📚 Final Notes for AI Implementation
+
+This template provides the complete framework for implementing production-ready TTS browser extensions with AI integration. Key success factors:
+
+1. **Context7 Usage**: Always use context7 for current API documentation and browser compatibility
+2. **Privacy First**: Implement explicit consent and transparent data practices
+3. **Accessibility Focus**: WCAG 2.1 AA compliance is mandatory, not optional  
+4. **Cross-Browser Testing**: Test on all target browsers throughout development
+5. **Performance Monitoring**: Track metrics from day one to catch issues early
+6. **Security Compliance**: Manifest V3, CSP, and secure coding practices
+7. **User Experience**: Simple, intuitive interface with powerful functionality
+8. **Quality Assurance**: Comprehensive testing strategy with automated validation
+
+**Remember**: This is a complete, self-contained template. Following this structure will result in a production-ready TTS browser extension that meets all technical, security, accessibility, and business requirements.
+
+**Important**: Every section marked with "use context7" requires real-time documentation lookup to ensure current, accurate implementation details.

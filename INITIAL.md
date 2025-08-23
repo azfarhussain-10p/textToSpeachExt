@@ -4,7 +4,7 @@ A comprehensive, production-ready browser extension for Chrome, Edge, Firefox, a
 
 1. **Text-to-Speech Conversion**: Select any text on any website and have it read aloud in multiple languages with customizable voices and accents
 2. **Cross-Language Translation**: Listen to English text in Urdu, Arabic, Spanish, or any supported language
-3. **AI-Powered Explanation**: Get detailed explanations of complex content using free AI models (Groq Claude) with real-time examples
+3. **AI-Powered Explanation**: Get detailed explanations of complex content using free AI models (Groq) and premium services (Claude) with real-time examples
 4. **Smart Overlay Controls**: Intuitive popup with play, pause, stop, voice selection, and explanation features
 5. **Universal Compatibility**: Works on articles, blogs, social media posts (LinkedIn, Facebook), and any web content
 

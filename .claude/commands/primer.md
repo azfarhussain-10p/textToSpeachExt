@@ -10,6 +10,9 @@ Read key files in the src/ or root directory
 
 IMPORTANT: Use Serena to search through the codebase. If you get any errors using Serena, retry with different Serena tools.
 
+IMPORTANT: Use Context7 to pulls up-to-date, version-specific documentation and code examples straight from the source and places them directly into prompts.
+
+
 Explain back to me:
 - Project structure
 - Project purpose and goals

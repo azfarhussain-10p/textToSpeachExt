@@ -1,10 +1,10 @@
 {
   "name": "intelligent-tts-extension",
   "version": "1.0.0-beta.1",
-  "description": "A production-ready, cross-browser Text-to-Speech extension with AI-powered explanations",
+  "description": "A comprehensive browser extension project for Text-to-Speech with AI-powered explanations - currently in planning/design phase with full configuration ready for implementation",
   "main": "src/background/service-worker.js",
   "scripts": {
-    "setup": "npm install && cp .env.example .env",
+    "setup": "npm install && echo 'Setup complete. Configure your .env file with API keys as needed.'",
     "dev": "npm run dev:chrome",
     "dev:chrome": "webpack --config build/webpack.chrome.js --mode development --watch",
     "dev:firefox": "webpack --config build/webpack.firefox.js --mode development --watch",
@@ -149,7 +149,8 @@
   },
   "optionalDependencies": {
     "playwright": "^1.36.0",
-    "selenium-webdriver": "^4.11.0"
+    "selenium-webdriver": "^4.11.0",
+    "@playwright/test": "^1.36.0"
   },
   "browserslist": [
     "Chrome >= 88",

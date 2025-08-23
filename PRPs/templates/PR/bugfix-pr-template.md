@@ -127,13 +127,30 @@
 - [ ] Performance impact assessed
 - [ ] Memory leaks checked (if applicable)
 
-### Cross-browser/Platform Testing
-- [ ] Chrome
-- [ ] Firefox  
-- [ ] Safari
-- [ ] Edge
-- [ ] Mobile browsers (if applicable)
-- [ ] Different operating systems (if applicable)
+### 🎤 TTS Extension Cross-Browser Testing
+<!-- Required for Text-to-Speech browser extension bug fixes -->
+
+**Desktop Browser Extension Testing:**
+- [ ] **Chrome 88+**: Manifest V3 compliance, service worker bug fixes
+- [ ] **Firefox 78+**: WebExtensions API compatibility, browser-specific fixes
+- [ ] **Safari 14+**: Speech synthesis issues, voice loading bug fixes
+- [ ] **Edge 88+**: Chromium-based extension bug validation
+
+**TTS-Specific Bug Reproduction:**
+- [ ] Bug reproduction in all target browsers
+- [ ] Voice enumeration bug testing across browsers
+- [ ] Speech synthesis error scenarios validation
+- [ ] Cross-browser speech queue management fixes
+- [ ] Browser-specific voice loading issue resolution
+
+**AI Service Bug Testing (if applicable):**
+- [ ] **Groq API**: Rate limit handling, authentication errors, fallback behavior
+- [ ] **Claude API**: Service degradation scenarios, backup systems validation
+- [ ] **Privacy Compliance**: Consent management bugs, data leak prevention
+
+**Mobile Browser Testing (if applicable):**
+- [ ] Mobile Chrome 90+: Touch interaction bugs, mobile voice issues
+- [ ] Mobile Safari 14+: iOS-specific voice restrictions and fixes
 
 ---
 
@@ -260,6 +277,33 @@
 - [ ] **Added context to log messages**
 - [ ] **Improved log aggregation** for the affected area
 - [ ] **Debug logging added** for complex scenarios
+
+### 🎤 TTS Extension-Specific Bug Analysis
+
+**Speech Synthesis Debugging:**
+- [ ] Voice loading error scenarios documented and fixed
+- [ ] Speech synthesis queue management issues resolved
+- [ ] Browser-specific voice enumeration bugs addressed
+- [ ] Speech rate/pitch/volume consistency bugs fixed
+- [ ] Utterance lifecycle management (onend, onerror) improvements
+
+**AI Service Integration Debugging:**
+- [ ] **Groq API**: Connection failures, rate limit exceeded, authentication issues
+- [ ] **Claude API**: Service timeouts, quota exceeded, fallback activation
+- [ ] **Privacy Compliance**: Consent dialog bugs, data minimization validation
+- [ ] **Secure Storage**: API key encryption/decryption issues resolved
+
+**Extension-Specific Issues:**
+- [ ] **Manifest V3**: Service worker lifecycle bugs, message passing issues
+- [ ] **Content Security Policy**: CSP violations resolved, inline script removal
+- [ ] **Cross-Context Communication**: Background-content script messaging fixes
+- [ ] **Permission Model**: activeTab scope issues, storage permission bugs
+
+**Performance Bug Analysis:**
+- [ ] Memory leaks in speech synthesis queue resolved
+- [ ] Event listener cleanup bugs fixed
+- [ ] Extension startup performance issues addressed
+- [ ] Overlay rendering performance bugs resolved
 
 ---
 
