@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TTS Assistant</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div id="popup-container">
+        <header class="popup-header">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon">🔊</span>
+                    <h1 class="logo-text">TTS Assistant</h1>
+                </div>
+                <div class="status-indicator" id="status-indicator">
+                    <div class="status-dot" id="status-dot"></div>
+                </div>
+            </div>
+        </header>
+
+        <main class="popup-main">
+            <!-- Quick Actions Section -->
+            <section class="section quick-actions">
+                <h2 class="section-title">Quick Actions</h2>
+                <div class="action-buttons">
+                    <button id="btn-read-page" class="action-btn primary" title="Read selected text or page content">
+                        <span class="btn-icon">📖</span>
+                        <span class="btn-text">Read Page</span>
+                    </button>
+                    <button id="btn-stop-speech" class="action-btn secondary" title="Stop current speech" disabled>
+                        <span class="btn-icon">⏹️</span>
+                        <span class="btn-text">Stop</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Voice Settings Section -->
+            <section class="section voice-settings">
+                <h2 class="section-title">Voice Settings</h2>
+                
+                <div class="setting-group">
+                    <label for="language-select" class="setting-label">Language</label>
+                    <select id="language-select" class="setting-control">
+                        <option value="en-US">English (US)</option>
+                        <option value="en-GB">English (UK)</option>
+                        <option value="es-ES">Spanish</option>
+                        <option value="fr-FR">French</option>
+                        <option value="de-DE">German</option>
+                        <option value="it-IT">Italian</option>
+                        <option value="pt-BR">Portuguese</option>
+                        <option value="ru-RU">Russian</option>
+                        <option value="zh-CN">Chinese</option>
+                        <option value="ja-JP">Japanese</option>
+                        <option value="ko-KR">Korean</option>
+                        <option value="ar-SA">Arabic</option>
+                        <option value="hi-IN">Hindi</option>
+                        <option value="ur-PK">Urdu</option>
+                    </select>
+                </div>
+
+                <div class="setting-group">
+                    <label for="voice-select" class="setting-label">Voice</label>
+                    <select id="voice-select" class="setting-control">
+                        <option value="">Loading voices...</option>
+                    </select>
+                </div>
+
+                <div class="setting-group">
+                    <label for="rate-slider" class="setting-label">
+                        Speed: <span id="rate-value">1.0</span>x
+                    </label>
+                    <input type="range" id="rate-slider" class="setting-slider" 
+                           min="0.5" max="2.0" step="0.1" value="1.0">
+                </div>
+
+                <div class="setting-group">
+                    <label for="pitch-slider" class="setting-label">
+                        Pitch: <span id="pitch-value">1.0</span>
+                    </label>
+                    <input type="range" id="pitch-slider" class="setting-slider" 
+                           min="0.5" max="2.0" step="0.1" value="1.0">
+                </div>
+
+                <div class="setting-group">
+                    <label for="volume-slider" class="setting-label">
+                        Volume: <span id="volume-value">100</span>%
+                    </label>
+                    <input type="range" id="volume-slider" class="setting-slider" 
+                           min="0" max="1" step="0.1" value="1.0">
+                </div>
+            </section>
+
+            <!-- AI Settings Section -->
+            <section class="section ai-settings">
+                <h2 class="section-title">AI Explanation</h2>
+                
+                <div class="setting-group">
+                    <label for="ai-provider-select" class="setting-label">Provider</label>
+                    <select id="ai-provider-select" class="setting-control">
+                        <option value="groq">Groq (Free)</option>
+                        <option value="claude">Claude (Premium)</option>
+                    </select>
+                </div>
+
+                <div class="setting-group">
+                    <label for="complexity-select" class="setting-label">Complexity</label>
+                    <select id="complexity-select" class="setting-control">
+                        <option value="simple">Simple</option>
+                        <option value="detailed">Detailed</option>
+                        <option value="technical">Technical</option>
+                    </select>
+                </div>
+
+                <div class="setting-group checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="cache-explanations" checked>
+                        <span class="checkmark"></span>
+                        Cache explanations
+                    </label>
+                </div>
+            </section>
+
+            <!-- Usage Stats Section -->
+            <section class="section usage-stats" id="usage-stats-section">
+                <h2 class="section-title">Usage</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-value" id="texts-read">0</span>
+                        <span class="stat-label">Texts Read</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="explanations-requested">0</span>
+                        <span class="stat-label">Explanations</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="time-saved">0</span>
+                        <span class="stat-label">Minutes Saved</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick Settings Section -->
+            <section class="section quick-settings">
+                <h2 class="section-title">Preferences</h2>
+                
+                <div class="setting-group checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="show-overlay" checked>
+                        <span class="checkmark"></span>
+                        Show text overlay
+                    </label>
+                </div>
+
+                <div class="setting-group checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="keyboard-shortcuts" checked>
+                        <span class="checkmark"></span>
+                        Enable keyboard shortcuts
+                    </label>
+                </div>
+
+                <div class="setting-group checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="context-menu" checked>
+                        <span class="checkmark"></span>
+                        Show context menu
+                    </label>
+                </div>
+            </section>
+
+            <!-- Loading/Error States -->
+            <div id="loading-state" class="state-message" style="display: none;">
+                <div class="spinner"></div>
+                <p>Loading...</p>
+            </div>
+
+            <div id="error-state" class="state-message error" style="display: none;">
+                <span class="error-icon">⚠️</span>
+                <p id="error-message">An error occurred</p>
+                <button id="retry-btn" class="btn-secondary">Retry</button>
+            </div>
+        </main>
+
+        <footer class="popup-footer">
+            <div class="footer-actions">
+                <button id="btn-options" class="footer-btn">
+                    <span class="btn-icon">⚙️</span>
+                    Advanced Settings
+                </button>
+                
+                <button id="btn-help" class="footer-btn">
+                    <span class="btn-icon">❓</span>
+                    Help & Support
+                </button>
+            </div>
+            
+            <div class="footer-info">
+                <p class="version-info">TTS Assistant v<span id="version">1.0.0</span></p>
+                <div class="keyboard-hints">
+                    <span class="hint">Ctrl+Shift+S: Speak</span>
+                    <span class="hint">Ctrl+Shift+E: Explain</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Test Area -->
+    <div id="test-area" class="section" style="display: none;">
+        <h2 class="section-title">Test TTS</h2>
+        <textarea id="test-text" placeholder="Enter text to test speech synthesis..." rows="3"></textarea>
+        <div class="test-controls">
+            <button id="btn-test-speak" class="action-btn primary">Test Speak</button>
+            <button id="btn-test-stop" class="action-btn secondary">Stop Test</button>
+        </div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>

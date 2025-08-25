@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="8" cy="8" r="6" fill="#667eea" stroke="#5a6fd8" stroke-width="2"/>
+  
+  <!-- Speaker icon -->
+  <g transform="translate(4, 4)">
+    <!-- Speaker base -->
+    <rect x="2" y="2" width="2" height="4" fill="white" rx="1"/>
+    <!-- Speaker cone -->
+    <polygon points="2,2 4,4 4,6 2,6" fill="white"/>
+    <!-- Sound waves -->
+    <path d="M 5.333333333333333 2.6666666666666665 Q 7.2727272727272725 2 7.2727272727272725 4 Q 7.2727272727272725 6 5.333333333333333 6.666666666666667" 
+          stroke="white" stroke-width="1.5" fill="none"/>
+    <path d="M 6.4 3.2 Q 8.88888888888889 2.2857142857142856 8.88888888888889 4 Q 8.88888888888889 6 6.4 6.4" 
+          stroke="white" stroke-width="1" fill="none"/>
+  </g>
+  
+  <!-- AI indicator dot -->
+  <circle cx="10" cy="6" r="3" fill="#28a745"/>
+</svg>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TTS Overlay</title>
+</head>
+<body>
+    <!-- TTS Extension Overlay Template -->
+    <!-- This HTML file is referenced in manifest.json web_accessible_resources -->
+    
+    <div class="tts-overlay-container" id="tts-overlay">
+        <div class="tts-overlay-content">
+            <div class="tts-overlay-header">
+                <div class="tts-overlay-title">
+                    <span class="tts-icon" role="img" aria-label="Speaker">🔊</span>
+                    <span class="tts-title-text">TTS Assistant</span>
+                </div>
+                <button class="tts-close-btn" aria-label="Close TTS overlay" title="Close (Esc)">
+                    <span>&times;</span>
+                </button>
+            </div>
+            
+            <div class="tts-overlay-body">
+                <div class="tts-selected-text" role="region" aria-label="Selected text">
+                    <div class="tts-text-content"></div>
+                </div>
+                
+                <div class="tts-controls" role="toolbar" aria-label="TTS controls">
+                    <button class="tts-btn tts-speak-btn" aria-label="Read selected text aloud" title="Speak (Ctrl+Shift+S)">
+                        <span class="btn-icon" role="img" aria-label="Play">▶️</span>
+                        <span class="btn-text">Speak</span>
+                    </button>
+                    
+                    <button class="tts-btn tts-explain-btn" aria-label="Get AI explanation" title="Explain (Ctrl+Shift+E)">
+                        <span class="btn-icon" role="img" aria-label="Light bulb">💡</span>
+                        <span class="btn-text">Explain</span>
+                    </button>
+                    
+                    <button class="tts-btn tts-stop-btn" style="display: none;" aria-label="Stop speaking" title="Stop (Ctrl+Shift+X)">
+                        <span class="btn-icon" role="img" aria-label="Stop">⏹️</span>
+                        <span class="btn-text">Stop</span>
+                    </button>
+                </div>
+                
+                <div class="tts-status" role="status" aria-live="polite">
+                    <div class="tts-loading" style="display: none;">
+                        <div class="tts-spinner" role="img" aria-label="Loading"></div>
+                        <span class="tts-loading-text">Processing...</span>
+                    </div>
+                    <div class="tts-error" style="display: none;" role="alert"></div>
+                </div>
+                
+                <div class="tts-explanation" style="display: none;">
+                    <div class="explanation-content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

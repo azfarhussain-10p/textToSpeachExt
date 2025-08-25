@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TTS Assistant - Advanced Settings</title>
+    <link rel="stylesheet" href="options.css">
+</head>
+<body>
+    <div class="options-container">
+        <header class="options-header">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon">🔊</span>
+                    <h1>TTS Assistant Settings</h1>
+                </div>
+                <div class="header-actions">
+                    <button id="save-btn" class="btn btn-primary">Save Changes</button>
+                    <button id="reset-btn" class="btn btn-secondary">Reset to Defaults</button>
+                </div>
+            </div>
+        </header>
+
+        <nav class="options-nav">
+            <div class="nav-tabs">
+                <button class="nav-tab active" data-tab="voice">Voice & Speech</button>
+                <button class="nav-tab" data-tab="ai">AI Features</button>
+                <button class="nav-tab" data-tab="interface">Interface</button>
+                <button class="nav-tab" data-tab="privacy">Privacy & Data</button>
+                <button class="nav-tab" data-tab="advanced">Advanced</button>
+            </div>
+        </nav>
+
+        <main class="options-main">
+            <!-- Voice & Speech Tab -->
+            <div id="voice-tab" class="tab-content active">
+                <h2>Voice & Speech Settings</h2>
+                
+                <div class="setting-section">
+                    <h3>Language & Voice</h3>
+                    <div class="setting-grid">
+                        <div class="setting-item">
+                            <label for="language">Default Language</label>
+                            <select id="language" class="form-control">
+                                <option value="en-US">English (US)</option>
+                                <option value="en-GB">English (UK)</option>
+                                <option value="es-ES">Spanish</option>
+                                <option value="fr-FR">French</option>
+                                <option value="de-DE">German</option>
+                                <option value="it-IT">Italian</option>
+                                <option value="pt-BR">Portuguese</option>
+                                <option value="ru-RU">Russian</option>
+                                <option value="zh-CN">Chinese</option>
+                                <option value="ja-JP">Japanese</option>
+                                <option value="ko-KR">Korean</option>
+                                <option value="ar-SA">Arabic</option>
+                                <option value="hi-IN">Hindi</option>
+                                <option value="ur-PK">Urdu</option>
+                            </select>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <label for="voice">Preferred Voice</label>
+                            <select id="voice" class="form-control">
+                                <option value="">Loading voices...</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setting-section">
+                    <h3>Speech Parameters</h3>
+                    <div class="setting-item">
+                        <label for="rate">Speech Rate: <span id="rate-value">1.0</span>x</label>
+                        <input type="range" id="rate" min="0.1" max="3.0" step="0.1" value="1.0" class="slider">
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label for="pitch">Pitch: <span id="pitch-value">1.0</span></label>
+                        <input type="range" id="pitch" min="0.0" max="2.0" step="0.1" value="1.0" class="slider">
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label for="volume">Volume: <span id="volume-value">100</span>%</label>
+                        <input type="range" id="volume" min="0" max="1" step="0.05" value="1.0" class="slider">
+                    </div>
+                </div>
+
+                <div class="setting-section">
+                    <h3>Advanced Speech Options</h3>
+                    <div class="checkbox-item">
+                        <label>
+                            <input type="checkbox" id="preload-voices" checked>
+                            Preload voices for faster response
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label for="max-text-length">Maximum text length (characters)</label>
+                        <input type="number" id="max-text-length" min="100" max="50000" value="5000" class="form-control">
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Features Tab -->
+            <div id="ai-tab" class="tab-content">
+                <h2>AI Features & Configuration</h2>
+                
+                <div class="setting-section">
+                    <h3>AI Providers</h3>
+                    <div class="setting-item">
+                        <label for="ai-provider">Primary AI Provider</label>
+                        <select id="ai-provider" class="form-control">
+                            <option value="groq">Groq (Free, Fast)</option>
+                            <option value="claude">Claude (Premium, Detailed)</option>
+                        </select>
+                        <p class="help-text">Groq provides fast, free explanations. Claude offers more detailed responses but requires an API key.</p>
+                    </div>
+                </div>
+
+                <div class="setting-section">
+                    <h3>API Keys</h3>
+                    <div class="setting-item">
+                        <label for="groq-api-key">Groq API Key</label>
+                        <input type="password" id="groq-api-key" placeholder="Enter your Groq API key" class="form-control">
+                        <p class="help-text">Get your free API key from <a href="https://groq.com" target="_blank">groq.com</a></p>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label for="claude-api-key">Claude API Key</label>
+                        <input type="password" id="claude-api-key" placeholder="Enter your Claude API key" class="form-control">
+                        <p class="help-text">Get your API key from <a href="https://anthropic.com" target="_blank">anthropic.com</a></p>
+                    </div>
+                </div>
+
+                <div class="setting-section">
+                    <h3>Explanation Settings</h3>
+                    <div class="setting-item">
+                        <label for="complexity">Default Complexity Level</label>
+                        <select id="complexity" class="form-control">
+                            <option value="simple">Simple - Easy to understand</option>
+                            <option value="detailed">Detailed - Comprehensive explanation</option>
+                            <option value="technical">Technical - Precise terminology</option>
+                        </select>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label for="context">Default Context</label>
+                        <select id="context" class="form-control">
+                            <option value="general">General - Everyday language</option>
+                            <option value="academic">Academic - Educational context</option>
+                            <option value="business">Business - Professional context</option>
+                        </select>
+                    </div>
+                    
+                    <div class="checkbox-item">
+                        <label>
+                            <input type="checkbox" id="cache-explanations" checked>
+                            Cache explanations for faster access
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interface Tab -->
+            <div id="interface-tab" class="tab-content">
+                <h2>Interface & User Experience</h2>
+                
+                <div class="setting-section">
+                    <h3>Overlay Settings</h3>
+                    <div class="checkbox-item">
+                        <label>
+                            <input type="checkbox" id="show-overlay" checked>
+                            Show text selection overlay
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label for="overlay-position">Overlay Position</label>
+                        <select id="overlay-position" class="form-control">
+                            <option value="smart">Smart positioning</option>
+                            <option value="cursor">Follow cursor</option>
+                            <option value="top">Always at top</option>
+                            <option value="bottom">Always at bottom</option>
+                        </select>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label for="theme">Theme</label>
+                        <select id="theme" class="form-control">
+                            <option value="auto">Auto (system preference)</option>
+                            <option value="light">Light theme</option>
+                            <option value="dark">Dark theme</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="setting-section">
+                    <h3>Interaction Options</h3>
+                    <div class="checkbox-item">
+                        <label>
+                            <input type="checkbox" id="keyboard-shortcuts" checked>
+                            Enable keyboard shortcuts
+                        </label>
+                    </div>
+                    
+                    <div class="checkbox-item">
+                        <label>
+                            <input type="checkbox" id="context-menu" checked>
+                            Show context menu options
+                        </label>
+                    </div>
+                    
+                    <div class="checkbox-item">
+                        <label>
+                            <input type="checkbox" id="animations" checked>
+                            Enable animations and transitions
+                        </label>
+                    </div>
+                    
+                    <div class="checkbox-item">
+                        <label>
+                            <input type="checkbox" id="show-shortcuts" checked>
+                            Show keyboard shortcut hints
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Privacy Tab -->
+            <div id="privacy-tab" class="tab-content">
+                <h2>Privacy & Data Protection</h2>
+                
+                <div class="setting-section">
+                    <h3>Data Collection</h3>
+                    <div class="checkbox-item">
+                        <label>
+                            <input type="checkbox" id="data-collection">
+                            Allow anonymous usage statistics
+                        </label>
+                        <p class="help-text">Helps improve the extension by collecting anonymous usage data</p>
+                    </div>
+                    
+                    <div class="checkbox-item">
+                        <label>
+                            <input type="checkbox" id="crash-reporting" checked>
+                            Send crash reports
+                        </label>
+                        <p class="help-text">Automatically send error reports to help fix bugs</p>
+                    </div>
+                </div>
+
+                <div class="setting-section">
+                    <h3>Data Storage</h3>
+                    <div class="setting-item">
+                        <label>Cache Management</label>
+                        <div class="button-group">
+                            <button id="clear-cache-btn" class="btn btn-secondary">Clear Explanation Cache</button>
+                            <button id="clear-stats-btn" class="btn btn-secondary">Clear Usage Statistics</button>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label>Data Export/Import</label>
+                        <div class="button-group">
+                            <button id="export-btn" class="btn btn-secondary">Export Settings</button>
+                            <button id="import-btn" class="btn btn-secondary">Import Settings</button>
+                        </div>
+                        <input type="file" id="import-file" accept=".json" style="display: none;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced Tab -->
+            <div id="advanced-tab" class="tab-content">
+                <h2>Advanced Configuration</h2>
+                
+                <div class="setting-section">
+                    <h3>Performance</h3>
+                    <div class="setting-item">
+                        <label for="api-timeout">API Request Timeout (ms)</label>
+                        <input type="number" id="api-timeout" min="1000" max="60000" value="10000" class="form-control">
+                    </div>
+                    
+                    <div class="checkbox-item">
+                        <label>
+                            <input type="checkbox" id="auto-explain">
+                            Auto-explain selected text (experimental)
+                        </label>
+                    </div>
+                </div>
+
+                <div class="setting-section">
+                    <h3>Accessibility</h3>
+                    <div class="checkbox-item">
+                        <label>
+                            <input type="checkbox" id="high-contrast">
+                            High contrast mode
+                        </label>
+                    </div>
+                    
+                    <div class="checkbox-item">
+                        <label>
+                            <input type="checkbox" id="large-text">
+                            Large text mode
+                        </label>
+                    </div>
+                    
+                    <div class="checkbox-item">
+                        <label>
+                            <input type="checkbox" id="screen-reader" checked>
+                            Screen reader support
+                        </label>
+                    </div>
+                </div>
+
+                <div class="setting-section">
+                    <h3>Debug & Development</h3>
+                    <div class="checkbox-item">
+                        <label>
+                            <input type="checkbox" id="debug-mode">
+                            Enable debug mode
+                        </label>
+                        <p class="help-text">Shows additional logging and debug information</p>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label>Extension Information</label>
+                        <div class="info-panel">
+                            <p><strong>Version:</strong> <span id="version-info">1.0.0</span></p>
+                            <p><strong>Build:</strong> <span id="build-info">Production</span></p>
+                            <p><strong>Browser:</strong> <span id="browser-info">Chrome</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="options-footer">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="https://github.com/azfarhussain-10p/textToSpeachExt#readme" target="_blank">Documentation</a>
+                    <a href="https://github.com/azfarhussain-10p/textToSpeachExt/issues" target="_blank">Support</a>
+                    <a href="https://github.com/azfarhussain-10p/textToSpeachExt" target="_blank">Source Code</a>
+                </div>
+                <p class="copyright">© 2024 Azfar Hussain. Licensed under MIT License.</p>
+            </div>
+        </footer>
+    </div>
+
+    <div id="toast-container"></div>
+    
+    <script src="options.js"></script>
+</body>
+</html>

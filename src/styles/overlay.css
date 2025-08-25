@@ -1,0 +1,178 @@
+/* TTS Extension Overlay Styles */
+/* This CSS file is referenced in manifest.json web_accessible_resources */
+
+.tts-overlay-container {
+    position: fixed;
+    z-index: 2147483647;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #333;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    min-width: 300px;
+    max-width: 500px;
+    opacity: 0;
+    transform: scale(0.95);
+    transition: all 0.2s ease;
+}
+
+.tts-overlay-container.visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.tts-overlay-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid #eee;
+    background: #f8f9fa;
+    border-radius: 8px 8px 0 0;
+}
+
+.tts-overlay-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+}
+
+.tts-close-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: #666;
+}
+
+.tts-close-btn:hover {
+    background: #e9ecef;
+    color: #333;
+}
+
+.tts-overlay-body {
+    padding: 16px;
+}
+
+.tts-selected-text {
+    margin-bottom: 12px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 3px solid #007bff;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.tts-controls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.tts-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.tts-btn:hover {
+    background: #f8f9fa;
+    border-color: #adb5bd;
+}
+
+.tts-btn:active {
+    background: #e9ecef;
+}
+
+.tts-speak-btn {
+    background: #28a745;
+    color: white;
+    border-color: #28a745;
+}
+
+.tts-explain-btn {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.tts-stop-btn {
+    background: #dc3545;
+    color: white;
+    border-color: #dc3545;
+}
+
+.tts-loading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #666;
+}
+
+.tts-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #e9ecef;
+    border-top-color: #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.tts-error {
+    color: #dc3545;
+    background: #f8d7da;
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #f5c6cb;
+}
+
+.tts-explanation {
+    margin-top: 12px;
+    padding: 12px;
+    background: #e7f3ff;
+    border-radius: 6px;
+    border-left: 3px solid #007bff;
+}
+
+/* Dark theme */
+@media (prefers-color-scheme: dark) {
+    .tts-overlay-container {
+        background: #2d3748;
+        border-color: #4a5568;
+        color: #e2e8f0;
+    }
+    
+    .tts-overlay-header {
+        background: #1a202c;
+        border-color: #4a5568;
+    }
+    
+    .tts-selected-text {
+        background: #1a202c;
+        border-color: #4299e1;
+    }
+    
+    .tts-btn {
+        background: #4a5568;
+        border-color: #718096;
+        color: #e2e8f0;
+    }
+}

@@ -1,0 +1,68 @@
+{
+  "manifest_version": 3,
+  "name": "Intelligent TTS Extension",
+  "version": "1.0.0",
+  "description": "A comprehensive browser extension for Text-to-Speech with AI-powered explanations",
+  "author": "Azfar Hussain",
+  
+  "permissions": [
+    "activeTab",
+    "storage",
+    "contextMenus",
+    "scripting"
+  ],
+  
+  "host_permissions": [
+    "https://api.groq.com/*",
+    "https://api.anthropic.com/*"
+  ],
+  
+  "background": {
+    "service_worker": "background/service-worker.js",
+    "type": "module"
+  },
+  
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content/content-script.js"],
+      "css": ["styles/content.css"],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+  
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "TTS Extension",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
+  
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  
+  "web_accessible_resources": [
+    {
+      "resources": ["styles/overlay.css", "components/overlay.html"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

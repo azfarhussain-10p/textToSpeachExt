@@ -108,14 +108,17 @@
   },
   "devDependencies": {
     "@babel/core": "^7.22.0",
-    "@babel/preset-env": "^7.22.0",
+    "@babel/preset-env": "^7.28.3",
     "@types/chrome": "^0.0.243",
     "@types/firefox-webext-browser": "^111.0.0",
     "@types/jest": "^29.5.0",
     "@types/webextension-polyfill": "^0.10.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
+    "archiver": "^7.0.1",
+    "babel-jest": "^30.0.5",
     "babel-loader": "^9.1.0",
+    "chrome-webstore-upload": "^3.0.0",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.8.0",
@@ -123,7 +126,6 @@
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-jest": "^27.2.0",
     "eslint-plugin-prettier": "^5.0.0",
-    "eslint-plugin-webextensions": "^0.3.0",
     "file-loader": "^6.2.0",
     "html-loader": "^4.2.0",
     "html-webpack-plugin": "^5.5.0",
@@ -133,24 +135,24 @@
     "jest-environment-jsdom": "^29.6.0",
     "jest-puppeteer": "^9.0.0",
     "jsdoc": "^4.0.0",
-    "lint-staged": "^13.2.0",
+    "lint-staged": "^16.1.5",
     "mini-css-extract-plugin": "^2.7.0",
     "prettier": "^3.0.0",
-    "puppeteer": "^20.8.0",
+    "puppeteer": "^24.17.0",
     "rimraf": "^5.0.0",
+    "sharp": "^0.34.3",
     "style-loader": "^3.3.0",
     "terser-webpack-plugin": "^5.3.0",
     "typescript": "^5.1.0",
-    "web-ext": "^7.7.0",
+    "web-ext": "^8.9.0",
     "webpack": "^5.88.0",
     "webpack-bundle-analyzer": "^4.9.0",
-    "webpack-cli": "^5.1.0",
-    "webstore-upload-cli": "^2.1.0"
+    "webpack-cli": "^5.1.0"
   },
   "optionalDependencies": {
+    "@playwright/test": "^1.36.0",
     "playwright": "^1.36.0",
-    "selenium-webdriver": "^4.11.0",
-    "@playwright/test": "^1.36.0"
+    "selenium-webdriver": "^4.11.0"
   },
   "browserslist": [
     "Chrome >= 88",
@@ -187,7 +189,9 @@
   "webExt": {
     "sourceDir": "dist/firefox",
     "run": {
-      "startUrl": ["https://example.com"]
+      "startUrl": [
+        "https://example.com"
+      ]
     },
     "lint": {
       "output": "json"
