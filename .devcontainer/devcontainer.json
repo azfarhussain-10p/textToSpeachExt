@@ -1,82 +1,77 @@
 {
-    "name": "TTS Extension Development",
-    "build": {
-      "dockerfile": "Dockerfile",
-      "args": {
-        "TZ": "${localEnv:TZ:America/Los_Angeles}"
-      }
+    "name": "TTS Extension Development - Features Based",
+    "image": "mcr.microsoft.com/devcontainers/typescript-node:1-20-bullseye",
+    "features": {
+        "ghcr.io/devcontainers/features/git:1": {},
+        "ghcr.io/devcontainers/features/github-cli:1": {},
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {
+            "moby": false,
+            "dockerDashComposeVersion": "none"
+        },
+        "ghcr.io/devcontainers/features/common-utils:2": {
+            "installZsh": true,
+            "installOhMyZsh": true,
+            "upgradePackages": true,
+            "username": "node",
+            "userUid": "automatic",
+            "userGid": "automatic"
+        }
     },
     "runArgs": [
-      "--cap-add=NET_ADMIN",
-      "--cap-add=NET_RAW"
+        "--cap-add=NET_ADMIN",
+        "--cap-add=NET_RAW",
+        "--privileged"
     ],
     "customizations": {
-      "vscode": {
-        "extensions": [
-          "dbaeumer.vscode-eslint",
-          "esbenp.prettier-vscode",
-          "eamodio.gitlens",
-          "ms-vscode.vscode-typescript-next",
-          "ms-vscode.vscode-json",
-          "firefox-devtools.vscode-firefox-debug",
-          "ms-playwright.playwright",
-          "bradlc.vscode-tailwindcss",
-          "christian-kohler.npm-intellisense",
-          "formulahendry.auto-rename-tag"
-        ],
-        "settings": {
-          "editor.formatOnSave": true,
-          "editor.defaultFormatter": "esbenp.prettier-vscode",
-          "editor.codeActionsOnSave": {
-            "source.fixAll.eslint": "explicit"
-          },
-          "terminal.integrated.defaultProfile.linux": "zsh",
-          "terminal.integrated.profiles.linux": {
-            "bash": {
-              "path": "bash",
-              "icon": "terminal-bash"
-            },
-            "zsh": {
-              "path": "zsh"
+        "vscode": {
+            "extensions": [
+                "dbaeumer.vscode-eslint",
+                "esbenp.prettier-vscode", 
+                "eamodio.gitlens",
+                "ms-vscode.vscode-typescript-next",
+                "ms-vscode.vscode-json",
+                "firefox-devtools.vscode-firefox-debug",
+                "ms-playwright.playwright",
+                "christian-kohler.npm-intellisense"
+            ],
+            "settings": {
+                "editor.formatOnSave": true,
+                "editor.defaultFormatter": "esbenp.prettier-vscode",
+                "editor.codeActionsOnSave": {
+                    "source.fixAll.eslint": "explicit"
+                },
+                "terminal.integrated.defaultProfile.linux": "zsh",
+                "typescript.preferences.quoteStyle": "double",
+                "javascript.preferences.quoteStyle": "double",
+                "json.schemas": [
+                    {
+                        "fileMatch": ["manifest.json", "**/manifest.json"],
+                        "url": "https://json.schemastore.org/chrome-manifest"
+                    }
+                ]
             }
-          },
-          "typescript.preferences.quoteStyle": "double",
-          "javascript.preferences.quoteStyle": "double",
-          "json.schemas": [
-            {
-              "fileMatch": ["manifest.json"],
-              "url": "https://json.schemastore.org/chrome-manifest"
-            }
-          ],
-          "files.associations": {
-            "*.js": "javascript",
-            "*.ts": "typescript",
-            "manifest.json": "json"
-          }
         }
-      }
     },
     "remoteUser": "node",
     "mounts": [
-      "source=tts-extension-bashhistory,target=/commandhistory,type=volume",
-      "source=tts-extension-config,target=/home/node/.claude,type=volume",
-      "source=tts-extension-browser-data,target=/home/node/.config,type=volume"
+        "source=tts-extension-bashhistory,target=/commandhistory,type=volume",
+        "source=tts-extension-config,target=/home/node/.config,type=volume"
     ],
     "remoteEnv": {
-      "NODE_OPTIONS": "--max-old-space-size=4096",
-      "CLAUDE_CONFIG_DIR": "/home/node/.claude",
-      "POWERLEVEL9K_DISABLE_GITSTATUS": "true",
-      "GROQ_API_KEY": "${localEnv:GROQ_API_KEY}",
-      "CLAUDE_API_KEY": "${localEnv:CLAUDE_API_KEY}",
-      "CHROME_EXTENSION_ID": "${localEnv:CHROME_EXTENSION_ID}",
-      "FIREFOX_API_KEY": "${localEnv:FIREFOX_API_KEY}",
-      "FIREFOX_API_SECRET": "${localEnv:FIREFOX_API_SECRET}",
-      "DEBUG_MODE": "true",
-      "DEFAULT_LANGUAGE": "en-US",
-      "SELECTION_THRESHOLD": "10",
-      "PROJECT_PHASE": "planning"
+        "NODE_OPTIONS": "--max-old-space-size=4096",
+        "CHROME_BIN": "/usr/bin/chromium",
+        "FIREFOX_BIN": "/usr/bin/firefox",
+        "DISPLAY": ":99",
+        "GROQ_API_KEY": "${localEnv:GROQ_API_KEY}",
+        "CLAUDE_API_KEY": "${localEnv:CLAUDE_API_KEY}",
+        "CHROME_EXTENSION_ID": "${localEnv:CHROME_EXTENSION_ID}",
+        "FIREFOX_API_KEY": "${localEnv:FIREFOX_API_KEY}",
+        "FIREFOX_API_SECRET": "${localEnv:FIREFOX_API_SECRET}",
+        "DEBUG_MODE": "true",
+        "DEFAULT_LANGUAGE": "en-US",
+        "PROJECT_PHASE": "development"
     },
-    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated",
-    "workspaceFolder": "/workspace",
-    "postCreateCommand": "sudo /usr/local/bin/init-firewall.sh"
-  }
+    "workspaceFolder": "/workspaces/textToSpeachExt",
+    "postCreateCommand": "bash .devcontainer/post-create.sh",
+    "forwardPorts": [3000, 8080, 9222]
+}
