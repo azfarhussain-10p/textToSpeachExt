@@ -219,3 +219,15 @@ _locales/*/auto-generated.json
 # Extension Analytics
 analytics.json
 usage-stats.json
+
+releases/
+output/*
+output/reports/*
+output/reports/validation/*
+output/reports/validation/package-analysis_*.md
+output/reports/validation/package-data_*.json
+output/reports/validation/package-updates_*.log
+output/reports/validation/npm-audit_*.json
+output/reports/validation/npm-outdated_*.json
+output/reports/validation/package-analysis_*.md
+output/reports/validation/package-data_*.json
