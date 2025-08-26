@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Text Selection Extension</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      width: 300px;
+      padding: 15px;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+    h1 {
+      font-size: 18px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    #selectedText {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 4px;
+      word-wrap: break-word;
+    }
+    button {
+      display: block;
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #count {
+      text-align: center;
+      font-weight: bold;
+    }
+    #toggleFeature {
+      background-color: #28a745;
+    }
+    #toggleFeature:hover {
+      background-color: #218838;
+    }
+  </style>
+</head>
+<body>
+  <h1>Text Selection Tools</h1>
+  <div id="selectedText">No text selected yet.</div>
+  <button id="getText">Get Selected Text</button>
+  <button id="copyText">Copy to Clipboard</button>
+  <button id="toggleFeature">Toggle Overlay</button>
+  <p>Selections made: <span id="count">0</span></p>
+
+  <script>
+    // Cross-browser compatibility: Use 'browser' API (assume polyfill loaded if needed)
+    const runtime = chrome.runtime || browser.runtime;
+    const tabs = chrome.tabs || browser.tabs;
+    const storage = chrome.storage || browser.storage;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const getTextBtn = document.getElementById('getText');
+      const copyTextBtn = document.getElementById('copyText');
+      const toggleBtn = document.getElementById('toggleFeature');
+      const textDisplay = document.getElementById('selectedText');
+      const countSpan = document.getElementById('count');
+
+      // Load initial count and feature state
+      storage.sync.get(['selectionCount', 'overlayEnabled'], (data) => {
+        countSpan.textContent = data.selectionCount || 0;
+        toggleBtn.textContent = data.overlayEnabled ? 'Disable Overlay' : 'Enable Overlay';
+      });
+
+      getTextBtn.addEventListener('click', () => {
+        tabs.query({ active: true, currentWindow: true }, (tabs) => {
+          tabs.sendMessage(tabs[0].id, { action: 'getSelectedText' }, (response) => {
+            if (response && response.text) {
+              textDisplay.textContent = response.text;
+              // Increment count
+              storage.sync.get('selectionCount', (data) => {
+                const newCount = (data.selectionCount || 0) + 1;
+                storage.sync.set({ selectionCount: newCount });
+                countSpan.textContent = newCount;
+              });
+              // Notify background
+              runtime.sendMessage({ action: 'textFetched', text: response.text });
+            } else {
+              textDisplay.textContent = 'No text selected.';
+            }
+          });
+        });
+      });
+
+      copyTextBtn.addEventListener('click', () => {
+        const text = textDisplay.textContent;
+        if (text && text !== 'No text selected yet.' && text !== 'No text selected.') {
+          navigator.clipboard.writeText(text).then(() => {
+            alert('Text copied!');
+          }).catch((err) => {
+            console.error('Copy failed:', err);
+          });
+        }
+      });
+
+      toggleBtn.addEventListener('click', () => {
+        storage.sync.get('overlayEnabled', (data) => {
+          const enabled = !data.overlayEnabled;
+          storage.sync.set({ overlayEnabled: enabled });
+          toggleBtn.textContent = enabled ? 'Disable Overlay' : 'Enable Overlay';
+          // Send toggle to content script
+          tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            tabs.sendMessage(tabs[0].id, { action: 'toggleOverlay', enabled });
+          });
+        });
+      });
+    });
+  </script>
+</body>
+</html>

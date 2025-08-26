@@ -14,7 +14,7 @@ A comprehensive, production-ready browser extension for Chrome, Edge, Firefox, a
 - **Manifest V3 Structure**: `examples/extension/manifest.json` - Modern extension configuration
 - **Content Script Pattern**: `examples/extension/content-script.js` - Text selection and overlay injection
 - **Background Service**: `examples/extension/background.js` - Cross-browser compatibility layer
-- **Popup Interface**: `examples/extension/popup/` - Extension toolbar interface
+- **Popup Interface**: `examples/extension/popup.html/` - Extension toolbar interface
 - **Cross-Browser Compatibility**: `examples/extension/browser-polyfill.js` - Unified API wrapper
 
 ### Text-to-Speech Implementation Examples:
