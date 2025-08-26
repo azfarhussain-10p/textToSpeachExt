@@ -103,10 +103,16 @@ echo "════════════════════════�
 echo "📁 Phase 1: Project Structure Analysis"
 echo "----------------------------------------"
 
-# Create validation report file
-REPORT_FILE="project-validation-report.md"
+# Configure output directory and file naming
+REPORT_DIR=".claude/output/reports/validation"
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+mkdir -p "$REPORT_DIR"
+
+# Create validation report file with timestamp
+REPORT_FILE="$REPORT_DIR/project-validation-report_$TIMESTAMP.md"
 echo "# Project Validation Report" > $REPORT_FILE
 echo "Generated: $(date)" >> $REPORT_FILE
+echo "Scope: $SCOPE | Severity: $SEVERITY | Dry Run: $DRY_RUN" >> $REPORT_FILE
 echo "" >> $REPORT_FILE
 
 # Use Serena MCP for project structure analysis
@@ -117,30 +123,30 @@ echo "📦 Phase 2: Dependency Analysis"
 echo "--------------------------------"
 
 echo "🔍 Checking for outdated dependencies..."
-npm outdated --json > outdated-deps.json 2>/dev/null || echo "[]" > outdated-deps.json
+npm outdated --json > "$REPORT_DIR/outdated-deps_$TIMESTAMP.json" 2>/dev/null || echo "[]" > "$REPORT_DIR/outdated-deps_$TIMESTAMP.json"
 
 echo "🔍 Running security audit..."
-npm audit --json > security-audit.json 2>/dev/null || echo "{}" > security-audit.json
+npm audit --json > "$REPORT_DIR/security-audit_$TIMESTAMP.json" 2>/dev/null || echo "{}" > "$REPORT_DIR/security-audit_$TIMESTAMP.json"
 
 echo "🔍 Checking for unused dependencies..."
-npx depcheck --json > unused-deps.json 2>/dev/null || echo "{}" > unused-deps.json
+npx depcheck --json > "$REPORT_DIR/unused-deps_$TIMESTAMP.json" 2>/dev/null || echo "{}" > "$REPORT_DIR/unused-deps_$TIMESTAMP.json"
 
 # Phase 3: Code Quality Analysis
 echo "🧹 Phase 3: Code Quality Analysis" 
 echo "----------------------------------"
 
 echo "🔍 Running ESLint analysis..."
-npx eslint src/ tests/ --format json --output-file eslint-report.json 2>/dev/null || echo "[]" > eslint-report.json
+npx eslint src/ tests/ --format json --output-file "$REPORT_DIR/eslint-report_$TIMESTAMP.json" 2>/dev/null || echo "[]" > "$REPORT_DIR/eslint-report_$TIMESTAMP.json"
 
 echo "🔍 Checking TypeScript/JavaScript syntax..."
-find src/ tests/ -name "*.js" -o -name "*.ts" | xargs -I {} node -c {} 2>&1 | tee syntax-check.log
+find src/ tests/ -name "*.js" -o -name "*.ts" | xargs -I {} node -c {} 2>&1 | tee "$REPORT_DIR/syntax-check_$TIMESTAMP.log"
 
 # Phase 4: Test Coverage Analysis
 echo "🧪 Phase 4: Test Coverage Analysis"
 echo "-----------------------------------"
 
 echo "🔍 Running test coverage analysis..."
-npm run test:unit:coverage 2>&1 | tee test-coverage.log || echo "Test coverage analysis failed"
+npm run test:unit:coverage 2>&1 | tee "$REPORT_DIR/test-coverage_$TIMESTAMP.log" || echo "Test coverage analysis failed"
 
 # Phase 5: Build Validation
 echo "⚙️ Phase 5: Build and Configuration Validation"
@@ -149,7 +155,7 @@ echo "-----------------------------------------------"
 echo "🔍 Validating build configurations..."
 for browser in chrome firefox safari; do
     if [ -f "build/webpack.$browser.js" ]; then
-        npx webpack --config "build/webpack.$browser.js" --mode production --dry-run 2>&1 | tee "build-validation-$browser.log"
+        npx webpack --config "build/webpack.$browser.js" --mode production --dry-run 2>&1 | tee "$REPORT_DIR/build-validation-${browser}_$TIMESTAMP.log"
     fi
 done
 
@@ -157,7 +163,7 @@ echo "🔍 Validating manifest files..."
 for manifest in src/manifest.*.json; do
     if [ -f "$manifest" ]; then
         echo "Validating $manifest..."
-        npx web-ext lint --source-dir dist/$(basename "$manifest" .json | sed 's/manifest\.//') 2>&1 | tee "manifest-validation-$(basename "$manifest" .json).log" || true
+        npx web-ext lint --source-dir dist/$(basename "$manifest" .json | sed 's/manifest\.//') 2>&1 | tee "$REPORT_DIR/manifest-validation-$(basename "$manifest" .json)_$TIMESTAMP.log" || true
     fi
 done
 
@@ -165,9 +171,13 @@ done
 echo "📝 Phase 6: Generating Comprehensive To-Do List"
 echo "------------------------------------------------"
 
-TODO_FILE="project-fixes-todo.md"
+# Configure TODO file with timestamp and organized output
+TODO_FILE="$REPORT_DIR/project-fixes-todo_$TIMESTAMP.md"
+SUMMARY_FILE="$REPORT_DIR/validation-summary_$TIMESTAMP.json"
+
 echo "# Project Fixes To-Do List" > $TODO_FILE
 echo "Generated: $(date)" >> $TODO_FILE
+echo "Scope: $SCOPE | Severity: $SEVERITY | Dry Run: $DRY_RUN" >> $TODO_FILE
 echo "" >> $TODO_FILE
 
 # Analyze all collected data and generate to-do items
@@ -175,8 +185,9 @@ echo "## Critical Issues" >> $TODO_FILE
 echo "" >> $TODO_FILE
 
 # Parse security audit for critical issues
-if [ -f security-audit.json ]; then
-    critical_vulns=$(jq -r '.vulnerabilities | to_entries[] | select(.value.severity == "critical") | .key' security-audit.json 2>/dev/null || echo "")
+SECURITY_FILE="$REPORT_DIR/security-audit_$TIMESTAMP.json"
+if [ -f "$SECURITY_FILE" ]; then
+    critical_vulns=$(jq -r '.vulnerabilities | to_entries[] | select(.value.severity == "critical") | .key' "$SECURITY_FILE" 2>/dev/null || echo "")
     if [ ! -z "$critical_vulns" ]; then
         echo "### Security Vulnerabilities (Critical)" >> $TODO_FILE
         echo "$critical_vulns" | while read vuln; do
@@ -187,16 +198,18 @@ if [ -f security-audit.json ]; then
 fi
 
 # Parse outdated dependencies
-if [ -f outdated-deps.json ]; then
+OUTDATED_FILE="$REPORT_DIR/outdated-deps_$TIMESTAMP.json"
+if [ -f "$OUTDATED_FILE" ]; then
     echo "### Dependency Updates" >> $TODO_FILE
-    jq -r 'to_entries[] | "- [ ] Update \(.key) from \(.value.current) to \(.value.latest)"' outdated-deps.json 2>/dev/null >> $TODO_FILE || true
+    jq -r 'to_entries[] | "- [ ] Update \(.key) from \(.value.current) to \(.value.latest)"' "$OUTDATED_FILE" 2>/dev/null >> $TODO_FILE || true
     echo "" >> $TODO_FILE
 fi
 
 # Parse ESLint issues
-if [ -f eslint-report.json ]; then
+ESLINT_FILE="$REPORT_DIR/eslint-report_$TIMESTAMP.json"
+if [ -f "$ESLINT_FILE" ]; then
     echo "### Code Quality Issues" >> $TODO_FILE
-    jq -r '.[] | .messages[] | "- [ ] \(.ruleId): \(.message) (Line \(.line))"' eslint-report.json 2>/dev/null >> $TODO_FILE || true
+    jq -r '.[] | .messages[] | "- [ ] \(.ruleId): \(.message) (Line \(.line))"' "$ESLINT_FILE" 2>/dev/null >> $TODO_FILE || true
     echo "" >> $TODO_FILE
 fi
 
@@ -210,8 +223,8 @@ if [ "$DRY_RUN" = false ]; then
     echo "📦 Updating dependencies to latest versions..."
     
     # Update all dependencies to latest
-    if [ -f outdated-deps.json ]; then
-        outdated_packages=$(jq -r 'keys[]' outdated-deps.json 2>/dev/null || echo "")
+    if [ -f "$OUTDATED_FILE" ]; then
+        outdated_packages=$(jq -r 'keys[]' "$OUTDATED_FILE" 2>/dev/null || echo "")
         if [ ! -z "$outdated_packages" ]; then
             echo "$outdated_packages" | xargs npm update
             echo "✅ Dependencies updated successfully"
@@ -243,14 +256,28 @@ else
     echo "🔍 Dry-run completed - no changes made"
 fi
 
-# Cleanup temporary files
-echo "🧹 Cleaning up temporary files..."
-rm -f outdated-deps.json security-audit.json unused-deps.json eslint-report.json syntax-check.log test-coverage.log build-validation-*.log manifest-validation-*.log
+# Generate final summary JSON report
+echo "📊 Generating final summary report..."
+echo "{" > "$SUMMARY_FILE"
+echo "  \"timestamp\": \"$TIMESTAMP\"," >> "$SUMMARY_FILE"
+echo "  \"scope\": \"$SCOPE\"," >> "$SUMMARY_FILE"
+echo "  \"severity\": \"$SEVERITY\"," >> "$SUMMARY_FILE"
+echo "  \"dry_run\": $DRY_RUN," >> "$SUMMARY_FILE"
+echo "  \"reports\": {" >> "$SUMMARY_FILE"
+echo "    \"main_report\": \"$(basename "$REPORT_FILE")\"," >> "$SUMMARY_FILE"
+echo "    \"todo_list\": \"$(basename "$TODO_FILE")\"," >> "$SUMMARY_FILE"
+echo "    \"security_audit\": \"$(basename "$SECURITY_FILE")\"," >> "$SUMMARY_FILE"
+echo "    \"outdated_deps\": \"$(basename "$OUTDATED_FILE")\"," >> "$SUMMARY_FILE"
+echo "    \"eslint_report\": \"$(basename "$ESLINT_FILE")\"" >> "$SUMMARY_FILE"
+echo "  }" >> "$SUMMARY_FILE"
+echo "}" >> "$SUMMARY_FILE"
 
 echo ""
 echo "🎉 Project validation completed!"
 echo "📊 Report saved to: $REPORT_FILE"
 echo "📋 To-do list saved to: $TODO_FILE"
+echo "📈 Summary saved to: $SUMMARY_FILE"
+echo "📁 All reports organized in: $REPORT_DIR/"
 echo ""
 echo "Summary of findings will be generated using Context7 and Serena MCP..."
 
@@ -390,3 +417,4 @@ jobs:
 ```
 
 This command provides comprehensive project health checking and automated fixing capabilities, leveraging the power of both Context7 and Serena MCP for enhanced accuracy and intelligent analysis.
+
