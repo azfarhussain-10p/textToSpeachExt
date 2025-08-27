@@ -58,7 +58,13 @@
       "Bash(./test_package_verify.sh:*)",
       "Bash(./package-json-verify.sh:*)",
       "Bash(bash:*)",
-      "Bash(./.claude/commands/package-json-verify.sh:*)"
+      "Bash(./.claude/commands/package-json-verify.sh:*)",
+      "mcp__context__get-library-docs",
+      "mcp__context__resolve-library-id",
+      "Bash(python3:*)",
+      "Bash(./create-icons.sh:*)",
+      "Bash(do echo \"Fixing line endings in: $file\")",
+      "Bash(sed:*)"
     ],
     "deny": [
       "Bash(rm -rf /)",
@@ -67,7 +73,10 @@
       "Bash(*eval*)",
       "Bash(*curl*|*sh*)"
     ],
-    "defaultMode": "acceptEdits"
+    "defaultMode": "acceptEdits",
+    "additionalDirectories": [
+      "/mnt/d/OfficialStuff/10Pearls/POC/AI"
+    ]
   },
   "hooks": {
     "PostToolUse": [

@@ -91,27 +91,45 @@ npm run dev:safari        # Safari development build
 
 ## 📚 Documentation Structure
 
-This project uses a modular documentation approach for better performance and organization:
+This project follows a comprehensive, organized documentation structure for better maintainability and navigation:
 
-### Core Documentation Files
+### Documentation Organization
 
-1. **[Development Guide](docs/development-guide.md)** - Complete development reference
+All project documentation is located in the [`docs/`](docs/) directory with the following structure:
+
+- **[📖 Documentation Overview](docs/README.md)** - Complete documentation index and standards
+- **[🚀 Deployment](docs/deployment/)** - Production deployment procedures, checklists, and store listings
+- **[📋 Guides](docs/guides/)** - Development setup, installation guides, and project structure
+- **[⚙️ Implementation](docs/implementation/)** - Technical implementation details, examples, and API integration
+- **[🔧 Troubleshooting](docs/troubleshooting/)** - Issue resolution, debugging guides, and browser compatibility
+
+### Key Documentation Files
+
+1. **[Development Guide](docs/guides/development-guide.md)** - Complete development reference
    - All npm commands and scripts
    - Testing strategies and frameworks
    - Build system configuration
    - Environment setup and deployment
 
-2. **[Implementation Examples](docs/implementation-examples.md)** - Code patterns and examples
+2. **[Implementation Examples](docs/implementation/examples.md)** - Code patterns and examples
    - TTS Service implementation with browser compatibility
    - AI Integration (Groq/Claude APIs) with fallbacks
    - UI/UX components (overlay, settings, accessibility)
    - Security, privacy, and performance monitoring
 
-3. **[Project Structure](docs/project-structure.md)** - Architecture and planning
+3. **[Project Structure](docs/guides/project-structure.md)** - Architecture and planning
    - Complete directory structure and file organization
    - Implementation roadmap and development phases
    - Quality gates checklist and success metrics
    - Architecture decisions and patterns
+
+### Documentation Standards
+
+All documentation follows strict standards defined in [Documentation Standards](docs/DOCUMENTATION-STANDARDS.md):
+- Standardized directory structure with categories
+- Consistent file naming conventions (kebab-case)
+- Required front matter with category, audience, and status
+- Cross-referencing and maintainability guidelines
 
 ## 🏆 Success Metrics & Quality Gates
 

@@ -25,6 +25,22 @@ A comprehensive browser extension project designed to transform any web text int
 - **Accessibility**: Full keyboard navigation and screen reader support
 - **Internationalization**: Support for RTL languages and cultural preferences
 
+## 📚 Documentation
+
+Complete project documentation is organized in the [`docs/`](docs/) directory:
+
+- **[📖 Documentation Overview](docs/README.md)** - Complete documentation guide and structure
+- **[🚀 Deployment](docs/deployment/)** - Production deployment procedures and checklists
+- **[📋 Guides](docs/guides/)** - Development setup, installation, and project structure
+- **[⚙️ Implementation](docs/implementation/)** - Technical implementation details and examples
+- **[🔧 Troubleshooting](docs/troubleshooting/)** - Issue resolution and debugging guides
+
+### Quick Start Documentation
+- [Development Guide](docs/guides/development-guide.md) - Complete development setup
+- [Installation Guide](docs/guides/installation-guide.md) - Claude Code setup instructions
+- [Implementation Guide](docs/implementation/implementation-guide.md) - Step-by-step implementation
+- [Deployment Checklist](docs/deployment/deployment-checklist.md) - Pre-release validation
+
 ## 🔧 MCP Server Prerequisites
 
 This project requires the following MCP (Model Context Protocol) servers for AI-assisted development and code analysis:

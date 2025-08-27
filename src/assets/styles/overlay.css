@@ -1,0 +1,543 @@
+/**
+ * TTS Extension Overlay Styles
+ * Responsive, accessible, and cross-browser compatible styles
+ */
+
+/* Core overlay container */
+.tts-overlay {
+  position: fixed;
+  z-index: 2147483647; /* Maximum z-index to ensure overlay appears above all content */
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+  max-width: 320px;
+  min-width: 280px;
+  display: none;
+  opacity: 0;
+  transform: translateY(-8px) scale(0.95);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: auto;
+  user-select: none;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Visible state animation */
+.tts-overlay.tts-overlay-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+  .tts-overlay {
+    background: #2a2a2a;
+    border-color: #444444;
+    color: #ffffff;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .tts-overlay {
+    border-width: 2px;
+    border-color: #000000;
+    background: #ffffff;
+    color: #000000;
+  }
+  
+  @media (prefers-color-scheme: dark) {
+    .tts-overlay {
+      background: #000000;
+      border-color: #ffffff;
+      color: #ffffff;
+    }
+  }
+}
+
+/* Overlay content container */
+.tts-overlay-content {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Header section */
+.tts-overlay-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 24px;
+}
+
+.tts-selected-text {
+  flex: 1;
+  font-weight: 500;
+  color: #333333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .tts-selected-text {
+    color: #e0e0e0;
+  }
+}
+
+.tts-close-btn {
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: #666666;
+  cursor: pointer;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  line-height: 1;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.tts-close-btn:hover {
+  background: #f5f5f5;
+  color: #333333;
+}
+
+.tts-close-btn:focus {
+  outline: 2px solid #0066cc;
+  outline-offset: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .tts-close-btn {
+    color: #999999;
+  }
+  
+  .tts-close-btn:hover {
+    background: #3a3a3a;
+    color: #e0e0e0;
+  }
+}
+
+/* Controls section */
+.tts-overlay-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Primary button row */
+.tts-overlay-controls > .tts-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 40px;
+}
+
+/* Secondary controls row */
+.tts-controls-secondary {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.tts-controls-secondary .tts-btn {
+  flex: 1;
+  min-width: 80px;
+  height: 36px;
+}
+
+/* Button styles */
+.tts-btn {
+  border: 1px solid #e0e0e0;
+  background: #ffffff;
+  color: #333333;
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  font-family: inherit;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.tts-btn:hover {
+  background: #f8f9fa;
+  border-color: #d0d0d0;
+  transform: translateY(-1px);
+}
+
+.tts-btn:active {
+  transform: translateY(0);
+  background: #e8e9ea;
+}
+
+.tts-btn:focus {
+  outline: 2px solid #0066cc;
+  outline-offset: 2px;
+}
+
+.tts-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Primary action buttons */
+.tts-speak-btn {
+  background: #0066cc;
+  border-color: #0066cc;
+  color: #ffffff;
+}
+
+.tts-speak-btn:hover {
+  background: #0052a3;
+  border-color: #0052a3;
+}
+
+.tts-speak-btn:active {
+  background: #003d7a;
+}
+
+.tts-explain-btn {
+  background: #8e44ad;
+  border-color: #8e44ad;
+  color: #ffffff;
+}
+
+.tts-explain-btn:hover {
+  background: #7d3c98;
+  border-color: #7d3c98;
+}
+
+.tts-explain-btn:active {
+  background: #6c3483;
+}
+
+/* Dark theme button styles */
+@media (prefers-color-scheme: dark) {
+  .tts-btn {
+    background: #3a3a3a;
+    border-color: #555555;
+    color: #e0e0e0;
+  }
+  
+  .tts-btn:hover {
+    background: #4a4a4a;
+    border-color: #666666;
+  }
+  
+  .tts-btn:active {
+    background: #2a2a2a;
+  }
+  
+  .tts-speak-btn {
+    background: #0066cc;
+    border-color: #0066cc;
+  }
+  
+  .tts-explain-btn {
+    background: #8e44ad;
+    border-color: #8e44ad;
+  }
+}
+
+/* Status section */
+.tts-overlay-status {
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-top: 4px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .tts-overlay-status {
+    background: #1a1a1a;
+    color: #e0e0e0;
+  }
+}
+
+.tts-status-text {
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  text-align: center;
+  color: #555555;
+}
+
+@media (prefers-color-scheme: dark) {
+  .tts-status-text {
+    color: #b0b0b0;
+  }
+}
+
+/* Progress bar */
+.tts-progress-bar {
+  width: 100%;
+  height: 4px;
+  background: #e0e0e0;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+@media (prefers-color-scheme: dark) {
+  .tts-progress-bar {
+    background: #444444;
+  }
+}
+
+.tts-progress-fill {
+  height: 100%;
+  background: #0066cc;
+  border-radius: 2px;
+  width: 0%;
+  transition: width 0.3s ease;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Explanation section */
+.tts-explanation {
+  margin-top: 8px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #0066cc;
+}
+
+@media (prefers-color-scheme: dark) {
+  .tts-explanation {
+    background: #1a1a1a;
+  }
+}
+
+.tts-explanation-text {
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 8px;
+  color: #333333;
+  word-wrap: break-word;
+}
+
+.tts-explanation-text.loading {
+  color: #666666;
+  font-style: italic;
+}
+
+.tts-explanation-text.error {
+  color: #d73a49;
+}
+
+.tts-explanation-text.warning {
+  color: #f57c00;
+}
+
+@media (prefers-color-scheme: dark) {
+  .tts-explanation-text {
+    color: #e0e0e0;
+  }
+  
+  .tts-explanation-text.loading {
+    color: #999999;
+  }
+  
+  .tts-explanation-text.error {
+    color: #ff6b6b;
+  }
+  
+  .tts-explanation-text.warning {
+    color: #ffa726;
+  }
+}
+
+.tts-explanation-provider {
+  font-size: 11px;
+  color: #888888;
+  margin-top: 8px;
+  text-align: right;
+}
+
+@media (prefers-color-scheme: dark) {
+  .tts-explanation-provider {
+    color: #666666;
+  }
+}
+
+.tts-explanation-actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.tts-speak-explanation-btn {
+  padding: 6px 12px;
+  font-size: 12px;
+  height: 32px;
+  background: transparent;
+  border: 1px solid #0066cc;
+  color: #0066cc;
+}
+
+.tts-speak-explanation-btn:hover {
+  background: #0066cc;
+  color: #ffffff;
+}
+
+/* Button icons */
+.tts-btn svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.tts-controls-secondary .tts-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.tts-speak-explanation-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 480px) {
+  .tts-overlay {
+    max-width: calc(100vw - 32px);
+    min-width: 240px;
+  }
+  
+  .tts-overlay-content {
+    padding: 12px;
+  }
+  
+  .tts-btn {
+    font-size: 13px;
+    padding: 6px 12px;
+    min-height: 32px;
+  }
+  
+  .tts-overlay-controls > .tts-btn {
+    height: 36px;
+  }
+  
+  .tts-controls-secondary .tts-btn {
+    height: 32px;
+    min-width: 60px;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .tts-btn {
+    min-height: 44px; /* iOS accessibility guidelines */
+  }
+  
+  .tts-overlay-controls > .tts-btn {
+    height: 44px;
+  }
+  
+  .tts-controls-secondary .tts-btn {
+    height: 40px;
+    min-width: 80px;
+  }
+  
+  .tts-close-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 20px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .tts-overlay {
+    transition: opacity 0.15s ease;
+    transform: none;
+  }
+  
+  .tts-overlay.tts-overlay-visible {
+    transform: none;
+  }
+  
+  .tts-btn {
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+  }
+  
+  .tts-btn:hover {
+    transform: none;
+  }
+  
+  .tts-progress-fill {
+    animation: none;
+  }
+}
+
+/* Focus management for accessibility */
+.tts-overlay *:focus {
+  outline: 2px solid #0066cc;
+  outline-offset: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .tts-overlay *:focus {
+    outline-color: #66b3ff;
+  }
+}
+
+/* Ensure overlay doesn't interfere with page content */
+.tts-overlay * {
+  box-sizing: border-box;
+}
+
+.tts-overlay,
+.tts-overlay * {
+  all: initial;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+/* Re-apply necessary styles after reset */
+.tts-overlay {
+  position: fixed !important;
+  z-index: 2147483647 !important;
+  display: none !important;
+  background: #ffffff !important;
+  border: 1px solid #e0e0e0 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15) !important;
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+  max-width: 320px !important;
+  min-width: 280px !important;
+  opacity: 0 !important;
+  transform: translateY(-8px) scale(0.95) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  pointer-events: auto !important;
+  user-select: none !important;
+}

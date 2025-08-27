@@ -24,13 +24,14 @@
     "test:unit:coverage": "jest --config jest.config.js --coverage",
     "test:integration": "jest --config jest.integration.config.js",
     "test:e2e": "npm run test:e2e:chrome",
-    "test:e2e:chrome": "jest --config jest.e2e.config.js --testNamePattern=chrome",
-    "test:e2e:firefox": "jest --config jest.e2e.config.js --testNamePattern=firefox",
-    "test:e2e:safari": "jest --config jest.e2e.config.js --testNamePattern=safari",
-    "test:e2e:all": "npm run test:e2e:chrome && npm run test:e2e:firefox && npm run test:e2e:safari",
+    "test:e2e:chrome": "npx playwright test --config=playwright.config.js --project=chrome-extension",
+    "test:e2e:firefox": "npx playwright test --config=playwright.config.js --project=firefox-extension",
+    "test:e2e:edge": "npx playwright test --config=playwright.config.js --project=edge-extension",
+    "test:e2e:all": "npx playwright test --config=playwright.config.js",
     "test:cross-browser": "npm run test:e2e:all",
     "test:performance": "jest --config jest.performance.config.js",
     "test:accessibility": "jest --config jest.a11y.config.js",
+    "test:validation": "node tests/validation/test-runner.js",
     "test:tts": "jest --testNamePattern=\"TTS|TextToSpeech\"",
     "test:ai": "jest --testNamePattern=\"AI|Explanation\"",
     "lint": "eslint src/ tests/ --ext .js,.ts",
@@ -38,7 +39,7 @@
     "format": "prettier --write src/ tests/ *.js *.json *.md",
     "format:check": "prettier --check src/ tests/ *.js *.json *.md",
     "typecheck": "tsc --noEmit",
-    "validate": "npm run lint && npm run format:check && npm run typecheck",
+    "validate": "npm run lint && npm run format:check && npm run typecheck && npm run test:validation",
     "audit": "npm audit && npm audit fix",
     "audit:security": "npm audit --audit-level moderate",
     "validate:manifest": "web-ext lint --source-dir dist/chrome --self-hosted",
@@ -59,6 +60,7 @@
     "docs": "npm run docs:generate && npm run docs:serve",
     "docs:generate": "jsdoc -c jsdoc.config.json",
     "docs:serve": "http-server docs/generated -p 8080",
+    "serve:test": "http-server tests/e2e/fixtures -p 8080 --cors",
     "release": "npm run build:all && npm run test && npm run package:all",
     "release:major": "npm version major && npm run release",
     "release:minor": "npm version minor && npm run release",
@@ -108,13 +110,24 @@
   },
   "devDependencies": {
     "@babel/core": "^7.22.0",
+    "@babel/plugin-proposal-class-properties": "^7.18.6",
+    "@babel/plugin-proposal-private-methods": "^7.18.6",
+    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
+    "@babel/plugin-transform-arrow-functions": "^7.27.1",
+    "@babel/plugin-transform-async-to-generator": "^7.27.1",
+    "@babel/plugin-transform-class-properties": "^7.27.1",
+    "@babel/plugin-transform-classes": "^7.28.3",
+    "@babel/plugin-transform-modules-commonjs": "^7.27.1",
+    "@babel/plugin-transform-private-methods": "^7.27.1",
     "@babel/preset-env": "^7.22.0",
+    "@playwright/test": "^1.55.0",
     "@types/chrome": "^0.0.243",
     "@types/firefox-webext-browser": "^111.0.0",
     "@types/jest": "^29.5.0",
     "@types/webextension-polyfill": "^0.10.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
+    "autoprefixer": "^10.4.21",
     "babel-loader": "^9.1.0",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^11.0.0",
@@ -123,7 +136,6 @@
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-jest": "^27.2.0",
     "eslint-plugin-prettier": "^5.0.0",
-    "eslint-plugin-webextensions": "^0.3.0",
     "file-loader": "^6.2.0",
     "html-loader": "^4.2.0",
     "html-webpack-plugin": "^5.5.0",
@@ -135,6 +147,7 @@
     "jsdoc": "^4.0.0",
     "lint-staged": "^13.2.0",
     "mini-css-extract-plugin": "^2.7.0",
+    "playwright": "^1.55.0",
     "prettier": "^3.0.0",
     "puppeteer": "^20.8.0",
     "rimraf": "^5.0.0",
@@ -144,13 +157,12 @@
     "web-ext": "^7.7.0",
     "webpack": "^5.88.0",
     "webpack-bundle-analyzer": "^4.9.0",
-    "webpack-cli": "^5.1.0",
-    "webstore-upload-cli": "^2.1.0"
+    "webpack-cli": "^5.1.0"
   },
   "optionalDependencies": {
+    "@playwright/test": "^1.36.0",
     "playwright": "^1.36.0",
-    "selenium-webdriver": "^4.11.0",
-    "@playwright/test": "^1.36.0"
+    "selenium-webdriver": "^4.11.0"
   },
   "browserslist": [
     "Chrome >= 88",
@@ -187,7 +199,9 @@
   "webExt": {
     "sourceDir": "dist/firefox",
     "run": {
-      "startUrl": ["https://example.com"]
+      "startUrl": [
+        "https://example.com"
+      ]
     },
     "lint": {
       "output": "json"

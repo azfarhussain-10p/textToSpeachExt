@@ -7,11 +7,15 @@ pnpm-debug.log*
 
 # Build Output and Distribution
 dist/
-build/
 out/
 *.zip
 *.crx
 *.xpi
+
+# Keep build/ config directory but ignore any cache files in it
+build/**/*.cache
+build/**/temp/
+build/**/tmp/
 
 # Environment Variables and Secrets (keeping .env tracked for project configuration)
 .env.local
@@ -47,10 +51,19 @@ desktop.ini
 .vim/
 .netrwhist
 
+# Keep .vscode/settings.json if it exists for project-specific settings
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+
 # Serena (MCP Server) Files
 .serena/
 .serena/memories/
 .serena/project.yml
+
+# Claude Code Files
+.claude/logs/
+.claude/memories/
 
 # Temporary Files
 *.tmp
@@ -87,6 +100,11 @@ test-results.xml
 .next/
 .nuxt/
 .vuepress/dist/
+.babel-cache/
+.terser-cache/
+*.tsbuildinfo
+.eslintcache
+.stylelintcache
 
 # Extension Specific Files
 # Packed extension files
@@ -155,10 +173,11 @@ docs/.docusaurus/
 _site/
 
 # Miscellaneous
-.eslintcache
-.stylelintcache
 *.tgz
 *.tar.gz
+
+# PostCSS and CSS Processing
+.postcss-cache/
 
 # Platform Specific
 # Windows
@@ -178,9 +197,15 @@ _site/
 # Manifest backup files
 manifest.json.bak
 manifest.v2.json.bak
+manifest.*.json.bak
 
-# Source maps in production
-*.map
+# Source maps in production (keep in development)
+dist/**/*.map
+releases/**/*.map
+
+# Browser-specific development files
+*.crx.unpacked/
+web-ext-artifacts/
 
 # Temporary extension files during development
 extension-temp/
@@ -231,3 +256,50 @@ output/reports/validation/npm-audit_*.json
 output/reports/validation/npm-outdated_*.json
 output/reports/validation/package-analysis_*.md
 output/reports/validation/package-data_*.json
+
+# Modern Build Tools and Cache
+.swc/
+.turbo/
+.vite/
+.rollup.cache/
+
+# Jest and Testing
+jest-coverage/
+coverage-final.json
+junit.xml
+
+# Playwright specific
+playwright/.cache/
+test-results/
+playwright-results/
+
+# TypeScript
+*.tsbuildinfo
+
+# Babel
+.babel-cache/
+
+# webpack-bundle-analyzer
+webpack-stats.json
+bundlestats.json
+
+# PnP (Yarn 2+)
+.pnp/
+.pnp.js
+.pnp.cjs
+.yarn/
+
+# Modern package managers
+.pnpm-store/
+.store/
+
+# Project-specific ignores based on current structure
+# Keep .claude/ config files but ignore runtime files
+!.claude/agents/
+!.claude/commands/
+!.claude/examples/
+!.claude/hooks/
+!.claude/settings.local.json
+
+# Husky Git Hooks
+.husky/_/

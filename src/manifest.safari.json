@@ -1,0 +1,49 @@
+{
+  "manifest_version": 2,
+  "name": "Intelligent TTS Extension",
+  "version": "1.0.0",
+  "description": "Convert any web text to speech with AI-powered explanations. Supports 15+ languages with privacy-first design.",
+  "author": "TTS Extension Team",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": [
+    "storage",
+    "activeTab",
+    "<all_urls>",
+    "contextMenus"
+  ],
+  "background": {
+    "scripts": ["background/service-worker.js"],
+    "persistent": false
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content/content-script.js"],
+      "css": ["styles/overlay.css"],
+      "run_at": "document_end",
+      "all_frames": false
+    }
+  ],
+  "browser_action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "24": "icons/icon24.png",
+      "32": "icons/icon32.png"
+    },
+    "default_title": "Intelligent TTS Extension"
+  },
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
+  "web_accessible_resources": [
+    "styles/*.css",
+    "sounds/*.mp3"
+  ],
+  "content_security_policy": "script-src 'self'; object-src 'self'"
+}

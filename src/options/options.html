@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="script-src 'self'; object-src 'self'; style-src 'self' 'unsafe-inline';">
+  <title>TTS Extension Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <div class="logo">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+          </svg>
+          <div>
+            <h1>TTS Extension Settings</h1>
+            <p>Configure your text-to-speech and AI features</p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav-tabs">
+      <button class="nav-tab active" data-tab="general">General</button>
+      <button class="nav-tab" data-tab="voice">Voice & Speech</button>
+      <button class="nav-tab" data-tab="ai">AI Features</button>
+      <button class="nav-tab" data-tab="ui">Interface</button>
+      <button class="nav-tab" data-tab="privacy">Privacy</button>
+      <button class="nav-tab" data-tab="advanced">Advanced</button>
+    </nav>
+
+    <!-- Content -->
+    <main class="main-content">
+      <!-- General Tab -->
+      <section id="general" class="tab-content active">
+        <h2>General Settings</h2>
+        
+        <div class="setting-group">
+          <label class="setting-label">
+            <input type="checkbox" id="extensionEnabled" checked>
+            <span class="checkmark"></span>
+            Enable TTS Extension
+          </label>
+          <p class="setting-description">Turn the extension on or off globally</p>
+        </div>
+
+        <div class="setting-group">
+          <label class="setting-label">
+            <input type="checkbox" id="autoStart">
+            <span class="checkmark"></span>
+            Auto-start on page load
+          </label>
+          <p class="setting-description">Automatically initialize TTS when pages load</p>
+        </div>
+
+        <div class="setting-group">
+          <label class="setting-label">
+            <input type="checkbox" id="contextMenu" checked>
+            <span class="checkmark"></span>
+            Enable context menu
+          </label>
+          <p class="setting-description">Show "Speak" and "Explain" options in right-click menu</p>
+        </div>
+
+        <div class="setting-group">
+          <label for="defaultLanguage">Default Language:</label>
+          <select id="defaultLanguage" class="form-control">
+            <option value="en-US">English (US)</option>
+            <option value="en-GB">English (UK)</option>
+            <option value="es-ES">Spanish (Spain)</option>
+            <option value="es-MX">Spanish (Mexico)</option>
+            <option value="fr-FR">French</option>
+            <option value="de-DE">German</option>
+            <option value="it-IT">Italian</option>
+            <option value="pt-PT">Portuguese</option>
+            <option value="ru-RU">Russian</option>
+            <option value="ja-JP">Japanese</option>
+            <option value="ko-KR">Korean</option>
+            <option value="zh-CN">Chinese (Simplified)</option>
+            <option value="ar-SA">Arabic</option>
+            <option value="hi-IN">Hindi</option>
+            <option value="ur-PK">Urdu</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- Voice & Speech Tab -->
+      <section id="voice" class="tab-content">
+        <h2>Voice & Speech Settings</h2>
+        
+        <div class="setting-group">
+          <label for="voiceSelect">Preferred Voice:</label>
+          <select id="voiceSelect" class="form-control">
+            <option value="">Loading voices...</option>
+          </select>
+          <p class="setting-description">Choose your preferred text-to-speech voice</p>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-group">
+            <label for="speechRate">Speech Rate:</label>
+            <div class="slider-container">
+              <input type="range" id="speechRate" min="0.5" max="2" step="0.1" value="1" class="slider">
+              <span class="slider-value" id="speechRateValue">1.0x</span>
+            </div>
+            <p class="setting-description">How fast the speech should be</p>
+          </div>
+
+          <div class="setting-group">
+            <label for="speechPitch">Speech Pitch:</label>
+            <div class="slider-container">
+              <input type="range" id="speechPitch" min="0.5" max="2" step="0.1" value="1" class="slider">
+              <span class="slider-value" id="speechPitchValue">1.0</span>
+            </div>
+            <p class="setting-description">Voice pitch level</p>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <label for="speechVolume">Volume:</label>
+          <div class="slider-container">
+            <input type="range" id="speechVolume" min="0" max="1" step="0.1" value="1" class="slider">
+            <span class="slider-value" id="speechVolumeValue">100%</span>
+          </div>
+          <p class="setting-description">Speech volume level</p>
+        </div>
+
+        <div class="setting-group">
+          <label class="setting-label">
+            <input type="checkbox" id="pauseOnSwitch">
+            <span class="checkmark"></span>
+            Pause speech when switching tabs
+          </label>
+          <p class="setting-description">Automatically pause when you switch to another tab</p>
+        </div>
+
+        <div class="setting-group">
+          <label class="setting-label">
+            <input type="checkbox" id="highlightText">
+            <span class="checkmark"></span>
+            Highlight text while speaking
+          </label>
+          <p class="setting-description">Visual indication of current speech position</p>
+        </div>
+
+        <div class="setting-group">
+          <button id="testVoiceBtn" class="btn btn-secondary">Test Current Voice Settings</button>
+        </div>
+      </section>
+
+      <!-- AI Features Tab -->
+      <section id="ai" class="tab-content">
+        <h2>AI Features</h2>
+        
+        <div class="setting-group">
+          <label class="setting-label">
+            <input type="checkbox" id="aiEnabled">
+            <span class="checkmark"></span>
+            Enable AI Explanations
+          </label>
+          <p class="setting-description">Get intelligent explanations for selected text using AI services</p>
+        </div>
+
+        <div id="aiSettings" style="display: none;">
+          <div class="setting-group">
+            <label for="aiProvider">AI Provider:</label>
+            <select id="aiProvider" class="form-control">
+              <option value="groq">Groq (Free - Recommended)</option>
+              <option value="claude">Claude API (Premium)</option>
+            </select>
+            <p class="setting-description">Choose your AI explanation provider</p>
+          </div>
+
+          <div class="setting-group">
+            <label for="explanationStyle">Explanation Style:</label>
+            <select id="explanationStyle" class="form-control">
+              <option value="simple">Simple & Clear</option>
+              <option value="detailed">Detailed & Comprehensive</option>
+              <option value="academic">Academic & Technical</option>
+              <option value="conversational">Conversational & Friendly</option>
+            </select>
+          </div>
+
+          <div class="setting-group">
+            <label for="explanationLength">Explanation Length:</label>
+            <select id="explanationLength" class="form-control">
+              <option value="short">Short (1-2 sentences)</option>
+              <option value="medium">Medium (1 paragraph)</option>
+              <option value="long">Long (Detailed explanation)</option>
+            </select>
+          </div>
+
+          <div class="setting-group api-key-group">
+            <label for="groqApiKey">Groq API Key:</label>
+            <div class="api-key-input">
+              <input type="password" id="groqApiKey" class="form-control" placeholder="Enter your Groq API key">
+              <button type="button" class="btn btn-link toggle-password" data-target="groqApiKey">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </div>
+            <p class="setting-description">Free API key from <a href="https://console.groq.com" target="_blank">console.groq.com</a></p>
+          </div>
+
+          <div class="setting-group api-key-group">
+            <label for="claudeApiKey">Claude API Key (Optional):</label>
+            <div class="api-key-input">
+              <input type="password" id="claudeApiKey" class="form-control" placeholder="Enter your Claude API key">
+              <button type="button" class="btn btn-link toggle-password" data-target="claudeApiKey">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </div>
+            <p class="setting-description">Premium API key from <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></p>
+          </div>
+
+          <div class="setting-group">
+            <button id="testAiBtn" class="btn btn-secondary">Test AI Explanation</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Interface Tab -->
+      <section id="ui" class="tab-content">
+        <h2>Interface Settings</h2>
+        
+        <div class="setting-group">
+          <label for="overlayPosition">Overlay Position:</label>
+          <select id="overlayPosition" class="form-control">
+            <option value="bottom-right">Bottom Right</option>
+            <option value="bottom-left">Bottom Left</option>
+            <option value="top-right">Top Right</option>
+            <option value="top-left">Top Left</option>
+            <option value="center">Center</option>
+          </select>
+          <p class="setting-description">Where the TTS overlay appears when you select text</p>
+        </div>
+
+        <div class="setting-group">
+          <label for="uiTheme">Theme:</label>
+          <select id="uiTheme" class="form-control">
+            <option value="auto">Auto (Follow System)</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+            <option value="high-contrast">High Contrast</option>
+          </select>
+        </div>
+
+        <div class="setting-group">
+          <label class="setting-label">
+            <input type="checkbox" id="keyboardShortcuts" checked>
+            <span class="checkmark"></span>
+            Enable keyboard shortcuts
+          </label>
+          <p class="setting-description">Use Ctrl+Shift+S to speak, Ctrl+Shift+E to explain</p>
+        </div>
+
+        <div class="setting-group">
+          <label class="setting-label">
+            <input type="checkbox" id="animationsEnabled" checked>
+            <span class="checkmark"></span>
+            Enable animations
+          </label>
+          <p class="setting-description">Smooth transitions and animations in the interface</p>
+        </div>
+
+        <div class="setting-group">
+          <label for="overlaySize">Overlay Size:</label>
+          <select id="overlaySize" class="form-control">
+            <option value="small">Small</option>
+            <option value="medium">Medium</option>
+            <option value="large">Large</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- Privacy Tab -->
+      <section id="privacy" class="tab-content">
+        <h2>Privacy & Data Settings</h2>
+        
+        <div class="privacy-notice">
+          <h3>🔒 Your Privacy Matters</h3>
+          <p>This extension is designed with privacy in mind. Here's what you should know:</p>
+          <ul>
+            <li>Text is only sent to AI services when you explicitly request explanations</li>
+            <li>No personal data is collected or stored permanently</li>
+            <li>API keys are stored locally on your device</li>
+            <li>Usage statistics are kept local and anonymous</li>
+          </ul>
+        </div>
+
+        <div class="setting-group">
+          <label class="setting-label">
+            <input type="checkbox" id="aiDataConsent">
+            <span class="checkmark"></span>
+            Consent to AI data processing
+          </label>
+          <p class="setting-description">Allow selected text to be sent to AI providers for explanations</p>
+        </div>
+
+        <div class="setting-group">
+          <label class="setting-label">
+            <input type="checkbox" id="usageAnalytics">
+            <span class="checkmark"></span>
+            Anonymous usage statistics
+          </label>
+          <p class="setting-description">Help improve the extension by sharing anonymous usage data</p>
+        </div>
+
+        <div class="setting-group">
+          <label class="setting-label">
+            <input type="checkbox" id="errorReporting">
+            <span class="checkmark"></span>
+            Error reporting
+          </label>
+          <p class="setting-description">Automatically report errors to help fix bugs</p>
+        </div>
+
+        <div class="setting-group">
+          <button id="clearDataBtn" class="btn btn-danger">Clear All Stored Data</button>
+          <p class="setting-description">Remove all settings, usage stats, and cached data</p>
+        </div>
+
+        <div class="setting-group">
+          <button id="exportSettingsBtn" class="btn btn-secondary">Export Settings</button>
+          <button id="importSettingsBtn" class="btn btn-secondary">Import Settings</button>
+          <input type="file" id="settingsFileInput" accept=".json" style="display: none;">
+        </div>
+      </section>
+
+      <!-- Advanced Tab -->
+      <section id="advanced" class="tab-content">
+        <h2>Advanced Settings</h2>
+        
+        <div class="setting-group">
+          <label for="maxTextLength">Maximum text length for TTS:</label>
+          <div class="slider-container">
+            <input type="range" id="maxTextLength" min="100" max="5000" step="100" value="2000" class="slider">
+            <span class="slider-value" id="maxTextLengthValue">2000 chars</span>
+          </div>
+          <p class="setting-description">Longer text will be split into chunks</p>
+        </div>
+
+        <div class="setting-group">
+          <label for="chunkSize">Text chunk size:</label>
+          <div class="slider-container">
+            <input type="range" id="chunkSize" min="50" max="500" step="50" value="200" class="slider">
+            <span class="slider-value" id="chunkSizeValue">200 chars</span>
+          </div>
+          <p class="setting-description">Size of each speech chunk for long text</p>
+        </div>
+
+        <div class="setting-group">
+          <label for="retryAttempts">API retry attempts:</label>
+          <select id="retryAttempts" class="form-control">
+            <option value="1">1 attempt</option>
+            <option value="2">2 attempts</option>
+            <option value="3" selected>3 attempts</option>
+            <option value="5">5 attempts</option>
+          </select>
+        </div>
+
+        <div class="setting-group">
+          <label class="setting-label">
+            <input type="checkbox" id="debugMode">
+            <span class="checkmark"></span>
+            Debug mode
+          </label>
+          <p class="setting-description">Enable detailed logging for troubleshooting</p>
+        </div>
+
+        <div class="setting-group">
+          <label class="setting-label">
+            <input type="checkbox" id="betaFeatures">
+            <span class="checkmark"></span>
+            Enable beta features
+          </label>
+          <p class="setting-description">Try experimental features (may be unstable)</p>
+        </div>
+
+        <div class="setting-group">
+          <button id="resetSettingsBtn" class="btn btn-danger">Reset to Defaults</button>
+          <p class="setting-description">Reset all settings to their default values</p>
+        </div>
+
+        <div class="debug-info">
+          <h3>Debug Information</h3>
+          <textarea id="debugInfo" readonly class="debug-textarea"></textarea>
+          <button id="copyDebugBtn" class="btn btn-secondary">Copy Debug Info</button>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-links">
+          <a href="https://github.com/azfarhussain-10p/textToSpeachExt" target="_blank">GitHub</a>
+          <a href="https://github.com/azfarhussain-10p/textToSpeachExt#help" target="_blank">Help</a>
+          <a href="https://github.com/azfarhussain-10p/textToSpeachExt/blob/main/PRIVACY.md" target="_blank">Privacy Policy</a>
+          <a href="https://github.com/azfarhussain-10p/textToSpeachExt/issues" target="_blank">Report Bug</a>
+        </div>
+        <div class="version-info">
+          Version <span id="versionNumber">1.0.0</span>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Status notification -->
+    <div id="notification" class="notification" style="display: none;">
+      <span class="notification-text"></span>
+      <button class="notification-close">&times;</button>
+    </div>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>
