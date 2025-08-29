@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TTS Overlay</title>
+    <link rel="stylesheet" href="overlay.css">
+</head>
+<body>
+    <!-- Main overlay container -->
+    <div id="tts-overlay" class="tts-overlay" role="dialog" aria-labelledby="tts-title" aria-modal="true" tabindex="-1">
+        
+        <!-- Header with title and close button -->
+        <div class="tts-header">
+            <h3 id="tts-title" class="tts-title">
+                <span class="tts-icon">🔊</span>
+                Text-to-Speech
+            </h3>
+            <button id="tts-close" class="tts-close-btn" aria-label="Close TTS overlay" title="Close (Esc)">
+                <span class="tts-close-icon">×</span>
+            </button>
+        </div>
+
+        <!-- Text preview section -->
+        <div class="tts-text-section">
+            <div class="tts-text-preview" id="tts-text-preview" role="region" aria-label="Selected text">
+                <div class="tts-text-content" id="tts-text-content"></div>
+                <div class="tts-text-stats" id="tts-text-stats" aria-live="polite"></div>
+            </div>
+        </div>
+
+        <!-- Main control buttons -->
+        <div class="tts-controls">
+            <div class="tts-control-group tts-playback-controls" role="group" aria-label="Playback controls">
+                <button id="tts-play" class="tts-btn tts-btn-primary" aria-label="Play text" title="Play (Ctrl+Shift+S)">
+                    <span class="tts-icon">▶</span>
+                    <span class="tts-btn-text">Play</span>
+                </button>
+                <button id="tts-pause" class="tts-btn tts-btn-secondary" aria-label="Pause speech" title="Pause" disabled>
+                    <span class="tts-icon">⏸</span>
+                    <span class="tts-btn-text">Pause</span>
+                </button>
+                <button id="tts-stop" class="tts-btn tts-btn-secondary" aria-label="Stop speech" title="Stop" disabled>
+                    <span class="tts-icon">⏹</span>
+                    <span class="tts-btn-text">Stop</span>
+                </button>
+            </div>
+
+            <!-- Progress bar -->
+            <div class="tts-progress-section" id="tts-progress-section" hidden>
+                <div class="tts-progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                    <div class="tts-progress-fill" id="tts-progress-fill"></div>
+                </div>
+                <div class="tts-progress-text" id="tts-progress-text" aria-live="polite"></div>
+            </div>
+        </div>
+
+        <!-- Settings section -->
+        <div class="tts-settings" id="tts-settings">
+            <div class="tts-settings-header">
+                <button id="tts-settings-toggle" class="tts-settings-toggle" aria-expanded="false" aria-controls="tts-settings-content">
+                    <span class="tts-icon">⚙️</span>
+                    <span>Settings</span>
+                    <span class="tts-chevron">▼</span>
+                </button>
+            </div>
+            
+            <div class="tts-settings-content" id="tts-settings-content" hidden>
+                <div class="tts-setting-group">
+                    <label for="tts-voice" class="tts-setting-label">Voice:</label>
+                    <select id="tts-voice" class="tts-select" aria-describedby="tts-voice-help">
+                        <option value="">Loading voices...</option>
+                    </select>
+                    <div id="tts-voice-help" class="tts-setting-help">Choose the voice for speech synthesis</div>
+                </div>
+
+                <div class="tts-setting-group">
+                    <label for="tts-rate" class="tts-setting-label">Speed:</label>
+                    <div class="tts-range-container">
+                        <input type="range" id="tts-rate" class="tts-range" min="0.5" max="2.0" step="0.1" value="1.0" aria-describedby="tts-rate-help">
+                        <span class="tts-range-value" id="tts-rate-value">1.0x</span>
+                    </div>
+                    <div id="tts-rate-help" class="tts-setting-help">Adjust speech speed (0.5x - 2.0x)</div>
+                </div>
+
+                <div class="tts-setting-group">
+                    <label for="tts-pitch" class="tts-setting-label">Pitch:</label>
+                    <div class="tts-range-container">
+                        <input type="range" id="tts-pitch" class="tts-range" min="0.5" max="2.0" step="0.1" value="1.0" aria-describedby="tts-pitch-help">
+                        <span class="tts-range-value" id="tts-pitch-value">1.0x</span>
+                    </div>
+                    <div id="tts-pitch-help" class="tts-setting-help">Adjust voice pitch (0.5x - 2.0x)</div>
+                </div>
+
+                <div class="tts-setting-group">
+                    <label for="tts-volume" class="tts-setting-label">Volume:</label>
+                    <div class="tts-range-container">
+                        <input type="range" id="tts-volume" class="tts-range" min="0.0" max="1.0" step="0.1" value="1.0" aria-describedby="tts-volume-help">
+                        <span class="tts-range-value" id="tts-volume-value">100%</span>
+                    </div>
+                    <div id="tts-volume-help" class="tts-setting-help">Adjust speech volume (0% - 100%)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI explanation section -->
+        <div class="tts-ai-section" id="tts-ai-section">
+            <div class="tts-ai-controls">
+                <button id="tts-explain" class="tts-btn tts-btn-ai" aria-describedby="tts-ai-help">
+                    <span class="tts-icon">🤖</span>
+                    <span class="tts-btn-text">Get AI Explanation</span>
+                </button>
+                
+                <div class="tts-ai-level-selector" id="tts-ai-level-selector">
+                    <label for="tts-explanation-level" class="tts-sr-only">Explanation level</label>
+                    <select id="tts-explanation-level" class="tts-select tts-select-small">
+                        <option value="simple">Simple</option>
+                        <option value="detailed">Detailed</option>
+                        <option value="technical">Technical</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div id="tts-ai-help" class="tts-setting-help">Get intelligent explanations using AI services</div>
+            
+            <div class="tts-explanation-container" id="tts-explanation-container" hidden>
+                <div class="tts-explanation-header">
+                    <span class="tts-explanation-title">AI Explanation</span>
+                    <button id="tts-explanation-close" class="tts-explanation-close" aria-label="Close explanation">×</button>
+                </div>
+                <div class="tts-explanation-content" id="tts-explanation" role="region" aria-live="polite"></div>
+                <div class="tts-explanation-footer" id="tts-explanation-footer"></div>
+                <div class="tts-explanation-actions">
+                    <button id="tts-speak-explanation" class="tts-btn tts-btn-small" title="Speak explanation">
+                        <span class="tts-icon">🔊</span>
+                        Speak
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status and loading indicators -->
+        <div class="tts-status" id="tts-status" role="status" aria-live="polite"></div>
+        
+        <div class="tts-loading" id="tts-loading" hidden>
+            <div class="tts-spinner"></div>
+            <span class="tts-loading-text" id="tts-loading-text">Processing...</span>
+        </div>
+
+        <!-- Error messages -->
+        <div class="tts-error" id="tts-error" role="alert" aria-live="assertive" hidden>
+            <div class="tts-error-content">
+                <span class="tts-error-icon">⚠️</span>
+                <div class="tts-error-message" id="tts-error-message"></div>
+                <button class="tts-error-close" id="tts-error-close" aria-label="Close error">×</button>
+            </div>
+        </div>
+
+        <!-- Footer with keyboard shortcuts info -->
+        <div class="tts-footer">
+            <button id="tts-shortcuts-toggle" class="tts-footer-btn" aria-expanded="false">
+                <span class="tts-icon">⌨️</span>
+                <span>Shortcuts</span>
+            </button>
+            
+            <div class="tts-shortcuts" id="tts-shortcuts" hidden>
+                <div class="tts-shortcut-item">
+                    <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd> : Speak selection
+                </div>
+                <div class="tts-shortcut-item">
+                    <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>T</kbd> : Toggle overlay
+                </div>
+                <div class="tts-shortcut-item">
+                    <kbd>Esc</kbd> : Close overlay
+                </div>
+                <div class="tts-shortcut-item">
+                    <kbd>Space</kbd> : Play/Pause
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load overlay JavaScript -->
+    <script src="../services/tts-service.js"></script>
+    <script src="../services/ai-service.js"></script>
+    <script src="../services/groq-client.js"></script>
+    <script src="../services/claude-client.js"></script>
+    <script src="../utils/rate-limiter.js"></script>
+    <script src="../utils/text-highlighter.js"></script>
+    <script src="overlay.js"></script>
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligent TTS Extension</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="popup-container">
+        <!-- Header -->
+        <div class="popup-header">
+            <div class="popup-logo">
+                <span class="popup-icon">🔊</span>
+                <h1 class="popup-title">TTS Extension</h1>
+            </div>
+            <div class="popup-version" id="popup-version">v1.0.0</div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="popup-section">
+            <h2 class="popup-section-title">Quick Actions</h2>
+            <div class="popup-actions">
+                <button class="popup-btn popup-btn-primary" id="btn-speak-selection">
+                    <span class="popup-btn-icon">🔊</span>
+                    <span class="popup-btn-text">Speak Selection</span>
+                </button>
+                <button class="popup-btn popup-btn-secondary" id="btn-test-voice">
+                    <span class="popup-btn-icon">🎤</span>
+                    <span class="popup-btn-text">Test Voice</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Status Section -->
+        <div class="popup-section">
+            <h2 class="popup-section-title">Service Status</h2>
+            <div class="popup-status">
+                <div class="status-item">
+                    <div class="status-label">TTS Service</div>
+                    <div class="status-indicator" id="tts-status">
+                        <span class="status-dot status-loading"></span>
+                        <span class="status-text">Checking...</span>
+                    </div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">AI Services</div>
+                    <div class="status-indicator" id="ai-status">
+                        <span class="status-dot status-loading"></span>
+                        <span class="status-text">Checking...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Settings -->
+        <div class="popup-section">
+            <h2 class="popup-section-title">Quick Settings</h2>
+            <div class="popup-settings">
+                <div class="setting-item">
+                    <label for="voice-select" class="setting-label">Voice:</label>
+                    <select id="voice-select" class="setting-select">
+                        <option value="">Loading...</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label for="speed-range" class="setting-label">Speed:</label>
+                    <div class="range-container">
+                        <input type="range" id="speed-range" class="setting-range" min="0.5" max="2.0" step="0.1" value="1.0">
+                        <span class="range-value" id="speed-value">1.0x</span>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label class="setting-label">
+                        <input type="checkbox" id="ai-enabled" class="setting-checkbox">
+                        <span class="checkbox-text">Enable AI Explanations</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Configuration Status -->
+        <div class="popup-section" id="api-section" style="display: none;">
+            <h2 class="popup-section-title">API Configuration</h2>
+            <div class="api-status">
+                <div class="api-item">
+                    <span class="api-name">Groq API</span>
+                    <span class="api-indicator" id="groq-indicator">
+                        <span class="status-dot status-unknown"></span>
+                    </span>
+                </div>
+                <div class="api-item">
+                    <span class="api-name">Claude API</span>
+                    <span class="api-indicator" id="claude-indicator">
+                        <span class="status-dot status-unknown"></span>
+                    </span>
+                </div>
+            </div>
+            <button class="popup-btn popup-btn-small" id="btn-configure-apis">
+                <span class="popup-btn-icon">⚙️</span>
+                <span class="popup-btn-text">Configure APIs</span>
+            </button>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="popup-section" id="activity-section" style="display: none;">
+            <h2 class="popup-section-title">Recent Activity</h2>
+            <div class="activity-list" id="activity-list">
+                <div class="activity-item">
+                    <div class="activity-text">No recent activity</div>
+                    <div class="activity-time"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="popup-footer">
+            <button class="popup-link-btn" id="btn-options">
+                <span class="popup-btn-icon">⚙️</span>
+                <span>Full Settings</span>
+            </button>
+            <button class="popup-link-btn" id="btn-shortcuts">
+                <span class="popup-btn-icon">⌨️</span>
+                <span>Shortcuts</span>
+            </button>
+            <button class="popup-link-btn" id="btn-help">
+                <span class="popup-btn-icon">❓</span>
+                <span>Help</span>
+            </button>
+        </div>
+
+        <!-- Shortcuts Panel (hidden by default) -->
+        <div class="shortcuts-panel" id="shortcuts-panel" style="display: none;">
+            <div class="shortcuts-header">
+                <h3>Keyboard Shortcuts</h3>
+                <button class="close-btn" id="close-shortcuts">×</button>
+            </div>
+            <div class="shortcuts-list">
+                <div class="shortcut-item">
+                    <span class="shortcut-keys">
+                        <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd>
+                    </span>
+                    <span class="shortcut-desc">Speak selected text</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="shortcut-keys">
+                        <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>T</kbd>
+                    </span>
+                    <span class="shortcut-desc">Toggle TTS overlay</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="shortcut-keys">
+                        <kbd>Esc</kbd>
+                    </span>
+                    <span class="shortcut-desc">Close overlay</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="shortcut-keys">
+                        <kbd>Space</kbd>
+                    </span>
+                    <span class="shortcut-desc">Play/Pause (in overlay)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading indicator -->
+        <div class="loading-overlay" id="loading-overlay" style="display: none;">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Initializing...</div>
+        </div>
+
+        <!-- Error display -->
+        <div class="error-banner" id="error-banner" style="display: none;">
+            <div class="error-content">
+                <span class="error-icon">⚠️</span>
+                <span class="error-text" id="error-text"></span>
+                <button class="error-close" id="error-close">×</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load popup JavaScript -->
+    <script src="../services/tts-service.js"></script>
+    <script src="../services/ai-service.js"></script>
+    <script src="../utils/browser-detection.js"></script>
+    <script src="popup.js"></script>
+</body>
+</html>

@@ -7,13 +7,14 @@ pnpm-debug.log*
 
 # Build Output and Distribution
 dist/
-build/
+build/output/
 out/
 *.zip
 *.crx
 *.xpi
 
-# Environment Variables and Secrets (keeping .env tracked for project configuration)
+# Environment Variables and Secrets
+.env
 .env.local
 .env.development.local
 .env.test.local
@@ -27,6 +28,7 @@ out/
 groq-api-key.txt
 claude-api-key.txt
 openai-api-key.txt
+anthropic-api-key.txt
 
 # Operating System Files
 .DS_Store
@@ -46,6 +48,12 @@ desktop.ini
 *~
 .vim/
 .netrwhist
+
+# Claude AI Assistant Files
+.claude/
+.claude/cache/
+.claude/logs/
+.claude/temp/
 
 # Serena (MCP Server) Files
 .serena/
@@ -204,7 +212,7 @@ e2e-results/
 # Sentry and Error Reporting
 .sentryclirc
 
-# Cursor IDE specific (mentioned in CLAUDE.md)
+# Cursor IDE specific
 .cursor/cache/
 .cursor/logs/
 
@@ -220,14 +228,30 @@ _locales/*/auto-generated.json
 analytics.json
 usage-stats.json
 
+# Release and Output directories
 releases/
-output/*
-output/reports/*
-output/reports/validation/*
-output/reports/validation/package-analysis_*.md
-output/reports/validation/package-data_*.json
-output/reports/validation/package-updates_*.log
-output/reports/validation/npm-audit_*.json
-output/reports/validation/npm-outdated_*.json
-output/reports/validation/package-analysis_*.md
-output/reports/validation/package-data_*.json
+output/
+output/reports/
+output/reports/validation/
+
+# Project-specific temporary files
+INSTALLATION-STATUS.md
+
+# Husky git hooks (keep the directory but ignore generated files)
+.husky/_
+
+# TypeScript
+*.tsbuildinfo
+
+# Jest
+.jest/
+
+# Webpack
+.webpack/
+
+# Bundle analyzer
+bundle-analyzer-report.html
+
+# Local development files
+local-config.json
+dev-config.json

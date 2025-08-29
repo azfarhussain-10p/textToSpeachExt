@@ -1,0 +1,78 @@
+{
+  "manifest_version": 3,
+  "name": "Intelligent TTS Extension",
+  "version": "1.0.0",
+  "description": "AI-powered text-to-speech with intelligent explanations for selected text on any website",
+  "author": "Azfar Hussain <azfarhussain.10p@gmail.com>",
+  
+  "permissions": [
+    "activeTab",
+    "storage",
+    "contextMenus",
+    "notifications",
+    "alarms"
+  ],
+  
+  "host_permissions": [
+    "https://api.groq.com/*",
+    "https://api.anthropic.com/*"
+  ],
+  
+  "background": {
+    "service_worker": "background/service-worker.js"
+  },
+  
+  "content_scripts": [{
+    "matches": ["<all_urls>"],
+    "js": ["content/content-script.js"],
+    "css": ["content/content-styles.css"],
+    "run_at": "document_end"
+  }],
+  
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "Intelligent TTS Extension",
+    "default_icon": {
+      "16": "assets/icons/icon16.png",
+      "32": "assets/icons/icon32.png",
+      "48": "assets/icons/icon48.png",
+      "128": "assets/icons/icon128.png"
+    }
+  },
+  
+  "icons": {
+    "16": "assets/icons/icon16.png",
+    "32": "assets/icons/icon32.png", 
+    "48": "assets/icons/icon48.png",
+    "128": "assets/icons/icon128.png"
+  },
+  
+  "web_accessible_resources": [{
+    "resources": [
+      "overlay/*",
+      "assets/*"
+    ],
+    "matches": ["<all_urls>"]
+  }],
+  
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self';"
+  },
+  
+  "commands": {
+    "toggle-tts": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+T",
+        "mac": "Command+Shift+T"
+      },
+      "description": "Toggle TTS overlay"
+    },
+    "speak-selection": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+S", 
+        "mac": "Command+Shift+S"
+      },
+      "description": "Speak selected text"
+    }
+  }
+}
