@@ -16,6 +16,7 @@ body {
   color: #1a1a1a;
   background: #ffffff;
   font-size: 14px;
+  height: 100vh;
 }
 
 /* Screen reader only text */
@@ -36,12 +37,11 @@ body {
   display: flex;
   flex-direction: column;
   width: 100%;
-  min-height: 200px;
-  max-height: 80vh;
+  height: 100vh;
   background: #ffffff;
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
+  overflow-y: auto;
   font-size: 14px;
 }
 
@@ -102,7 +102,7 @@ body {
   color: #212529;
   line-height: 1.6;
   margin-bottom: 8px;
-  max-height: 120px;
+  max-height: 300px;
   overflow-y: auto;
   word-wrap: break-word;
 }
@@ -117,7 +117,8 @@ body {
 /* Controls section */
 .tts-controls {
   padding: 20px;
-  border-bottom: 1px solid #e9ecef;
+  border-top: 1px solid #e9ecef;
+  background: #ffffff;
 }
 
 .tts-control-group {
@@ -658,5 +659,10 @@ body {
   .tts-loading,
   .tts-footer {
     background: #3a3a3a;
+  }
+  
+  .tts-controls {
+    background: #2d2d2d;
+    border-top-color: #4a4a4a;
   }
 }

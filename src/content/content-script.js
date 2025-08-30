@@ -290,17 +290,17 @@
         position: fixed !important;
         top: 20px !important;
         right: 20px !important;
-        width: 380px !important;
-        height: auto !important;
-        min-height: 250px !important;
-        max-height: 85vh !important;
+        width: 400px !important;
+        height: 600px !important;
+        min-height: 600px !important;
+        max-height: 95vh !important;
         border: none !important;
         border-radius: 12px !important;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
         background: white !important;
         z-index: 2147483647 !important;
         resize: both !important;
-        overflow: auto !important;
+        overflow: hidden !important;
       `;
 
       // Wait for iframe to load then send data

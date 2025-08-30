@@ -857,11 +857,19 @@
    * Handle word boundary highlighting during speech
    */
   function handleWordHighlight(event) {
+    console.log('🟡 Word highlight requested:', event, {
+      enabled: overlayState.highlighting.enabled,
+      highlighter: !!overlayState.highlighting.highlighter,
+      textContent: !!elements.textContent
+    });
+
     if (!overlayState.highlighting.enabled || !overlayState.highlighting.highlighter || !elements.textContent) {
+      console.log('🟡 Word highlighting skipped - requirements not met');
       return;
     }
 
     try {
+      console.log('🟡 Calling highlighter.highlightWordAt with:', event.charIndex, event.text?.substring(0, 50));
       overlayState.highlighting.highlighter.highlightWordAt(event.charIndex, event.text);
     } catch (error) {
       console.warn('Word highlighting error:', error);

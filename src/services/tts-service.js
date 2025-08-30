@@ -417,26 +417,38 @@ class TTSService {
   setupUtteranceEvents(utterance) {
     utterance.onboundary = (event) => {
       // Word/sentence boundaries - used for text highlighting
+      console.log('🔍 TTS boundary event:', event.name, 'at', event.charIndex, 'callbacks:', {
+        word: !!this.onWordBoundary,
+        sentence: !!this.onSentenceBoundary
+      });
+      
       if (event.name === 'word' && this.onWordBoundary) {
+        console.log('📍 Calling word boundary callback');
         this.onWordBoundary({
           charIndex: event.charIndex,
           text: utterance.text,
           name: event.name
         });
       } else if (event.name === 'sentence' && this.onSentenceBoundary) {
+        console.log('📍 Calling sentence boundary callback');
         this.onSentenceBoundary({
           charIndex: event.charIndex,
           text: utterance.text,
           name: event.name
         });
       }
-      
-      console.log('TTS boundary:', event.name, 'at', event.charIndex);
     };
     
     utterance.onmark = (event) => {
       // SSML marks - for advanced speech control
       console.log('TTS mark:', event.name);
+    };
+
+    // Test if boundary events are supported
+    const originalOnStart = utterance.onstart;
+    utterance.onstart = () => {
+      console.log('🎤 TTS started - testing boundary support');
+      if (originalOnStart) originalOnStart();
     };
   }
 

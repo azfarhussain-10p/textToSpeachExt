@@ -29,33 +29,7 @@
             </div>
         </div>
 
-        <!-- Main control buttons -->
-        <div class="tts-controls">
-            <div class="tts-control-group tts-playback-controls" role="group" aria-label="Playback controls">
-                <button id="tts-play" class="tts-btn tts-btn-primary" aria-label="Play text" title="Play (Ctrl+Shift+S)">
-                    <span class="tts-icon">▶</span>
-                    <span class="tts-btn-text">Play</span>
-                </button>
-                <button id="tts-pause" class="tts-btn tts-btn-secondary" aria-label="Pause speech" title="Pause" disabled>
-                    <span class="tts-icon">⏸</span>
-                    <span class="tts-btn-text">Pause</span>
-                </button>
-                <button id="tts-stop" class="tts-btn tts-btn-secondary" aria-label="Stop speech" title="Stop" disabled>
-                    <span class="tts-icon">⏹</span>
-                    <span class="tts-btn-text">Stop</span>
-                </button>
-            </div>
-
-            <!-- Progress bar -->
-            <div class="tts-progress-section" id="tts-progress-section" hidden>
-                <div class="tts-progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                    <div class="tts-progress-fill" id="tts-progress-fill"></div>
-                </div>
-                <div class="tts-progress-text" id="tts-progress-text" aria-live="polite"></div>
-            </div>
-        </div>
-
-        <!-- Settings section -->
+            <!-- Settings section -->
         <div class="tts-settings" id="tts-settings">
             <div class="tts-settings-header">
                 <button id="tts-settings-toggle" class="tts-settings-toggle" aria-expanded="false" aria-controls="tts-settings-content">
@@ -176,6 +150,32 @@
                 <div class="tts-shortcut-item">
                     <kbd>Space</kbd> : Play/Pause
                 </div>
+            </div>
+        </div>
+
+        <!-- Main control buttons - fixed at bottom -->
+        <div class="tts-controls">
+            <div class="tts-control-group tts-playback-controls" role="group" aria-label="Playback controls">
+                <button id="tts-play" class="tts-btn tts-btn-primary" aria-label="Play text" title="Play (Ctrl+Shift+S)">
+                    <span class="tts-icon">▶</span>
+                    <span class="tts-btn-text">Play</span>
+                </button>
+                <button id="tts-pause" class="tts-btn tts-btn-secondary" aria-label="Pause speech" title="Pause" disabled>
+                    <span class="tts-icon">⏸</span>
+                    <span class="tts-btn-text">Pause</span>
+                </button>
+                <button id="tts-stop" class="tts-btn tts-btn-secondary" aria-label="Stop speech" title="Stop" disabled>
+                    <span class="tts-icon">⏹</span>
+                    <span class="tts-btn-text">Stop</span>
+                </button>
+            </div>
+
+            <!-- Progress bar -->
+            <div class="tts-progress-section" id="tts-progress-section" hidden>
+                <div class="tts-progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                    <div class="tts-progress-fill" id="tts-progress-fill"></div>
+                </div>
+                <div class="tts-progress-text" id="tts-progress-text" aria-live="polite"></div>
             </div>
         </div>
     </div>
