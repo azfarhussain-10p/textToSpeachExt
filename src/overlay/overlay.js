@@ -36,8 +36,7 @@
    */
   async function initialize() {
     try {
-      console.log('🚀 TTS Overlay initializing...');
-
+  
       // Cache DOM elements
       cacheDOMElements();
 
@@ -60,7 +59,6 @@
       sendMessageToParent('OVERLAY_READY');
 
       overlayState.isInitialized = true;
-      console.log('✅ TTS Overlay initialized successfully');
 
     } catch (error) {
       console.error('❌ Overlay initialization failed:', error);
@@ -224,6 +222,7 @@
 
       // Update UI based on available services
       updateUIForAvailableServices();
+      
 
     } catch (error) {
       console.error('Service initialization error:', error);
@@ -406,21 +405,15 @@
    */
   function setupMessageListener() {
     window.addEventListener('message', (event) => {
-      console.log('📨 Overlay received message:', event.data);
-      console.log('📨 Message origin:', event.origin);
-      
       // Validate event data structure
       if (!event.data || typeof event.data !== 'object') {
-        console.log('📨 Ignoring non-object message');
         return; // Ignore non-object messages
       }
 
       const { type, data } = event.data;
-      console.log('📨 Message type:', type, 'data:', data);
 
       // Only process messages with a defined type
       if (!type) {
-        console.log('📨 Ignoring message without type');
         return; // Ignore messages without type
       }
 
@@ -442,32 +435,19 @@
    * Handle overlay initialization with text and options
    */
   async function handleInitOverlay(data) {
-    console.log('📝 Initializing overlay with data:', data);
-    
     const { text, options = {} } = data;
     
-    console.log('📝 Extracted text:', text?.substring(0, 100) + '...');
-    console.log('📝 Options:', options);
-    
     if (!text) {
-      console.error('❌ No text provided to overlay');
       showError('No text provided');
       return;
     }
 
     overlayState.text = text;
-    console.log('✅ Text stored in overlay state:', overlayState.text?.substring(0, 50) + '...');
 
     // Update UI with text
     displayText(text);
     
-    // Handle auto-actions (disabled auto-play due to browser restrictions)
-    if (options.autoPlay) {
-      console.log('🚀 Auto-play requested but disabled due to browser restrictions');
-      console.log('👆 Please click the Play button to start TTS');
-      // Note: Auto-play disabled because Chrome requires direct user interaction for speech synthesis
-    }
-    
+    // Handle auto-actions (auto-play disabled due to browser restrictions)
     if (options.autoExplain) {
       setTimeout(() => handleExplainRequest(), 500);
     }
@@ -521,44 +501,55 @@
    * Handle play button click
    */
   async function handlePlay() {
-    console.log('🎵 Play button clicked');
-    console.log('🔍 TTS service available:', !!overlayState.services.tts);
-    console.log('🔍 Text available:', !!overlayState.text);
-    console.log('🔍 Text content:', overlayState.text?.substring(0, 50) + '...');
-    console.log('🔍 Current settings:', overlayState.currentSettings);
+    if (!overlayState.services.tts) {
+      showError('TTS service not available');
+      return;
+    }
 
-    if (!overlayState.services.tts || !overlayState.text) {
-      const errorMsg = `TTS service not available or no text to speak (TTS: ${!!overlayState.services.tts}, Text: ${!!overlayState.text})`;
-      console.error('❌', errorMsg);
-      showError(errorMsg);
+    // If speech is paused, resume it instead of starting new speech
+    if (overlayState.isSpeaking && overlayState.isPaused) {
+      try {
+        overlayState.services.tts.resume();
+        return;
+      } catch (error) {
+        console.error('Resume error:', error);
+        showError('Failed to resume: ' + error.message);
+        return;
+      }
+    }
+
+    // Don't start new speech if already speaking
+    if (overlayState.isSpeaking && !overlayState.isPaused) {
+      return;
+    }
+
+    if (!overlayState.text) {
+      showError('No text available to speak');
       return;
     }
 
     try {
-      console.log('🔊 Starting TTS speech...');
       showLoading('Preparing speech...');
       
       // Initialize highlighting before starting speech
       if (overlayState.highlighting.enabled && overlayState.highlighting.highlighter && elements.textContent && overlayState.text) {
-        console.log('🟡 Pre-initializing text highlighting before TTS start');
-        console.log('🟡 Text element:', elements.textContent);
-        console.log('🟡 Text content for highlighting:', overlayState.text.substring(0, 50) + '...');
-        
         // Ensure the text element has the correct content
         if (elements.textContent.textContent !== overlayState.text) {
-          console.log('🟡 Synchronizing text content for highlighting');
           elements.textContent.textContent = overlayState.text;
         }
         
         overlayState.highlighting.highlighter.initializeHighlighting(elements.textContent, overlayState.text);
-        console.log('✅ Text highlighting pre-initialized successfully');
       }
       
+      // Set speaking state before TTS starts
+      overlayState.isSpeaking = true;
+      overlayState.isPaused = false;
+      updatePlaybackControls();
+      
       await overlayState.services.tts.speak(overlayState.text, overlayState.currentSettings);
-      console.log('✅ TTS speech completed');
       
     } catch (error) {
-      console.error('❌ Play error:', error);
+      console.error('Play error:', error);
       showError('Failed to play text: ' + error.message);
       hideLoading();
     }
@@ -568,8 +559,20 @@
    * Handle pause button click
    */
   function handlePause() {
-    if (overlayState.services.tts) {
+    if (!overlayState.services.tts) {
+      showError('TTS service not available');
+      return;
+    }
+
+    if (!overlayState.isSpeaking || overlayState.isPaused) {
+      return;
+    }
+
+    try {
       overlayState.services.tts.pause();
+    } catch (error) {
+      console.error('Pause error:', error);
+      showError('Failed to pause: ' + error.message);
     }
   }
 
@@ -577,8 +580,24 @@
    * Handle stop button click
    */
   function handleStop() {
-    if (overlayState.services.tts) {
+    if (!overlayState.services.tts) {
+      showError('TTS service not available');
+      return;
+    }
+
+    if (!overlayState.isSpeaking) {
+      return;
+    }
+
+    try {
       overlayState.services.tts.stop();
+      
+      // Manually trigger TTS end handler to update UI state
+      handleTTSEnd();
+      
+    } catch (error) {
+      console.error('Stop error:', error);
+      showError('Failed to stop: ' + error.message);
     }
     
     // Clean up text highlighting when manually stopped
@@ -611,12 +630,19 @@
     
     if (elements.settingsToggle) {
       elements.settingsToggle.setAttribute('aria-expanded', overlayState.ui.settingsExpanded);
+      
+      // Update the chevron direction
+      const chevron = elements.settingsToggle.querySelector('.tts-chevron');
+      if (chevron) {
+        chevron.textContent = overlayState.ui.settingsExpanded ? '▲' : '▼';
+      }
     }
 
     // Trigger resize
     requestAnimationFrame(() => {
-      const height = document.body.scrollHeight;
-      sendMessageToParent('OVERLAY_RESIZE', { height });
+      const height = Math.min(document.body.scrollHeight + 20, window.innerHeight * 0.9);
+      const width = Math.max(380, Math.min(500, document.body.scrollWidth + 40));
+      sendMessageToParent('OVERLAY_RESIZE', { height, width });
     });
   }
 
@@ -827,8 +853,6 @@
   // TTS Event Handlers
 
   function handleTTSStart() {
-    console.log('🎬 handleTTSStart called!');
-    
     overlayState.isSpeaking = true;
     overlayState.isPaused = false;
     
@@ -838,25 +862,12 @@
 
     // Initialize text highlighting for the current text
     if (overlayState.highlighting.enabled && overlayState.highlighting.highlighter && elements.textContent && overlayState.text) {
-      console.log('🟡 Initializing text highlighting for TTS start');
-      console.log('🟡 Text element:', elements.textContent);
-      console.log('🟡 Text content:', overlayState.text.substring(0, 50) + '...');
-      
       // Ensure the text element has the correct content
       if (elements.textContent.textContent !== overlayState.text) {
-        console.log('🟡 Synchronizing text content for highlighting');
         elements.textContent.textContent = overlayState.text;
       }
       
       overlayState.highlighting.highlighter.initializeHighlighting(elements.textContent, overlayState.text);
-      console.log('✅ Text highlighting initialized successfully');
-    } else {
-      console.log('🟡 Text highlighting initialization skipped:', {
-        enabled: overlayState.highlighting.enabled,
-        highlighter: !!overlayState.highlighting.highlighter,
-        textElement: !!elements.textContent,
-        text: !!overlayState.text
-      });
     }
   }
 
@@ -904,33 +915,13 @@
    * Handle word boundary highlighting during speech
    */
   function handleWordHighlight(event) {
-    console.log('🟡 Word highlight requested:', event, {
-      enabled: overlayState.highlighting.enabled,
-      highlighter: !!overlayState.highlighting.highlighter,
-      textContent: !!elements.textContent,
-      overlayText: !!overlayState.text
-    });
-
     if (!overlayState.highlighting.enabled || !overlayState.highlighting.highlighter || !elements.textContent || !overlayState.text) {
-      console.log('🟡 Word highlighting skipped - requirements not met', {
-        enabled: overlayState.highlighting.enabled,
-        highlighter: !!overlayState.highlighting.highlighter,
-        textElement: !!elements.textContent,
-        text: !!overlayState.text
-      });
       return;
     }
 
     try {
       // Use the original text from overlay state if event.text is not available
       const textToHighlight = event.text || overlayState.text;
-      console.log('🟡 Calling highlighter.highlightWordAt with:', {
-        charIndex: event.charIndex,
-        eventText: event.text?.substring(0, 50) || 'undefined',
-        overlayText: overlayState.text?.substring(0, 50) || 'undefined',
-        fallback: event.fallback || false
-      });
-      
       overlayState.highlighting.highlighter.highlightWordAt(event.charIndex, textToHighlight);
     } catch (error) {
       console.warn('Word highlighting error:', error);
@@ -941,22 +932,13 @@
    * Handle sentence boundary highlighting during speech
    */
   function handleSentenceHighlight(event) {
-    console.log('🟨 Sentence highlight requested:', event);
-    
     if (!overlayState.highlighting.enabled || !overlayState.highlighting.highlighter || !elements.textContent || !overlayState.text) {
-      console.log('🟨 Sentence highlighting skipped - requirements not met');
       return;
     }
 
     try {
       // Use the original text from overlay state if event.text is not available
       const textToHighlight = event.text || overlayState.text;
-      console.log('🟨 Calling highlighter.highlightSentenceAt with:', {
-        charIndex: event.charIndex,
-        eventText: event.text?.substring(0, 50) || 'undefined',
-        overlayText: overlayState.text?.substring(0, 50) || 'undefined'
-      });
-      
       overlayState.highlighting.highlighter.highlightSentenceAt(event.charIndex, textToHighlight);
     } catch (error) {
       console.warn('Sentence highlighting error:', error);
@@ -1081,6 +1063,9 @@
       window.parent.postMessage({ type, data }, '*');
     }
   }
+
+
+
 
   // Initialize when DOM is ready
   if (document.readyState === 'loading') {
