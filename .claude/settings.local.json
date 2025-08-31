@@ -13,7 +13,8 @@
       "mcp__serena__replace_symbol_body",
       "Bash(npm run build:chrome:*)",
       "mcp__serena__check_onboarding_performed",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "mcp__serena__insert_after_symbol"
     ],
     "deny": [],
     "ask": [],

@@ -44,10 +44,9 @@ class TTSService {
       await this.loadVoices();
       
       this.isInitialized = true;
-      console.log('✅ TTS Service initialized successfully');
       
     } catch (error) {
-      console.error('❌ TTS Service initialization failed:', error);
+      console.error('TTS Service initialization failed:', error);
       this.isInitialized = false;
       throw error;
     }
@@ -72,8 +71,6 @@ class TTSService {
         this.voices = this.synthesis.getVoices();
         
         if (this.voices.length > 0) {
-          console.log(`🎤 Loaded ${this.voices.length} TTS voices`);
-          this.logAvailableVoices();
           resolve(this.voices);
           return;
         }
@@ -128,21 +125,119 @@ class TTSService {
       
       // Start speech
       return new Promise((resolve, reject) => {
-        utterance.onend = () => {
+        let hasEnded = false;
+        let endCallbackTimer = null;
+        let reachedLastWord = false;
+        let stagnationCount = 0;
+        const maxStagnation = 10;
+        const startTime = Date.now();
+        
+        // Calculate word count for completion detection
+        const words = text.trim().split(/\s+/).filter(w => w.length > 0);
+        const totalWords = words.length;
+        
+        const handleEnd = () => {
+          if (hasEnded) return;
+          hasEnded = true;
+          
           this.currentUtterance = null;
-          if (this.onSpeakEnd) this.onSpeakEnd();
+          
+          if (endCallbackTimer) {
+            clearTimeout(endCallbackTimer);
+            endCallbackTimer = null;
+          }
+          
+          if (this.onSpeakEnd) {
+            this.onSpeakEnd();
+          }
           resolve();
         };
         
+        // Completion detection polling
+        const checkSpeechStatus = () => {
+          if (hasEnded) return;
+          
+          // Check if synthesis reports not speaking
+          const isActuallySpeaking = this.synthesis && this.synthesis.speaking;
+          const isActuallyPaused = this.synthesis && this.synthesis.paused;
+          
+          if (!isActuallySpeaking && !isActuallyPaused) {
+            handleEnd();
+            return;
+          }
+          
+          // Aggressive check after last word
+          if (reachedLastWord) {
+            stagnationCount++;
+            
+            if (stagnationCount >= maxStagnation || !isActuallySpeaking) {
+              handleEnd();
+              return;
+            }
+          }
+          
+          // Timeout fallback
+          const estimatedDuration = (totalWords / 2.5) * 1000;
+          const maxDuration = Math.max(estimatedDuration * 2, 15000);
+          
+          if (Date.now() - startTime > maxDuration) {
+            handleEnd();
+            return;
+          }
+          
+          // Schedule next check
+          const nextCheckInterval = reachedLastWord ? 100 : 200;
+          endCallbackTimer = setTimeout(checkSpeechStatus, nextCheckInterval);
+        };
+        
+        // Track word progress for last word detection
+        this.speechProgressCallback = (event) => {
+          if (hasEnded || event.name !== 'word' || event.charIndex === undefined) return;
+          
+          // Calculate current word index
+          let currentWordIndex = 0;
+          let charCount = 0;
+          
+          for (let i = 0; i < words.length; i++) {
+            if (charCount + words[i].length > event.charIndex) {
+              currentWordIndex = i;
+              break;
+            }
+            charCount += words[i].length + 1;
+          }
+          
+          // Activate aggressive detection on last word
+          if (currentWordIndex >= totalWords - 1 && !reachedLastWord) {
+            reachedLastWord = true;
+            stagnationCount = 0;
+            
+            // Immediate check after last word
+            setTimeout(() => {
+              if (!hasEnded) checkSpeechStatus();
+            }, 500);
+          }
+        };
+        
+        utterance.onend = handleEnd;
+        
         utterance.onerror = (event) => {
-          console.error('TTS error:', event);
+          hasEnded = true;
           this.currentUtterance = null;
+          
+          if (endCallbackTimer) {
+            clearTimeout(endCallbackTimer);
+            endCallbackTimer = null;
+          }
+          
           if (this.onSpeakError) this.onSpeakError(event);
           reject(new Error(`TTS failed: ${event.error}`));
         };
         
         utterance.onstart = () => {
           if (this.onSpeakStart) this.onSpeakStart();
+          
+          // Start completion detection
+          endCallbackTimer = setTimeout(checkSpeechStatus, 1000);
         };
         
         this.currentUtterance = utterance;
@@ -172,8 +267,6 @@ class TTSService {
       clearInterval(this.fallbackTimer);
       this.fallbackTimer = null;
     }
-    
-    console.log('🛑 TTS stopped and highlighting timers cleared');
   }
 
   /**
@@ -425,19 +518,12 @@ class TTSService {
   setupUtteranceEvents(utterance) {
     // Enhanced boundary event handling with fallback support
     utterance.onboundary = (event) => {
-      // Word/sentence boundaries - used for text highlighting
-      console.log('🔍 TTS boundary event:', {
-        name: event.name, 
-        charIndex: event.charIndex,
-        text: event.text ? event.text.substring(0, 50) + '...' : 'undefined',
-        callbacks: {
-          word: !!this.onWordBoundary,
-          sentence: !!this.onSentenceBoundary
-        }
-      });
+      // Call our speech progress callback for completion detection
+      if (this.speechProgressCallback) {
+        this.speechProgressCallback(event);
+      }
       
       if (event.name === 'word' && this.onWordBoundary) {
-        console.log('📍 Calling word boundary callback with charIndex:', event.charIndex);
         this.onWordBoundary({
           charIndex: event.charIndex,
           text: utterance.text,
@@ -445,7 +531,6 @@ class TTSService {
           event: event
         });
       } else if (event.name === 'sentence' && this.onSentenceBoundary) {
-        console.log('📍 Calling sentence boundary callback with charIndex:', event.charIndex);
         this.onSentenceBoundary({
           charIndex: event.charIndex,
           text: utterance.text,
@@ -457,7 +542,6 @@ class TTSService {
 
     // Fallback for browsers that don't support onboundary events
     if (!utterance.onboundary) {
-      console.warn('⚠️ Browser does not support onboundary events - using timer-based fallback');
       this.setupFallbackHighlighting(utterance);
     }
     
@@ -469,7 +553,6 @@ class TTSService {
     // Test if boundary events are supported
     const originalOnStart = utterance.onstart;
     utterance.onstart = () => {
-      console.log('🎤 TTS started - testing boundary support');
       if (originalOnStart) originalOnStart();
     };
   }
@@ -559,32 +642,6 @@ class TTSService {
     }
   }
 
-  /**
-   * Log available voices for debugging
-   */
-  logAvailableVoices() {
-    if (this.voices.length === 0) {
-      console.warn('⚠️ No TTS voices available');
-      return;
-    }
-    
-    console.log('🎤 Available TTS voices:');
-    this.voices.forEach((voice, index) => {
-      console.log(`  ${index + 1}. ${voice.name} (${voice.lang}) ${voice.default ? '[DEFAULT]' : ''}`);
-    });
-    
-    // Group by language for summary
-    const languageGroups = {};
-    this.voices.forEach(voice => {
-      const lang = voice.lang.split('-')[0];
-      if (!languageGroups[lang]) {
-        languageGroups[lang] = 0;
-      }
-      languageGroups[lang]++;
-    });
-    
-    console.log('📊 Voice summary by language:', languageGroups);
-  }
 
   /**
    * Get TTS service status
@@ -613,7 +670,6 @@ class TTSService {
    */
   setSentenceBoundaryCallback(callback) {
     this.onSentenceBoundary = callback;
-    console.log('📋 Sentence boundary callback set:', !!callback);
   }
 
   /**

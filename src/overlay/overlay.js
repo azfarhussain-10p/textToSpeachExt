@@ -202,21 +202,17 @@
         if (typeof AIService !== 'undefined' && AIService) {
           overlayState.services.ai = new AIService();
           await overlayState.services.ai.initialize();
-          console.log('✅ AI Service initialized');
         } else {
           throw new Error('AIService class not available');
         }
       } catch (error) {
-        console.warn('AI Service not available:', error.message);
         overlayState.services.ai = null;
       }
 
       // Initialize text highlighter
       if (typeof TextHighlighter !== 'undefined') {
         overlayState.highlighting.highlighter = new TextHighlighter();
-        console.log('✅ Text highlighter initialized');
       } else {
-        console.warn('TextHighlighter not available - text highlighting disabled');
         overlayState.highlighting.enabled = false;
       }
 
@@ -618,6 +614,7 @@
     sendMessageToParent('CLOSE_OVERLAY');
   }
 
+
   /**
    * Handle settings toggle
    */
@@ -951,8 +948,12 @@
    * Update playback control buttons based on state
    */
   function updatePlaybackControls() {
+    const playDisabled = overlayState.isSpeaking && !overlayState.isPaused;
+    const pauseDisabled = !overlayState.isSpeaking || overlayState.isPaused;
+    const stopDisabled = !overlayState.isSpeaking;
+    
     if (elements.playBtn) {
-      elements.playBtn.disabled = overlayState.isSpeaking && !overlayState.isPaused;
+      elements.playBtn.disabled = playDisabled;
       
       // Clear existing content safely
       while (elements.playBtn.firstChild) {
@@ -973,11 +974,11 @@
     }
     
     if (elements.pauseBtn) {
-      elements.pauseBtn.disabled = !overlayState.isSpeaking || overlayState.isPaused;
+      elements.pauseBtn.disabled = pauseDisabled;
     }
     
     if (elements.stopBtn) {
-      elements.stopBtn.disabled = !overlayState.isSpeaking;
+      elements.stopBtn.disabled = stopDisabled;
     }
   }
 
