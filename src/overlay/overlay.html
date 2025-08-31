@@ -8,7 +8,7 @@
 </head>
 <body>
     <!-- Main overlay container -->
-    <div id="tts-overlay" class="tts-overlay" role="dialog" aria-labelledby="tts-title" aria-modal="true" tabindex="-1">
+    <div id="tts-overlay" class="tts-overlay tts-scrollable overlay-container" role="dialog" aria-labelledby="tts-title" aria-modal="true" tabindex="-1">
         
         <!-- Header with title and close button -->
         <div class="tts-header">
@@ -24,7 +24,7 @@
         <!-- Text preview section -->
         <div class="tts-text-section">
             <div class="tts-text-preview" id="tts-text-preview" role="region" aria-label="Selected text">
-                <div class="tts-text-content" id="tts-text-content"></div>
+                <div class="tts-text-content tts-scrollable" id="tts-text-content"></div>
                 <div class="tts-text-stats" id="tts-text-stats" aria-live="polite"></div>
             </div>
         </div>
@@ -39,7 +39,7 @@
                 </button>
             </div>
             
-            <div class="tts-settings-content" id="tts-settings-content" hidden>
+            <div class="tts-settings-content tts-scrollable tts-settings-content" id="tts-settings-content" hidden>
                 <div class="tts-setting-group">
                     <label for="tts-voice" class="tts-setting-label">Voice:</label>
                     <select id="tts-voice" class="tts-select" aria-describedby="tts-voice-help">
@@ -102,7 +102,7 @@
                     <span class="tts-explanation-title">AI Explanation</span>
                     <button id="tts-explanation-close" class="tts-explanation-close" aria-label="Close explanation">×</button>
                 </div>
-                <div class="tts-explanation-content" id="tts-explanation" role="region" aria-live="polite"></div>
+                <div class="tts-explanation-content tts-scrollable tts-explanation-content" id="tts-explanation" role="region" aria-live="polite"></div>
                 <div class="tts-explanation-footer" id="tts-explanation-footer"></div>
                 <div class="tts-explanation-actions">
                     <button id="tts-speak-explanation" class="tts-btn tts-btn-small" title="Speak explanation">
@@ -137,7 +137,7 @@
                 <span>Shortcuts</span>
             </button>
             
-            <div class="tts-shortcuts" id="tts-shortcuts" hidden>
+            <div class="tts-shortcuts tts-scrollable tts-shortcuts-list" id="tts-shortcuts" hidden>
                 <div class="tts-shortcut-item">
                     <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd> : Speak selection
                 </div>

@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TTS Highlighting Workflow Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .test-title {
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #7c3aed;
+        }
+        
+        .status {
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            margin: 5px 0;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .status.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .test-text {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            line-height: 1.6;
+            user-select: text;
+            cursor: text;
+        }
+        
+        .mock-overlay {
+            position: fixed;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            width: 350px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            z-index: 10000;
+            display: none;
+        }
+        
+        .mock-overlay.show {
+            display: block;
+        }
+        
+        .overlay-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .overlay-title {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .text-content {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            line-height: 1.6;
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #e9ecef;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: #7c3aed;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #6d28d9;
+        }
+        
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #374151;
+        }
+        
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+        
+        .log-container {
+            margin-top: 20px;
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .log-entry {
+            margin-bottom: 5px;
+        }
+        
+        .log-entry.error {
+            color: #ff4444;
+        }
+        
+        .log-entry.warning {
+            color: #ffaa00;
+        }
+        
+        .log-entry.highlight {
+            color: #ffeb3b;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔊 TTS Highlighting Workflow Test</h1>
+    <p>This page tests the complete workflow from text selection to highlighting during TTS playback.</p>
+    
+    <!-- Test 1: Text Selection -->
+    <div class="test-container">
+        <h2 class="test-title">Test 1: Text Selection Simulation</h2>
+        <div class="status info">Select text below to simulate the extension workflow</div>
+        <div class="test-text" id="test-text-1">
+            <p>This is a sample text that demonstrates the Text-to-Speech highlighting functionality. When you select this text and click the TTS button, each word should be highlighted as it is spoken.</p>
+            
+            <p>The highlighting system should work smoothly with different types of content including paragraphs, sentences with punctuation, and various text structures.</p>
+        </div>
+        <button class="btn btn-primary" onclick="simulateTextSelection('test-text-1')">
+            📝 Simulate Text Selection
+        </button>
+    </div>
+    
+    <!-- Test 2: Long Text Content -->
+    <div class="test-container">
+        <h2 class="test-title">Test 2: Long Text with Multiple Paragraphs</h2>
+        <div class="status info">Test highlighting with longer content</div>
+        <div class="test-text" id="test-text-2">
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+            
+            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            
+            <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+        </div>
+        <button class="btn btn-primary" onclick="simulateTextSelection('test-text-2')">
+            📝 Simulate Long Text Selection
+        </button>
+    </div>
+    
+    <!-- Mock Overlay -->
+    <div class="mock-overlay" id="mock-overlay">
+        <div class="overlay-header">
+            <div class="overlay-title">🔊 Text to Speech</div>
+            <button class="close-btn" onclick="closeOverlay()">&times;</button>
+        </div>
+        
+        <div class="text-content" id="overlay-text-content">
+            <!-- Selected text will be displayed here -->
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-primary" onclick="startTTS()">
+                ▶️ Play
+            </button>
+            <button class="btn btn-secondary" onclick="stopTTS()">
+                ⏹️ Stop
+            </button>
+        </div>
+    </div>
+    
+    <!-- Console Log -->
+    <div class="test-container">
+        <h2 class="test-title">Debug Console</h2>
+        <div class="status info">Real-time logs of the highlighting workflow</div>
+        <div class="log-container" id="log-container">
+            <div class="log-entry">🚀 TTS Highlighting Workflow Test initialized</div>
+        </div>
+        <button class="btn btn-secondary" onclick="clearLogs()">Clear Logs</button>
+    </div>
+    
+    <!-- Load Required Scripts -->
+    <script src="../src/utils/text-highlighter.js"></script>
+    
+    <script>
+        // Mock TTS Service for testing
+        class MockTTSService {
+            constructor() {
+                this.highlighter = null;
+                this.isPlaying = false;
+                this.currentText = '';
+                this.wordBoundaryCallback = null;
+                this.sentenceBoundaryCallback = null;
+                this.startCallback = null;
+                this.endCallback = null;
+            }
+            
+            setWordBoundaryCallback(callback) {
+                this.wordBoundaryCallback = callback;
+            }
+            
+            setSentenceBoundaryCallback(callback) {
+                this.sentenceBoundaryCallback = callback;
+            }
+            
+            setEventCallbacks(callbacks) {
+                this.startCallback = callbacks.onStart;
+                this.endCallback = callbacks.onEnd;
+            }
+            
+            async speak(text) {
+                this.currentText = text;
+                this.isPlaying = true;
+                
+                log('🎵 Mock TTS: Starting speech synthesis', 'highlight');
+                
+                // Simulate TTS start
+                if (this.startCallback) {
+                    this.startCallback();
+                }
+                
+                // Simulate word boundaries during speech
+                await this.simulateWordBoundaries(text);
+                
+                // Simulate TTS end
+                this.isPlaying = false;
+                if (this.endCallback) {
+                    this.endCallback();
+                }
+                
+                log('✅ Mock TTS: Speech synthesis completed', 'highlight');
+            }
+            
+            async simulateWordBoundaries(text) {
+                const words = text.split(/\s+/);
+                let charIndex = 0;
+                
+                for (let i = 0; i < words.length; i++) {
+                    if (!this.isPlaying) break;
+                    
+                    const word = words[i];
+                    
+                    // Find the actual position in the text including spaces
+                    const wordStart = text.indexOf(word, charIndex);
+                    
+                    log(`🟡 Mock TTS: Word boundary at ${wordStart}: "${word}"`, 'highlight');
+                    
+                    // Simulate word boundary event
+                    if (this.wordBoundaryCallback) {
+                        this.wordBoundaryCallback({
+                            charIndex: wordStart,
+                            text: text,
+                            word: word
+                        });
+                    }
+                    
+                    // Update character index for next word
+                    charIndex = wordStart + word.length;
+                    
+                    // Simulate timing (150ms per word)
+                    await new Promise(resolve => setTimeout(resolve, 150));
+                }
+            }
+            
+            stop() {
+                this.isPlaying = false;
+                log('⏹️ Mock TTS: Speech stopped', 'warning');
+            }
+        }
+        
+        // Global state
+        let mockTTS = new MockTTSService();
+        let textHighlighter = new TextHighlighter();
+        let overlayTextElement = null;
+        let currentText = '';
+        
+        // Logging function
+        function log(message, type = 'info') {
+            const logContainer = document.getElementById('log-container');
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+            console.log(message);
+        }
+        
+        function clearLogs() {
+            const logContainer = document.getElementById('log-container');
+            logContainer.innerHTML = '<div class="log-entry">🚀 TTS Highlighting Workflow Test initialized</div>';
+        }
+        
+        // Simulate text selection
+        function simulateTextSelection(elementId) {
+            const textElement = document.getElementById(elementId);
+            const selectedText = textElement.textContent.trim();
+            
+            log(`📝 Text selected from element: ${elementId}`, 'info');
+            log(`📝 Selected text length: ${selectedText.length} characters`, 'info');
+            
+            // Show mock overlay with selected text
+            showOverlay(selectedText);
+        }
+        
+        function showOverlay(text) {
+            currentText = text;
+            overlayTextElement = document.getElementById('overlay-text-content');
+            
+            // Display text in overlay
+            overlayTextElement.textContent = text;
+            
+            document.getElementById('mock-overlay').classList.add('show');
+            
+            log('🔍 Overlay displayed with selected text', 'info');
+            log(`🔍 Text content element ready: ${!!overlayTextElement}`, 'info');
+        }
+        
+        function closeOverlay() {
+            document.getElementById('mock-overlay').classList.remove('show');
+            stopTTS();
+            log('❌ Overlay closed', 'info');
+        }
+        
+        function startTTS() {
+            if (!currentText || !overlayTextElement) {
+                log('❌ Cannot start TTS: Missing text or element', 'error');
+                return;
+            }
+            
+            log('🎵 Starting TTS with highlighting...', 'highlight');
+            
+            // Set up highlighting callbacks
+            mockTTS.setWordBoundaryCallback(handleWordHighlight);
+            mockTTS.setEventCallbacks({
+                onStart: handleTTSStart,
+                onEnd: handleTTSEnd
+            });
+            
+            // Start TTS
+            mockTTS.speak(currentText);
+        }
+        
+        function stopTTS() {
+            mockTTS.stop();
+            
+            // Clean up highlighting
+            if (textHighlighter) {
+                textHighlighter.cleanup();
+                log('🧹 Text highlighting cleaned up', 'info');
+            }
+        }
+        
+        // TTS event handlers (matching overlay.js implementation)
+        function handleTTSStart() {
+            log('🟡 TTS Started - Initializing highlighting', 'highlight');
+            
+            if (textHighlighter && overlayTextElement && currentText) {
+                log(`🟡 Initializing highlighting for element with text: "${currentText.substring(0, 50)}..."`, 'highlight');
+                
+                // Ensure text content is synchronized
+                if (overlayTextElement.textContent !== currentText) {
+                    log('🟡 Synchronizing text content for highlighting', 'warning');
+                    overlayTextElement.textContent = currentText;
+                }
+                
+                textHighlighter.initializeHighlighting(overlayTextElement, currentText);
+                log('✅ Text highlighting initialized successfully', 'highlight');
+            } else {
+                log('❌ Cannot initialize highlighting - missing requirements', 'error');
+            }
+        }
+        
+        function handleTTSEnd() {
+            log('🟡 TTS Ended - Cleaning up highlighting', 'highlight');
+            
+            if (textHighlighter) {
+                textHighlighter.cleanup();
+                log('✅ Text highlighting cleaned up successfully', 'highlight');
+            }
+        }
+        
+        function handleWordHighlight(event) {
+            log(`🟡 Word highlight at index ${event.charIndex}: "${event.word}"`, 'highlight');
+            
+            if (!textHighlighter || !overlayTextElement || !currentText) {
+                log('❌ Word highlighting failed - missing requirements', 'error');
+                return;
+            }
+            
+            try {
+                textHighlighter.highlightWordAt(event.charIndex, currentText);
+                log(`✅ Word highlighted successfully: "${event.word}"`, 'highlight');
+            } catch (error) {
+                log(`❌ Word highlighting error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Initialize test
+        log('🚀 Mock TTS Service initialized', 'info');
+        log('🚀 Text Highlighter initialized', 'info');
+        log('📝 Select text and click "Simulate Text Selection" to begin test', 'info');
+    </script>
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TTS Overlay Scrollbar Test</title>
+    <link rel="stylesheet" href="../src/overlay/overlay.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .test-title {
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #7c3aed;
+        }
+        
+        .status {
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            margin: 5px 0;
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .test-text {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔊 TTS Overlay Scrollbar Test</h1>
+    <p>This page tests the custom scrollbar implementation in the overlay context.</p>
+    
+    <!-- Test 1: Overlay Body Scrolling -->
+    <div class="test-container">
+        <h2 class="test-title">Test 1: Body Scrollbar (Full Page)</h2>
+        <div class="status">✓ Body should have custom purple scrollbar</div>
+        <div class="test-text">
+            <p>Scroll down to see the custom scrollbar in action on the body element.</p>
+        </div>
+    </div>
+    
+    <!-- Test 2: Text Content Scrolling -->
+    <div class="test-container">
+        <h2 class="test-title">Test 2: Text Content Scrolling</h2>
+        <div class="status">✓ Text content should have custom scrollbar with proper height</div>
+        <div class="tts-text-content tts-scrollable" style="height: 200px; background: #f8f9fa; padding: 15px; border-radius: 8px;">
+            <h4>This is the TTS Text Content Area</h4>
+            <p>This container mimics the text content area in the TTS overlay where selected text is displayed for speech synthesis.</p>
+            
+            <p><strong>Features being tested:</strong></p>
+            <ul>
+                <li>Custom purple gradient scrollbar</li>
+                <li>Floating thumb effect with background-clip</li>
+                <li>Smooth hover animations</li>
+                <li>Proper minimum thumb height (30px)</li>
+                <li>Rounded corners and shadows</li>
+            </ul>
+            
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+            
+            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            
+            <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+            
+            <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
+            
+            <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.</p>
+            
+            <p>Similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio.</p>
+        </div>
+    </div>
+    
+    <!-- Test 3: Settings Content -->
+    <div class="test-container">
+        <h2 class="test-title">Test 3: Settings Content Scrolling</h2>
+        <div class="status">✓ Settings panel should scroll with custom scrollbar</div>
+        <div class="tts-settings-content tts-scrollable" style="height: 250px; background: #f8f9fa; padding: 15px; border-radius: 8px;">
+            <h4>TTS Settings Panel</h4>
+            
+            <div style="margin: 20px 0;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 500;">Voice Selection:</label>
+                <select style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <option>Microsoft David Desktop - English (United States)</option>
+                    <option>Microsoft Zira Desktop - English (United States)</option>
+                    <option>Google UK English Female</option>
+                    <option>Google US English Male</option>
+                </select>
+            </div>
+            
+            <div style="margin: 20px 0;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 500;">Speech Rate:</label>
+                <input type="range" min="0.5" max="2.0" step="0.1" value="1.0" style="width: 100%;">
+                <span style="font-size: 12px; color: #666;">Current: 1.0x</span>
+            </div>
+            
+            <div style="margin: 20px 0;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 500;">Pitch:</label>
+                <input type="range" min="0.5" max="2.0" step="0.1" value="1.0" style="width: 100%;">
+                <span style="font-size: 12px; color: #666;">Current: 1.0x</span>
+            </div>
+            
+            <div style="margin: 20px 0;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 500;">Volume:</label>
+                <input type="range" min="0" max="100" value="100" style="width: 100%;">
+                <span style="font-size: 12px; color: #666;">Current: 100%</span>
+            </div>
+            
+            <div style="margin: 20px 0;">
+                <h5>Advanced Options</h5>
+                <label style="display: flex; align-items: center; margin: 10px 0;">
+                    <input type="checkbox" style="margin-right: 8px;">
+                    <span>Auto-pause on punctuation</span>
+                </label>
+                <label style="display: flex; align-items: center; margin: 10px 0;">
+                    <input type="checkbox" style="margin-right: 8px;" checked>
+                    <span>Highlight spoken text</span>
+                </label>
+                <label style="display: flex; align-items: center; margin: 10px 0;">
+                    <input type="checkbox" style="margin-right: 8px;">
+                    <span>Skip HTML tags</span>
+                </label>
+            </div>
+            
+            <div style="margin: 20px 0;">
+                <h5>Keyboard Shortcuts</h5>
+                <p style="margin: 5px 0; font-size: 12px;"><kbd>Ctrl+Shift+S</kbd> - Start/Stop speech</p>
+                <p style="margin: 5px 0; font-size: 12px;"><kbd>Ctrl+Shift+P</kbd> - Pause/Resume</p>
+                <p style="margin: 5px 0; font-size: 12px;"><kbd>Esc</kbd> - Close overlay</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Test 4: AI Explanation Area -->
+    <div class="test-container">
+        <h2 class="test-title">Test 4: AI Explanation Scrolling</h2>
+        <div class="status">✓ AI explanation content should scroll with custom scrollbar</div>
+        <div class="tts-explanation-content tts-scrollable" style="height: 200px; background: #f0f4ff; padding: 15px; border-radius: 8px; border-left: 4px solid #7c3aed;">
+            <h4>🤖 AI Explanation</h4>
+            <p><strong>Topic:</strong> Text-to-Speech Technology</p>
+            
+            <p><strong>Simple Explanation:</strong></p>
+            <p>Text-to-Speech (TTS) is a technology that converts written text into spoken words. It's like having a computer read text aloud to you.</p>
+            
+            <p><strong>How it works:</strong></p>
+            <ol>
+                <li><strong>Text Analysis:</strong> The system analyzes the input text to understand its structure, including punctuation, abbreviations, and formatting.</li>
+                <li><strong>Linguistic Processing:</strong> The text is processed to determine pronunciation, stress patterns, and intonation.</li>
+                <li><strong>Audio Synthesis:</strong> The processed information is converted into audio waveforms that represent speech.</li>
+                <li><strong>Playback:</strong> The generated audio is played through speakers or headphones.</li>
+            </ol>
+            
+            <p><strong>Benefits:</strong></p>
+            <ul>
+                <li>Accessibility for visually impaired users</li>
+                <li>Multitasking while consuming content</li>
+                <li>Language learning assistance</li>
+                <li>Improved comprehension for auditory learners</li>
+                <li>Reduced eye strain</li>
+            </ul>
+            
+            <p><strong>Modern TTS Features:</strong></p>
+            <p>Contemporary TTS systems use advanced neural networks and AI to produce more natural-sounding speech with proper emotion, emphasis, and contextual understanding.</p>
+        </div>
+    </div>
+    
+    <!-- Add lots of content to trigger body scrolling -->
+    <div class="test-container">
+        <h2 class="test-title">Scroll Test Content</h2>
+        <div class="status">✓ Page should scroll to show body custom scrollbar</div>
+        <div class="test-text">
+            <p>This section adds enough content to make the page scrollable so you can test the body scrollbar.</p>
+            
+            <div style="height: 200px; background: linear-gradient(45deg, #f0f4ff, #fef3f3); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin: 20px 0;">
+                <p style="text-align: center; font-size: 18px; color: #7c3aed; font-weight: 500;">Scroll Up/Down to Test Body Scrollbar</p>
+            </div>
+            
+            <div style="height: 200px; background: linear-gradient(45deg, #f0fff4, #fffbf0); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin: 20px 0;">
+                <p style="text-align: center; font-size: 16px; color: #059669;">Custom scrollbars should be visible and functional</p>
+            </div>
+            
+            <div style="height: 200px; background: linear-gradient(45deg, #f8f9fa, #e9ecef); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin: 20px 0;">
+                <p style="text-align: center; font-size: 16px; color: #495057;">Hover over scrollbars to see animations</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="test-container">
+        <h2 class="test-title">Test Summary</h2>
+        <div class="status">✓ All scrollbar implementations should now be working correctly</div>
+        <div class="test-text">
+            <h4>What to verify:</h4>
+            <ol>
+                <li><strong>Visual Appearance:</strong> Purple gradient scrollbars (#7c3aed to #a855f7)</li>
+                <li><strong>Floating Effect:</strong> 2px transparent border with background-clip</li>
+                <li><strong>Hover States:</strong> Darker gradient and scale effect on hover</li>
+                <li><strong>Smooth Animations:</strong> 0.2s transitions on all interactions</li>
+                <li><strong>Proper Sizing:</strong> 12px width, 30px minimum thumb height</li>
+                <li><strong>Cross-browser:</strong> Works in Chrome, Edge, Safari (webkit) and Firefox (fallback)</li>
+            </ol>
+        </div>
+    </div>
+    
+    <script>
+        // Add some interactivity for testing
+        document.addEventListener('DOMContentLoaded', function() {
+            const scrollableElements = document.querySelectorAll('.tts-scrollable');
+            
+            scrollableElements.forEach(element => {
+                element.addEventListener('scroll', function() {
+                    console.log(`Scrolled in: ${this.className}`);
+                });
+                
+                element.addEventListener('mouseenter', function() {
+                    console.log(`Mouse entered scrollable: ${this.className}`);
+                });
+            });
+            
+            // Log when custom scrollbars are working
+            console.log('TTS Overlay Scrollbar Test Loaded');
+            console.log('Found', scrollableElements.length, 'scrollable elements');
+        });
+    </script>
+</body>
+</html>

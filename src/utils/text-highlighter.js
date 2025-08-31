@@ -28,6 +28,7 @@ class TextHighlighter {
     const styleElement = document.createElement('style');
     styleElement.id = 'tts-highlighter-styles';
     styleElement.textContent = `
+      /* TTS Text Highlighting Styles */
       .${this.highlightClass} {
         background-color: #ffeb3b !important;
         color: #000 !important;
@@ -35,6 +36,7 @@ class TextHighlighter {
         border-radius: 2px !important;
         padding: 1px 2px !important;
         font-weight: 500 !important;
+        display: inline !important;
       }
       
       .${this.sentenceHighlightClass} {
@@ -48,15 +50,31 @@ class TextHighlighter {
         position: relative !important;
       }
       
-      .tts-highlight-word.active {
+      .tts-highlight-word.active,
+      .${this.highlightClass}.active {
         background-color: #ff9800 !important;
         color: #fff !important;
         box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+        display: inline !important;
+        font-weight: 600 !important;
+      }
+      
+      /* Ensure highlighting works in iframe context */
+      iframe .${this.highlightClass} {
+        background-color: #ff9800 !important;
+        color: #fff !important;
+        padding: 1px 2px !important;
+        border-radius: 2px !important;
+        font-weight: 500 !important;
+        display: inline !important;
       }
     `;
 
     // Insert into document head or body
-    (document.head || document.body).appendChild(styleElement);
+    const target = document.head || document.body;
+    target.appendChild(styleElement);
+    
+    console.log('🎨 TTS highlighter styles injected into:', target.tagName);
   }
 
   /**
@@ -85,7 +103,15 @@ class TextHighlighter {
    * @param {string} text - Full text being spoken
    */
   highlightWordAt(charIndex, text) {
-    if (!this.isHighlighting || !this.targetElement) {
+    console.log('🟡 highlightWordAt called with:', { charIndex, textLength: text?.length, isHighlighting: this.isHighlighting, hasTargetElement: !!this.targetElement });
+    
+    if (!this.isHighlighting) {
+      console.warn('🟡 Highlighting not active - isHighlighting:', this.isHighlighting);
+      return;
+    }
+    
+    if (!this.targetElement) {
+      console.warn('🟡 No target element for highlighting - targetElement:', this.targetElement);
       return;
     }
 
@@ -94,15 +120,21 @@ class TextHighlighter {
       this.clearWordHighlights();
       
       // Find the word boundaries around the character index
+      console.log('🟡 Finding word at charIndex:', charIndex, 'in text:', text?.substring(0, 100));
       const wordBoundaries = this.findWordAt(charIndex, text);
+      console.log('🟡 Word boundaries found:', wordBoundaries);
+      
       if (!wordBoundaries) {
+        console.warn('🟡 No word boundaries found for charIndex:', charIndex);
         return;
       }
 
+      console.log('🟡 About to highlight text range:', wordBoundaries.start, 'to', wordBoundaries.end);
+      
       // Create highlight span for the word
       this.highlightTextRange(wordBoundaries.start, wordBoundaries.end, this.highlightClass + ' active');
       
-      console.log('🟡 Highlighting word:', wordBoundaries.word, 'at index', charIndex);
+      console.log('🟡 Highlighting word completed:', wordBoundaries.word, 'at index', charIndex);
       
     } catch (error) {
       console.warn('Failed to highlight word:', error);
@@ -143,7 +175,10 @@ class TextHighlighter {
    * @returns {Object|null} Word boundaries {start, end, word}
    */
   findWordAt(charIndex, text) {
+    console.log('🟡 findWordAt called with charIndex:', charIndex, 'text length:', text?.length);
+    
     if (charIndex < 0 || charIndex >= text.length) {
+      console.log('🟡 charIndex out of bounds:', charIndex, 'text length:', text.length);
       return null;
     }
 
@@ -158,17 +193,24 @@ class TextHighlighter {
     while (end < text.length && /\w/.test(text[end])) {
       end++;
     }
+    
+    const wordText = text.substring(start, end);
+    console.log('🟡 Word boundaries calculated:', { start, end, word: wordText, charAtIndex: text[charIndex] });
 
     // Ensure we found a valid word
-    if (start >= end || !/\w/.test(text.substring(start, end))) {
+    if (start >= end || !/\w/.test(wordText)) {
+      console.log('🟡 Invalid word found:', { start, end, word: wordText, hasWordChar: /\w/.test(wordText) });
       return null;
     }
 
-    return {
+    const result = {
       start: start,
       end: end,
-      word: text.substring(start, end)
+      word: wordText
     };
+    
+    console.log('🟡 findWordAt returning:', result);
+    return result;
   }
 
   /**
@@ -209,27 +251,52 @@ class TextHighlighter {
    * @param {string} className - CSS class name for highlighting
    */
   highlightTextRange(startIndex, endIndex, className) {
-    if (!this.targetElement) return;
+    if (!this.targetElement) {
+      console.warn('No target element for highlighting');
+      return;
+    }
 
     try {
-      // Create a temporary element to wrap the highlighted text
-      const textContent = this.targetElement.textContent || this.targetElement.innerText;
+      // Get current text content (handle both plain text and existing highlights)
+      const textContent = this.getCleanTextContent();
       
-      if (startIndex < 0 || endIndex > textContent.length || startIndex >= endIndex) {
+      if (!textContent || startIndex < 0 || endIndex > textContent.length || startIndex >= endIndex) {
+        console.warn('Invalid highlight range:', { startIndex, endIndex, textLength: textContent?.length });
         return;
       }
+
+      // Clear any existing word highlights first
+      this.clearWordHighlights();
 
       // Split text into parts: before, highlighted, after
       const beforeText = textContent.substring(0, startIndex);
       const highlightText = textContent.substring(startIndex, endIndex);
       const afterText = textContent.substring(endIndex);
 
-      // Create highlight span
+      console.log('🟡 Highlighting text range:', {
+        startIndex,
+        endIndex,
+        word: highlightText,
+        beforeLength: beforeText.length,
+        afterLength: afterText.length
+      });
+
+      // Create highlight span with inline styles as fallback
       const highlightSpan = document.createElement('span');
       highlightSpan.className = className;
       highlightSpan.textContent = highlightText;
+      highlightSpan.setAttribute('data-tts-highlight', 'word');
+      
+      // Apply inline styles as fallback to ensure visibility
+      highlightSpan.style.backgroundColor = '#ff9800';
+      highlightSpan.style.color = '#fff';
+      highlightSpan.style.padding = '1px 2px';
+      highlightSpan.style.borderRadius = '2px';
+      highlightSpan.style.fontWeight = '500';
+      highlightSpan.style.boxShadow = '0 1px 3px rgba(0,0,0,0.3)';
+      highlightSpan.style.transition = 'all 0.2s ease';
 
-      // Clear element and rebuild with highlighted section
+      // Rebuild element content with highlighted section
       this.targetElement.textContent = '';
       
       if (beforeText) {
@@ -243,8 +310,52 @@ class TextHighlighter {
         this.targetElement.appendChild(document.createTextNode(afterText));
       }
 
+      console.log('🟡 Highlight span created:', highlightSpan);
+      console.log('🟡 Target element after highlight:', this.targetElement);
+      console.log('🟡 Highlighted elements count:', this.highlightedElements.length);
+
+      // Scroll highlighted word into view if needed
+      this.scrollIntoViewIfNeeded(highlightSpan);
+
     } catch (error) {
       console.warn('Failed to highlight text range:', error);
+    }
+  }
+
+  /**
+   * Get clean text content without highlight spans
+   * @returns {string} Clean text content
+   */
+  getCleanTextContent() {
+    if (!this.targetElement) return '';
+    
+    // If we have the original text, use it
+    if (this.originalText) {
+      return this.originalText;
+    }
+    
+    // Otherwise extract text from current element
+    return this.targetElement.textContent || this.targetElement.innerText || '';
+  }
+
+  /**
+   * Scroll highlighted element into view if necessary
+   * @param {Element} element - Element to scroll into view
+   */
+  scrollIntoViewIfNeeded(element) {
+    try {
+      if (element && element.scrollIntoViewIfNeeded) {
+        element.scrollIntoViewIfNeeded(false);
+      } else if (element && element.scrollIntoView) {
+        // Use smooth scrolling if available
+        element.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+          inline: 'nearest'
+        });
+      }
+    } catch (error) {
+      console.warn('Failed to scroll highlight into view:', error);
     }
   }
 
@@ -252,48 +363,73 @@ class TextHighlighter {
    * Clear all word highlights (but keep sentence highlights)
    */
   clearWordHighlights() {
-    // Remove individual word highlight spans
-    this.highlightedElements.forEach(element => {
-      if (element && element.parentNode && element.className.includes(this.highlightClass)) {
-        const parent = element.parentNode;
-        const textNode = document.createTextNode(element.textContent);
-        parent.replaceChild(textNode, element);
-        parent.normalize(); // Merge adjacent text nodes
-      }
-    });
-    
-    this.highlightedElements = this.highlightedElements.filter(
-      element => element && !element.className.includes(this.highlightClass)
-    );
+    try {
+      // Remove individual word highlight spans
+      this.highlightedElements.forEach((element, index) => {
+        if (element && element.parentNode && element.className.includes(this.highlightClass)) {
+          const parent = element.parentNode;
+          const textNode = document.createTextNode(element.textContent);
+          parent.replaceChild(textNode, element);
+          parent.normalize(); // Merge adjacent text nodes
+        }
+      });
+      
+      // Filter out cleared elements
+      this.highlightedElements = this.highlightedElements.filter(
+        element => element && element.parentNode && !element.className.includes(this.highlightClass)
+      );
+
+      console.log('🧹 Cleared word highlights, remaining elements:', this.highlightedElements.length);
+    } catch (error) {
+      console.warn('Failed to clear word highlights:', error);
+      // Reset the array if there's an error
+      this.highlightedElements = [];
+    }
   }
 
   /**
    * Clear all highlights and restore original text
    */
   cleanup() {
-    // Remove all highlight spans
-    this.highlightedElements.forEach(element => {
-      if (element && element.parentNode) {
-        const parent = element.parentNode;
-        const textNode = document.createTextNode(element.textContent);
-        parent.replaceChild(textNode, element);
-        parent.normalize();
-      }
-    });
-    
-    // Clear highlight classes from target element
-    if (this.targetElement) {
-      this.targetElement.classList.remove('tts-highlight-container');
-      this.targetElement.classList.remove(this.sentenceHighlightClass);
-    }
+    try {
+      console.log('🧹 Starting text highlighting cleanup');
 
-    // Reset state
-    this.highlightedElements = [];
-    this.targetElement = null;
-    this.originalText = '';
-    this.isHighlighting = false;
-    
-    console.log('🧹 Text highlighting cleaned up');
+      // Remove all highlight spans
+      this.highlightedElements.forEach((element, index) => {
+        if (element && element.parentNode) {
+          const parent = element.parentNode;
+          const textNode = document.createTextNode(element.textContent);
+          parent.replaceChild(textNode, element);
+          parent.normalize();
+        }
+      });
+      
+      // Clear highlight classes from target element
+      if (this.targetElement) {
+        this.targetElement.classList.remove('tts-highlight-container');
+        this.targetElement.classList.remove(this.sentenceHighlightClass);
+        
+        // Restore original text if available
+        if (this.originalText && this.targetElement.textContent !== this.originalText) {
+          this.targetElement.textContent = this.originalText;
+        }
+      }
+
+      // Reset state
+      this.highlightedElements = [];
+      this.targetElement = null;
+      this.originalText = '';
+      this.isHighlighting = false;
+      
+      console.log('✅ Text highlighting cleaned up successfully');
+    } catch (error) {
+      console.warn('Failed to cleanup text highlighting:', error);
+      // Force reset state even if cleanup failed
+      this.highlightedElements = [];
+      this.targetElement = null;
+      this.originalText = '';
+      this.isHighlighting = false;
+    }
   }
 
   /**

@@ -3,6 +3,84 @@
  * Modern, compact design for the extension popup
  */
 
+/* ===== EMBEDDED CUSTOM SCROLLBAR STYLES ===== */
+/* CSS Custom Properties for easy theming */
+:root {
+  /* Primary scrollbar colors - Purple/Violet gradient */
+  --tts-scrollbar-thumb-start: #7c3aed;
+  --tts-scrollbar-thumb-end: #a855f7;
+  --tts-scrollbar-thumb-hover-start: #6d28d9;
+  --tts-scrollbar-thumb-hover-end: #9333ea;
+  --tts-scrollbar-thumb-active-start: #5b21b6;
+  --tts-scrollbar-thumb-active-end: #7e22ce;
+  --tts-scrollbar-track-bg: #f0f0f0;
+  --tts-scrollbar-track-border: #e5e5e5;
+  --tts-scrollbar-width: 12px;
+  --tts-scrollbar-border-radius: 10px;
+  --tts-scrollbar-thumb-min-height: 30px;
+  --tts-scrollbar-transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.tts-scrollable {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  scrollbar-gutter: stable;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--tts-scrollbar-thumb-start) var(--tts-scrollbar-track-bg);
+}
+
+.tts-scrollable::-webkit-scrollbar {
+  width: var(--tts-scrollbar-width) !important;
+}
+
+.tts-scrollable::-webkit-scrollbar-track {
+  background: var(--tts-scrollbar-track-bg) !important;
+  border-radius: var(--tts-scrollbar-border-radius) !important;
+  border: 1px solid var(--tts-scrollbar-track-border) !important;
+  margin: 2px !important;
+}
+
+.tts-scrollable::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, var(--tts-scrollbar-thumb-start) 0%, var(--tts-scrollbar-thumb-end) 100%) !important;
+  border: 2px solid transparent !important;
+  background-clip: content-box !important;
+  border-radius: var(--tts-scrollbar-border-radius) !important;
+  min-height: var(--tts-scrollbar-thumb-min-height) !important;
+  transition: var(--tts-scrollbar-transition) !important;
+  box-shadow: 0 2px 6px rgba(124, 58, 237, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+.tts-scrollable::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, var(--tts-scrollbar-thumb-hover-start) 0%, var(--tts-scrollbar-thumb-hover-end) 100%) !important;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+  transform: scaleX(1.05) !important;
+}
+
+.tts-scrollable::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(135deg, var(--tts-scrollbar-thumb-active-start) 0%, var(--tts-scrollbar-thumb-active-end) 100%) !important;
+  box-shadow: 0 1px 3px rgba(124, 58, 237, 0.4), inset 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+  transform: scaleX(0.95) !important;
+}
+
+.tts-scrollable:focus {
+  outline: 2px solid var(--tts-scrollbar-thumb-start);
+  outline-offset: 2px;
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --tts-scrollbar-track-bg: #2d2d2d;
+    --tts-scrollbar-track-border: #404040;
+  }
+  .tts-scrollable {
+    scrollbar-color: var(--tts-scrollbar-thumb-start) #2d2d2d;
+  }
+}
+
+/* ===== END EMBEDDED SCROLLBAR STYLES ===== */
+
 /* Reset and base styles */
 * {
   box-sizing: border-box;
@@ -23,7 +101,7 @@ body {
 .popup-container {
   width: 100%;
   max-height: 600px;
-  overflow-y: auto;
+  /* Scrollbar handled by tts-scrollable class */
 }
 
 /* Header */
@@ -332,10 +410,10 @@ body {
   align-items: center;
 }
 
-/* Activity */
+/* Activity - updated for custom scrollbar */
 .activity-list {
-  max-height: 80px;
-  overflow-y: auto;
+  max-height: 120px; /* Increased height for better UX */
+  /* Custom scrollbar styles now handled by tts-scrollable class */
 }
 
 .activity-item {

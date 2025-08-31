@@ -538,6 +538,22 @@
       console.log('🔊 Starting TTS speech...');
       showLoading('Preparing speech...');
       
+      // Initialize highlighting before starting speech
+      if (overlayState.highlighting.enabled && overlayState.highlighting.highlighter && elements.textContent && overlayState.text) {
+        console.log('🟡 Pre-initializing text highlighting before TTS start');
+        console.log('🟡 Text element:', elements.textContent);
+        console.log('🟡 Text content for highlighting:', overlayState.text.substring(0, 50) + '...');
+        
+        // Ensure the text element has the correct content
+        if (elements.textContent.textContent !== overlayState.text) {
+          console.log('🟡 Synchronizing text content for highlighting');
+          elements.textContent.textContent = overlayState.text;
+        }
+        
+        overlayState.highlighting.highlighter.initializeHighlighting(elements.textContent, overlayState.text);
+        console.log('✅ Text highlighting pre-initialized successfully');
+      }
+      
       await overlayState.services.tts.speak(overlayState.text, overlayState.currentSettings);
       console.log('✅ TTS speech completed');
       
@@ -563,6 +579,11 @@
   function handleStop() {
     if (overlayState.services.tts) {
       overlayState.services.tts.stop();
+    }
+    
+    // Clean up text highlighting when manually stopped
+    if (overlayState.highlighting.enabled && overlayState.highlighting.highlighter) {
+      overlayState.highlighting.highlighter.cleanup();
     }
   }
 
@@ -806,6 +827,8 @@
   // TTS Event Handlers
 
   function handleTTSStart() {
+    console.log('🎬 handleTTSStart called!');
+    
     overlayState.isSpeaking = true;
     overlayState.isPaused = false;
     
@@ -814,8 +837,26 @@
     hideLoading();
 
     // Initialize text highlighting for the current text
-    if (overlayState.highlighting.enabled && overlayState.highlighting.highlighter && elements.textContent) {
+    if (overlayState.highlighting.enabled && overlayState.highlighting.highlighter && elements.textContent && overlayState.text) {
+      console.log('🟡 Initializing text highlighting for TTS start');
+      console.log('🟡 Text element:', elements.textContent);
+      console.log('🟡 Text content:', overlayState.text.substring(0, 50) + '...');
+      
+      // Ensure the text element has the correct content
+      if (elements.textContent.textContent !== overlayState.text) {
+        console.log('🟡 Synchronizing text content for highlighting');
+        elements.textContent.textContent = overlayState.text;
+      }
+      
       overlayState.highlighting.highlighter.initializeHighlighting(elements.textContent, overlayState.text);
+      console.log('✅ Text highlighting initialized successfully');
+    } else {
+      console.log('🟡 Text highlighting initialization skipped:', {
+        enabled: overlayState.highlighting.enabled,
+        highlighter: !!overlayState.highlighting.highlighter,
+        textElement: !!elements.textContent,
+        text: !!overlayState.text
+      });
     }
   }
 
@@ -837,6 +878,12 @@
     overlayState.isPaused = false;
     
     updatePlaybackControls();
+    
+    // Clean up text highlighting on error
+    if (overlayState.highlighting.enabled && overlayState.highlighting.highlighter) {
+      overlayState.highlighting.highlighter.cleanup();
+    }
+    
     showError('Speech error: ' + error.error);
     hideLoading();
   }
@@ -860,17 +907,31 @@
     console.log('🟡 Word highlight requested:', event, {
       enabled: overlayState.highlighting.enabled,
       highlighter: !!overlayState.highlighting.highlighter,
-      textContent: !!elements.textContent
+      textContent: !!elements.textContent,
+      overlayText: !!overlayState.text
     });
 
-    if (!overlayState.highlighting.enabled || !overlayState.highlighting.highlighter || !elements.textContent) {
-      console.log('🟡 Word highlighting skipped - requirements not met');
+    if (!overlayState.highlighting.enabled || !overlayState.highlighting.highlighter || !elements.textContent || !overlayState.text) {
+      console.log('🟡 Word highlighting skipped - requirements not met', {
+        enabled: overlayState.highlighting.enabled,
+        highlighter: !!overlayState.highlighting.highlighter,
+        textElement: !!elements.textContent,
+        text: !!overlayState.text
+      });
       return;
     }
 
     try {
-      console.log('🟡 Calling highlighter.highlightWordAt with:', event.charIndex, event.text?.substring(0, 50));
-      overlayState.highlighting.highlighter.highlightWordAt(event.charIndex, event.text);
+      // Use the original text from overlay state if event.text is not available
+      const textToHighlight = event.text || overlayState.text;
+      console.log('🟡 Calling highlighter.highlightWordAt with:', {
+        charIndex: event.charIndex,
+        eventText: event.text?.substring(0, 50) || 'undefined',
+        overlayText: overlayState.text?.substring(0, 50) || 'undefined',
+        fallback: event.fallback || false
+      });
+      
+      overlayState.highlighting.highlighter.highlightWordAt(event.charIndex, textToHighlight);
     } catch (error) {
       console.warn('Word highlighting error:', error);
     }
@@ -880,12 +941,23 @@
    * Handle sentence boundary highlighting during speech
    */
   function handleSentenceHighlight(event) {
-    if (!overlayState.highlighting.enabled || !overlayState.highlighting.highlighter || !elements.textContent) {
+    console.log('🟨 Sentence highlight requested:', event);
+    
+    if (!overlayState.highlighting.enabled || !overlayState.highlighting.highlighter || !elements.textContent || !overlayState.text) {
+      console.log('🟨 Sentence highlighting skipped - requirements not met');
       return;
     }
 
     try {
-      overlayState.highlighting.highlighter.highlightSentenceAt(event.charIndex, event.text);
+      // Use the original text from overlay state if event.text is not available
+      const textToHighlight = event.text || overlayState.text;
+      console.log('🟨 Calling highlighter.highlightSentenceAt with:', {
+        charIndex: event.charIndex,
+        eventText: event.text?.substring(0, 50) || 'undefined',
+        overlayText: overlayState.text?.substring(0, 50) || 'undefined'
+      });
+      
+      overlayState.highlighting.highlighter.highlightSentenceAt(event.charIndex, textToHighlight);
     } catch (error) {
       console.warn('Sentence highlighting error:', error);
     }

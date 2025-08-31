@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Highlighting Test - TTS Extension</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            background: #f5f5f5;
+        }
+        
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .test-title {
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #7c3aed;
+        }
+        
+        .test-content {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            min-height: 150px;
+            border: 2px dashed #dee2e6;
+            font-size: 16px;
+            line-height: 1.8;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background: #7c3aed;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .btn:hover {
+            background: #6d28d9;
+            transform: translateY(-1px);
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+        
+        .status {
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.info {
+            background: #cce5ff;
+            color: #0066cc;
+            border: 1px solid #99ccff;
+        }
+        
+        .status.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .log-container {
+            background: #1e1e1e;
+            color: #f0f0f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+        
+        .log-entry {
+            margin: 2px 0;
+            padding: 2px 0;
+        }
+        
+        .log-info { color: #61dafb; }
+        .log-success { color: #4caf50; }
+        .log-warning { color: #ff9800; }
+        .log-error { color: #f44336; }
+        
+        /* Highlight styles for testing */
+        .tts-highlight-word {
+            background-color: #ffeb3b !important;
+            color: #000 !important;
+            transition: background-color 0.2s ease !important;
+            border-radius: 2px !important;
+            padding: 1px 2px !important;
+            font-weight: 500 !important;
+        }
+        
+        .tts-highlight-word.active {
+            background-color: #ff9800 !important;
+            color: #fff !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+        }
+        
+        .tts-highlight-sentence {
+            background-color: rgba(255, 235, 59, 0.3) !important;
+            border-left: 3px solid #ffeb3b !important;
+            padding-left: 8px !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .tts-highlight-container {
+            position: relative !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔊 Text Highlighting Test - TTS Extension</h1>
+    <p>This page tests the text highlighting functionality that works with the TTS extension.</p>
+    
+    <!-- Test 1: Basic Text Highlighting -->
+    <div class="test-container">
+        <h2 class="test-title">Test 1: Basic Word Highlighting</h2>
+        <div class="status info">This test checks if individual words can be highlighted correctly.</div>
+        
+        <div class="test-content" id="test-text-1">
+            The quick brown fox jumps over the lazy dog. This sentence contains multiple words that should be highlighted individually when spoken by the text-to-speech system. Each word should be highlighted with a yellow background when it is being spoken.
+        </div>
+        
+        <div class="controls">
+            <button class="btn" onclick="startWordHighlighting('test-text-1')">Start Word Highlighting</button>
+            <button class="btn btn-secondary" onclick="clearHighlighting('test-text-1')">Clear Highlights</button>
+            <button class="btn btn-secondary" onclick="testSpecificWord('test-text-1', 'fox')">Highlight "fox"</button>
+        </div>
+        
+        <div id="status-1" class="status info">Ready to test word highlighting</div>
+    </div>
+    
+    <!-- Test 2: Sentence Highlighting -->
+    <div class="test-container">
+        <h2 class="test-title">Test 2: Sentence Highlighting</h2>
+        <div class="status info">This test checks if sentences can be highlighted correctly.</div>
+        
+        <div class="test-content" id="test-text-2">
+            This is the first sentence. This is the second sentence with more words. This is the third and final sentence that completes our test paragraph. Each sentence should be highlighted when spoken.
+        </div>
+        
+        <div class="controls">
+            <button class="btn" onclick="startSentenceHighlighting('test-text-2')">Start Sentence Highlighting</button>
+            <button class="btn btn-secondary" onclick="clearHighlighting('test-text-2')">Clear Highlights</button>
+        </div>
+        
+        <div id="status-2" class="status info">Ready to test sentence highlighting</div>
+    </div>
+    
+    <!-- Test 3: TTS Integration Test -->
+    <div class="test-container">
+        <h2 class="test-title">Test 3: TTS Integration with Highlighting</h2>
+        <div class="status info">This test integrates with Web Speech API for real highlighting during speech.</div>
+        
+        <div class="test-content" id="test-text-3">
+            Welcome to the Text-to-Speech highlighting demonstration. This text will be spoken aloud while individual words are highlighted in real-time. The highlighting should follow the speech progression and provide visual feedback for users.
+        </div>
+        
+        <div class="controls">
+            <button class="btn" id="speak-btn" onclick="speakWithHighlighting('test-text-3')">Speak with Highlighting</button>
+            <button class="btn btn-secondary" id="stop-btn" onclick="stopSpeaking()" disabled>Stop Speaking</button>
+            <button class="btn btn-secondary" onclick="clearHighlighting('test-text-3')">Clear Highlights</button>
+        </div>
+        
+        <div id="status-3" class="status info">Ready to test TTS integration</div>
+    </div>
+    
+    <!-- Test 4: Edge Cases -->
+    <div class="test-container">
+        <h2 class="test-title">Test 4: Edge Cases & Robustness</h2>
+        <div class="status info">Testing edge cases and error handling.</div>
+        
+        <div class="test-content" id="test-text-4">
+            Text with numbers: 123, 456, 789. Text with punctuation: Hello, world! How are you? Text with special characters: @#$%^&*(){}. Mixed case: CamelCase, UPPERCASE, lowercase. This tests various edge cases.
+        </div>
+        
+        <div class="controls">
+            <button class="btn" onclick="testEdgeCases('test-text-4')">Test Edge Cases</button>
+            <button class="btn btn-secondary" onclick="clearHighlighting('test-text-4')">Clear Highlights</button>
+        </div>
+        
+        <div id="status-4" class="status info">Ready to test edge cases</div>
+    </div>
+    
+    <!-- Debug Log -->
+    <div class="test-container">
+        <h2 class="test-title">Debug Log</h2>
+        <div class="log-container" id="debug-log">
+            <div class="log-entry log-info">Text highlighting test page loaded</div>
+        </div>
+        <button class="btn btn-secondary" onclick="clearLog()">Clear Log</button>
+    </div>
+
+    <!-- Load required scripts -->
+    <script src="../src/utils/text-highlighter.js"></script>
+    
+    <script>
+        // Global variables
+        let highlighters = {};
+        let speechSynthesis = window.speechSynthesis;
+        let currentUtterance = null;
+        let currentHighlighter = null;
+        
+        // Logging function
+        function log(message, type = 'info') {
+            const logContainer = document.getElementById('debug-log');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+            
+            console.log(`[TextHighlighting] ${message}`);
+        }
+        
+        // Initialize highlighters for each test
+        function initializeHighlighter(elementId) {
+            if (!highlighters[elementId]) {
+                highlighters[elementId] = new TextHighlighter();
+                log(`Initialized highlighter for ${elementId}`, 'success');
+            }
+            return highlighters[elementId];
+        }
+        
+        // Test 1: Word highlighting simulation
+        function startWordHighlighting(elementId) {
+            const element = document.getElementById(elementId);
+            const highlighter = initializeHighlighter(elementId);
+            const text = element.textContent;
+            
+            log(`Starting word highlighting for: ${text.substring(0, 50)}...`);
+            updateStatus(elementId, 'Starting word highlighting...', 'info');
+            
+            // Initialize highlighting
+            highlighter.initializeHighlighting(element, text);
+            
+            // Simulate word-by-word highlighting
+            const words = text.split(/\s+/);
+            let currentIndex = 0;
+            let charIndex = 0;
+            
+            const highlightInterval = setInterval(() => {
+                if (currentIndex >= words.length) {
+                    clearInterval(highlightInterval);
+                    updateStatus(elementId, 'Word highlighting completed!', 'success');
+                    log('Word highlighting sequence completed', 'success');
+                    return;
+                }
+                
+                const word = words[currentIndex];
+                log(`Highlighting word: "${word}" at index ${charIndex}`);
+                
+                // Highlight the current word
+                highlighter.highlightWordAt(charIndex, text);
+                
+                updateStatus(elementId, `Highlighting word: "${word}"`, 'info');
+                
+                // Move to next word
+                charIndex += word.length + 1; // +1 for space
+                currentIndex++;
+            }, 800); // Highlight each word for 800ms
+        }
+        
+        // Test 2: Sentence highlighting simulation
+        function startSentenceHighlighting(elementId) {
+            const element = document.getElementById(elementId);
+            const highlighter = initializeHighlighter(elementId);
+            const text = element.textContent;
+            
+            log(`Starting sentence highlighting for: ${text.substring(0, 50)}...`);
+            updateStatus(elementId, 'Starting sentence highlighting...', 'info');
+            
+            // Initialize highlighting
+            highlighter.initializeHighlighting(element, text);
+            
+            // Split into sentences
+            const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+            let currentIndex = 0;
+            let charIndex = 0;
+            
+            const highlightInterval = setInterval(() => {
+                if (currentIndex >= sentences.length) {
+                    clearInterval(highlightInterval);
+                    updateStatus(elementId, 'Sentence highlighting completed!', 'success');
+                    log('Sentence highlighting sequence completed', 'success');
+                    return;
+                }
+                
+                const sentence = sentences[currentIndex].trim();
+                log(`Highlighting sentence: "${sentence.substring(0, 30)}..."`);
+                
+                // Highlight the current sentence
+                highlighter.highlightSentenceAt(charIndex, text);
+                
+                updateStatus(elementId, `Highlighting sentence ${currentIndex + 1}`, 'info');
+                
+                // Move to next sentence
+                charIndex += sentence.length + 2; // +2 for punctuation and space
+                currentIndex++;
+            }, 2000); // Highlight each sentence for 2 seconds
+        }
+        
+        // Test 3: Real TTS integration
+        function speakWithHighlighting(elementId) {
+            const element = document.getElementById(elementId);
+            const highlighter = initializeHighlighter(elementId);
+            const text = element.textContent;
+            
+            if (!speechSynthesis) {
+                updateStatus(elementId, 'Speech synthesis not supported', 'error');
+                log('Speech synthesis not available', 'error');
+                return;
+            }
+            
+            log(`Starting TTS with highlighting for: ${text.substring(0, 50)}...`);
+            updateStatus(elementId, 'Starting speech synthesis...', 'info');
+            
+            // Stop any current speech
+            speechSynthesis.cancel();
+            
+            // Create utterance
+            currentUtterance = new SpeechSynthesisUtterance(text);
+            currentHighlighter = highlighter;
+            
+            // Configure utterance
+            currentUtterance.rate = 0.8; // Slower for better highlighting
+            currentUtterance.pitch = 1.0;
+            currentUtterance.volume = 1.0;
+            
+            // Initialize highlighting
+            highlighter.initializeHighlighting(element, text);
+            
+            // Set up event listeners
+            currentUtterance.onstart = () => {
+                log('Speech started', 'success');
+                updateStatus(elementId, 'Speaking with highlighting...', 'success');
+                document.getElementById('speak-btn').disabled = true;
+                document.getElementById('stop-btn').disabled = false;
+            };
+            
+            currentUtterance.onend = () => {
+                log('Speech ended', 'info');
+                updateStatus(elementId, 'Speech completed!', 'success');
+                document.getElementById('speak-btn').disabled = false;
+                document.getElementById('stop-btn').disabled = true;
+                currentUtterance = null;
+                currentHighlighter = null;
+            };
+            
+            currentUtterance.onerror = (event) => {
+                log(`Speech error: ${event.error}`, 'error');
+                updateStatus(elementId, `Speech error: ${event.error}`, 'error');
+                document.getElementById('speak-btn').disabled = false;
+                document.getElementById('stop-btn').disabled = true;
+            };
+            
+            // Word boundary highlighting
+            currentUtterance.onboundary = (event) => {
+                if (event.name === 'word') {
+                    log(`Word boundary at ${event.charIndex}: "${text.substring(event.charIndex, event.charIndex + 10)}..."`);
+                    highlighter.highlightWordAt(event.charIndex, text);
+                } else if (event.name === 'sentence') {
+                    log(`Sentence boundary at ${event.charIndex}`);
+                    highlighter.highlightSentenceAt(event.charIndex, text);
+                }
+            };
+            
+            // Start speaking
+            speechSynthesis.speak(currentUtterance);
+        }
+        
+        // Stop speaking
+        function stopSpeaking() {
+            if (speechSynthesis) {
+                speechSynthesis.cancel();
+                log('Speech stopped by user', 'info');
+                
+                if (currentHighlighter) {
+                    currentHighlighter.cleanup();
+                }
+                
+                document.getElementById('speak-btn').disabled = false;
+                document.getElementById('stop-btn').disabled = true;
+                currentUtterance = null;
+                currentHighlighter = null;
+            }
+        }
+        
+        // Test specific word
+        function testSpecificWord(elementId, word) {
+            const element = document.getElementById(elementId);
+            const highlighter = initializeHighlighter(elementId);
+            const text = element.textContent;
+            
+            const wordIndex = text.toLowerCase().indexOf(word.toLowerCase());
+            if (wordIndex === -1) {
+                updateStatus(elementId, `Word "${word}" not found`, 'warning');
+                log(`Word "${word}" not found in text`, 'warning');
+                return;
+            }
+            
+            log(`Highlighting specific word: "${word}" at index ${wordIndex}`);
+            highlighter.initializeHighlighting(element, text);
+            highlighter.highlightWordAt(wordIndex, text);
+            updateStatus(elementId, `Highlighted word: "${word}"`, 'success');
+        }
+        
+        // Test edge cases
+        function testEdgeCases(elementId) {
+            const element = document.getElementById(elementId);
+            const highlighter = initializeHighlighter(elementId);
+            const text = element.textContent;
+            
+            log('Testing edge cases...', 'info');
+            updateStatus(elementId, 'Testing edge cases...', 'info');
+            
+            highlighter.initializeHighlighting(element, text);
+            
+            // Test various character positions
+            const testPositions = [0, 5, 15, text.length - 10, text.length - 1];
+            let currentTest = 0;
+            
+            const testInterval = setInterval(() => {
+                if (currentTest >= testPositions.length) {
+                    clearInterval(testInterval);
+                    updateStatus(elementId, 'Edge case testing completed!', 'success');
+                    log('Edge case testing completed', 'success');
+                    return;
+                }
+                
+                const pos = testPositions[currentTest];
+                log(`Testing highlight at position ${pos}`);
+                highlighter.highlightWordAt(pos, text);
+                
+                currentTest++;
+            }, 1000);
+        }
+        
+        // Clear highlighting
+        function clearHighlighting(elementId) {
+            if (highlighters[elementId]) {
+                highlighters[elementId].cleanup();
+                log(`Cleared highlighting for ${elementId}`, 'info');
+                updateStatus(elementId, 'Highlighting cleared', 'info');
+            }
+        }
+        
+        // Update status
+        function updateStatus(elementId, message, type = 'info') {
+            const statusElement = document.getElementById(`status-${elementId.split('-')[2]}`);
+            if (statusElement) {
+                statusElement.textContent = message;
+                statusElement.className = `status ${type}`;
+            }
+        }
+        
+        // Clear log
+        function clearLog() {
+            const logContainer = document.getElementById('debug-log');
+            logContainer.innerHTML = '<div class="log-entry log-info">Debug log cleared</div>';
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            log('Text highlighting test page initialized', 'success');
+            
+            // Check if TextHighlighter is available
+            if (typeof TextHighlighter === 'undefined') {
+                log('TextHighlighter class not found!', 'error');
+                document.body.innerHTML = '<h1 style="color: red;">Error: TextHighlighter not loaded</h1>';
+                return;
+            }
+            
+            log('TextHighlighter class loaded successfully', 'success');
+            
+            // Check speech synthesis support
+            if (!speechSynthesis) {
+                log('Speech synthesis not supported in this browser', 'warning');
+            } else {
+                log('Speech synthesis supported', 'success');
+            }
+        });
+    </script>
+</body>
+</html>

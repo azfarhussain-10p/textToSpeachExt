@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-    <div class="popup-container">
+    <div class="popup-container tts-scrollable popup-container">
         <!-- Header -->
         <div class="popup-header">
             <div class="popup-logo">
@@ -105,7 +105,7 @@
         <!-- Recent Activity -->
         <div class="popup-section" id="activity-section" style="display: none;">
             <h2 class="popup-section-title">Recent Activity</h2>
-            <div class="activity-list" id="activity-list">
+            <div class="activity-list tts-scrollable tts-popup-activity-list" id="activity-list">
                 <div class="activity-item">
                     <div class="activity-text">No recent activity</div>
                     <div class="activity-time"></div>
@@ -130,12 +130,12 @@
         </div>
 
         <!-- Shortcuts Panel (hidden by default) -->
-        <div class="shortcuts-panel" id="shortcuts-panel" style="display: none;">
+        <div class="shortcuts-panel tts-scrollable tts-shortcuts-panel" id="shortcuts-panel" style="display: none;">
             <div class="shortcuts-header">
                 <h3>Keyboard Shortcuts</h3>
                 <button class="close-btn" id="close-shortcuts">×</button>
             </div>
-            <div class="shortcuts-list">
+            <div class="shortcuts-list tts-scrollable tts-shortcuts-list">
                 <div class="shortcut-item">
                     <span class="shortcut-keys">
                         <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd>

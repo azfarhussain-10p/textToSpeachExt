@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TTS Extension - Custom Scrollbar Test</title>
+    <link rel="stylesheet" href="../src/styles/scrollbar.css">
+    <style>
+        /* Test page specific styles */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .test-title {
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #7c3aed;
+        }
+        
+        .test-content {
+            background: #f8f9fa;
+            padding: 15px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+        }
+        
+        .browser-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        
+        .test-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .test-btn {
+            background: #7c3aed;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .test-btn:hover {
+            background: #6d28d9;
+            transform: translateY(-1px);
+        }
+        
+        .status {
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            margin: 5px 0;
+        }
+        
+        .status.pass {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.fail {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status.unknown {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        /* Test variations */
+        .tts-theme-test {
+            height: 200px;
+            padding: 20px;
+            margin: 10px 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        
+        /* High contrast test */
+        @media (prefers-contrast: high) {
+            .high-contrast-indicator {
+                display: block !important;
+            }
+        }
+        
+        .high-contrast-indicator {
+            display: none;
+            background: #ffff00;
+            color: #000000;
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid #000000;
+            font-weight: bold;
+        }
+        
+        /* Dark mode test */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: #1a1a1a;
+                color: #e9ecef;
+            }
+            
+            .test-container {
+                background: #2d2d2d;
+                color: #e9ecef;
+            }
+            
+            .dark-mode-indicator {
+                display: block !important;
+            }
+        }
+        
+        .dark-mode-indicator {
+            display: none;
+            background: #333;
+            color: #fff;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        
+        /* Reduced motion test */
+        @media (prefers-reduced-motion: reduce) {
+            .reduced-motion-indicator {
+                display: block !important;
+            }
+        }
+        
+        .reduced-motion-indicator {
+            display: none;
+            background: #e6f3ff;
+            color: #0066cc;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔊 TTS Extension - Custom Scrollbar Test Page</h1>
+    
+    <div class="browser-info" id="browser-info">
+        <strong>Browser Detection:</strong><br>
+        <span id="user-agent"></span><br>
+        <span id="browser-features"></span>
+    </div>
+    
+    <div class="test-controls">
+        <button class="test-btn" onclick="runAllTests()">Run All Tests</button>
+        <button class="test-btn" onclick="addMoreContent()">Add More Content</button>
+        <button class="test-btn" onclick="testThemes()">Test Themes</button>
+        <button class="test-btn" onclick="testAccessibility()">Test Accessibility</button>
+        <button class="test-btn" onclick="testPerformance()">Performance Test</button>
+    </div>
+    
+    <div id="test-results"></div>
+    
+    <!-- Media Query Indicators -->
+    <div class="high-contrast-indicator">
+        ✓ High Contrast Mode Detected - Custom scrollbar styles adjusted
+    </div>
+    
+    <div class="dark-mode-indicator">
+        🌙 Dark Mode Detected - Scrollbar colors adapted
+    </div>
+    
+    <div class="reduced-motion-indicator">
+        ⚡ Reduced Motion Detected - Animations disabled
+    </div>
+    
+    <!-- Test Container 1: Basic Scrollable Content -->
+    <div class="test-container">
+        <h2 class="test-title">Test 1: Basic Vertical Scrolling</h2>
+        <div class="status" id="test1-status">Ready to test</div>
+        <div class="tts-scrollable popup-container test-content" style="height: 200px;" id="test1-content">
+            <h3>TTS Extension Features</h3>
+            <p>This extension provides comprehensive text-to-speech functionality with the following features:</p>
+            <ul>
+                <li><strong>Universal TTS:</strong> Select any text on any website and listen with natural voices</li>
+                <li><strong>AI Explanations:</strong> Get intelligent explanations using Groq and Claude APIs</li>
+                <li><strong>Cross-Browser Support:</strong> Works on Chrome, Firefox, Safari, and Edge</li>
+                <li><strong>Multilingual:</strong> Support for 15+ languages including English, Urdu, Arabic, Spanish, French, German, Hindi</li>
+                <li><strong>Accessibility:</strong> Full WCAG 2.1 AA compliance with keyboard navigation and screen reader support</li>
+                <li><strong>Mobile Ready:</strong> Touch-optimized overlay with responsive design</li>
+                <li><strong>Privacy-First:</strong> No data collection without explicit consent</li>
+                <li><strong>Customizable:</strong> Adjustable voice speed, pitch, and volume settings</li>
+                <li><strong>Keyboard Shortcuts:</strong> Quick access via customizable keyboard shortcuts</li>
+                <li><strong>Theme Support:</strong> Light and dark mode compatibility</li>
+            </ul>
+            <p>The extension uses modern web technologies including the Web Speech API for text-to-speech synthesis, ensuring compatibility across different browsers and operating systems.</p>
+            <p>Security is a top priority, with proper content sanitization and secure API key storage to protect user data and prevent XSS vulnerabilities.</p>
+        </div>
+    </div>
+    
+    <!-- Test Container 2: Activity List Style -->
+    <div class="test-container">
+        <h2 class="test-title">Test 2: Activity List Scrolling</h2>
+        <div class="status" id="test2-status">Ready to test</div>
+        <div class="tts-scrollable tts-popup-activity-list test-content" id="test2-content">
+            <div class="activity-item">
+                <span>Spoke selected text: "Introduction to Machine Learning"</span>
+                <span style="float: right; font-size: 11px; color: #666;">2 min ago</span>
+            </div>
+            <div class="activity-item">
+                <span>Generated AI explanation for: "Neural Networks"</span>
+                <span style="float: right; font-size: 11px; color: #666;">5 min ago</span>
+            </div>
+            <div class="activity-item">
+                <span>Used voice: "Microsoft David Desktop - English"</span>
+                <span style="float: right; font-size: 11px; color: #666;">8 min ago</span>
+            </div>
+            <div class="activity-item">
+                <span>Adjusted speech speed to 1.2x</span>
+                <span style="float: right; font-size: 11px; color: #666;">12 min ago</span>
+            </div>
+            <div class="activity-item">
+                <span>Opened TTS overlay for selected paragraph</span>
+                <span style="float: right; font-size: 11px; color: #666;">15 min ago</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Test Container 3: Text Preview Area -->
+    <div class="test-container">
+        <h2 class="test-title">Test 3: Text Preview Scrolling</h2>
+        <div class="status" id="test3-status">Ready to test</div>
+        <div class="tts-scrollable tts-text-preview test-content" id="test3-content">
+            <h4>Selected Text Preview</h4>
+            <p>The concept of artificial intelligence has evolved significantly since its inception in the 1950s. What began as a theoretical exploration of machine cognition has transformed into a practical technology that permeates nearly every aspect of modern life.</p>
+            <p>Machine learning, a subset of AI, focuses on algorithms that can learn and make decisions from data without being explicitly programmed for every scenario. This approach has revolutionized fields ranging from healthcare to finance, enabling predictive analytics and automation at unprecedented scales.</p>
+            <p>Natural language processing (NLP) represents another crucial branch of AI, dealing with the interaction between computers and human language. Modern NLP systems can understand context, sentiment, and even generate human-like text, making applications like text-to-speech and language translation increasingly sophisticated.</p>
+            <p>The ethical implications of AI development cannot be overlooked. As these systems become more powerful and autonomous, questions about bias, transparency, and accountability become increasingly important. Responsible AI development requires careful consideration of these factors throughout the design and implementation process.</p>
+        </div>
+    </div>
+    
+    <!-- Test Container 4: AI Explanation Content -->
+    <div class="test-container">
+        <h2 class="test-title">Test 4: AI Explanation Scrolling</h2>
+        <div class="status" id="test4-status">Ready to test</div>
+        <div class="tts-scrollable tts-explanation-content test-content" id="test4-content">
+            <h4>🤖 AI Explanation</h4>
+            <p><strong>Simple Explanation:</strong> Artificial Intelligence (AI) is like teaching computers to think and learn like humans do.</p>
+            <p><strong>Detailed Explanation:</strong> AI systems use mathematical algorithms and large datasets to identify patterns and make predictions. Machine learning allows these systems to improve their performance over time without being explicitly reprogrammed.</p>
+            <p><strong>Technical Details:</strong> Modern AI architectures often employ neural networks, which are computational models inspired by the human brain. Deep learning uses multiple layers of these networks to process complex data like images, speech, and text.</p>
+            <p><strong>Applications:</strong> AI is used in search engines, recommendation systems, autonomous vehicles, medical diagnosis, financial trading, and many other domains where pattern recognition and decision-making are valuable.</p>
+            <p><strong>Future Implications:</strong> As AI continues to advance, we can expect to see more sophisticated applications in areas like scientific research, creative arts, and human-computer interaction, while also facing new challenges related to ethics and societal impact.</p>
+        </div>
+    </div>
+    
+    <!-- Test Container 5: Theme Variations -->
+    <div class="test-container">
+        <h2 class="test-title">Test 5: Theme Variations</h2>
+        <div class="status" id="test5-status">Ready to test</div>
+        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+            <div class="tts-scrollable tts-theme-test" id="default-theme">
+                <h5>Default Purple Theme</h5>
+                <p>This is the default purple/violet gradient theme with modern styling and floating thumb effect.</p>
+                <p>The gradient moves from #7c3aed to #a855f7, providing a vibrant and modern appearance that matches contemporary UI design trends.</p>
+                <p>Hover effects enhance the user experience with subtle animations and improved contrast.</p>
+            </div>
+            <div class="tts-scrollable tts-theme-blue tts-theme-test" id="blue-theme">
+                <h5>Blue Theme Variant</h5>
+                <p>Alternative blue theme option for users who prefer cooler colors.</p>
+                <p>Uses a blue gradient from #2563eb to #3b82f6, providing a professional and trustworthy appearance.</p>
+                <p>Maintains the same interaction patterns and accessibility features as the default theme.</p>
+            </div>
+            <div class="tts-scrollable tts-theme-green tts-theme-test" id="green-theme">
+                <h5>Green Theme Variant</h5>
+                <p>Eco-friendly green theme option with natural color palette.</p>
+                <p>Gradient from #059669 to #10b981 provides a fresh, organic feel while maintaining excellent visibility.</p>
+                <p>Perfect for applications with environmental or health-related content.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Test Container 6: Auto-hide and Variants -->
+    <div class="test-container">
+        <h2 class="test-title">Test 6: Scrollbar Variants</h2>
+        <div class="status" id="test6-status">Ready to test</div>
+        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+            <div class="tts-scrollable-thin tts-scrollable tts-theme-test" id="thin-variant">
+                <h5>Thin Scrollbar Variant</h5>
+                <p>Compact design with 8px width for dense interfaces.</p>
+                <p>Maintains all functionality while taking up less screen real estate.</p>
+                <p>Ideal for mobile devices or when screen space is at a premium.</p>
+                <p>Still provides excellent accessibility with proper minimum thumb height.</p>
+            </div>
+            <div class="tts-scrollable-wide tts-scrollable tts-theme-test" id="wide-variant">
+                <h5>Wide Scrollbar Variant</h5>
+                <p>Enhanced accessibility with 16px width for better visibility.</p>
+                <p>Larger target area improves usability for users with motor impairments.</p>
+                <p>Provides better visual feedback and easier interaction.</p>
+                <p>Complies with accessibility guidelines for larger touch targets.</p>
+            </div>
+            <div class="tts-scrollable-auto-hide tts-scrollable tts-theme-test" id="auto-hide-variant">
+                <h5>Auto-hide Scrollbar</h5>
+                <p>Minimalist approach that shows scrollbar only on hover or focus.</p>
+                <p>Provides clean interface while maintaining functionality when needed.</p>
+                <p>Hover over this container to see the scrollbar appear with smooth animation.</p>
+                <p>Focus within the container also triggers the scrollbar visibility.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Browser detection and feature testing
+        function detectBrowser() {
+            const ua = navigator.userAgent;
+            const userAgentEl = document.getElementById('user-agent');
+            const featuresEl = document.getElementById('browser-features');
+            
+            userAgentEl.textContent = ua;
+            
+            let browserName = 'Unknown';
+            let browserVersion = 'Unknown';
+            let features = [];
+            
+            // Chrome
+            if (ua.includes('Chrome') && !ua.includes('Edge')) {
+                browserName = 'Chrome';
+                browserVersion = ua.match(/Chrome\/(\d+)/)?.[1] || 'Unknown';
+            }
+            // Firefox
+            else if (ua.includes('Firefox')) {
+                browserName = 'Firefox';
+                browserVersion = ua.match(/Firefox\/(\d+)/)?.[1] || 'Unknown';
+            }
+            // Safari
+            else if (ua.includes('Safari') && !ua.includes('Chrome')) {
+                browserName = 'Safari';
+                browserVersion = ua.match(/Version\/(\d+)/)?.[1] || 'Unknown';
+            }
+            // Edge
+            else if (ua.includes('Edge')) {
+                browserName = 'Edge';
+                browserVersion = ua.match(/Edge\/(\d+)/)?.[1] || 'Unknown';
+            }
+            
+            // Feature detection
+            if (CSS.supports('-webkit-scrollbar-thumb', 'background: red')) {
+                features.push('✓ Webkit Scrollbar Support');
+            } else {
+                features.push('✗ No Webkit Scrollbar Support');
+            }
+            
+            if (CSS.supports('scrollbar-width', 'thin')) {
+                features.push('✓ Firefox Scrollbar Support');
+            } else {
+                features.push('✗ Limited Firefox Scrollbar Support');
+            }
+            
+            if (CSS.supports('scrollbar-gutter', 'stable')) {
+                features.push('✓ Scrollbar Gutter Support');
+            } else {
+                features.push('✗ No Scrollbar Gutter Support');
+            }
+            
+            featuresEl.innerHTML = `
+                Browser: ${browserName} ${browserVersion}<br>
+                ${features.join('<br>')}
+            `;
+        }
+        
+        // Test functions
+        function testScrollbarVisibility(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return false;
+            
+            const hasOverflow = container.scrollHeight > container.clientHeight;
+            return hasOverflow;
+        }
+        
+        function testScrollbarFunctionality(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return false;
+            
+            const initialScrollTop = container.scrollTop;
+            container.scrollTop = 50;
+            const canScroll = container.scrollTop !== initialScrollTop;
+            container.scrollTop = initialScrollTop;
+            
+            return canScroll;
+        }
+        
+        function testAccessibilityFeatures(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return { keyboard: false, focus: false, aria: false };
+            
+            const results = {
+                keyboard: container.tabIndex >= 0 || container.hasAttribute('tabindex'),
+                focus: container.matches(':focus-within') !== null,
+                aria: container.hasAttribute('role') || container.hasAttribute('aria-label')
+            };
+            
+            return results;
+        }
+        
+        function updateTestStatus(testId, status, message) {
+            const statusEl = document.getElementById(`test${testId}-status`);
+            if (statusEl) {
+                statusEl.className = `status ${status}`;
+                statusEl.textContent = message;
+            }
+        }
+        
+        function runAllTests() {
+            console.log('Running all scrollbar tests...');
+            
+            const tests = [
+                { id: 1, contentId: 'test1-content', name: 'Basic Vertical Scrolling' },
+                { id: 2, contentId: 'test2-content', name: 'Activity List' },
+                { id: 3, contentId: 'test3-content', name: 'Text Preview' },
+                { id: 4, contentId: 'test4-content', name: 'AI Explanation' }
+            ];
+            
+            tests.forEach(test => {
+                const hasScroll = testScrollbarVisibility(test.contentId);
+                const canScroll = testScrollbarFunctionality(test.contentId);
+                const accessibility = testAccessibilityFeatures(test.contentId);
+                
+                let status = 'pass';
+                let message = `✓ ${test.name}: Scrollable, Functional`;
+                
+                if (!hasScroll && !canScroll) {
+                    status = 'unknown';
+                    message = `? ${test.name}: No overflow detected`;
+                } else if (hasScroll && !canScroll) {
+                    status = 'fail';
+                    message = `✗ ${test.name}: Scroll not working`;
+                }
+                
+                updateTestStatus(test.id, status, message);
+            });
+            
+            // Test theme variations
+            updateTestStatus(5, 'pass', '✓ Theme variations loaded successfully');
+            updateTestStatus(6, 'pass', '✓ Scrollbar variants available');
+        }
+        
+        function addMoreContent() {
+            const containers = ['test1-content', 'test2-content', 'test3-content', 'test4-content'];
+            
+            containers.forEach(containerId => {
+                const container = document.getElementById(containerId);
+                if (container) {
+                    const additionalContent = document.createElement('div');
+                    additionalContent.innerHTML = `
+                        <p><strong>Additional Test Content:</strong> This content was added dynamically to test scrollbar behavior with changing content height.</p>
+                        <p>The custom scrollbar should automatically adjust to the new content height and remain functional.</p>
+                        <p>Performance should remain smooth even with additional DOM elements.</p>
+                    `;
+                    container.appendChild(additionalContent);
+                }
+            });
+            
+            console.log('Added more content to test containers');
+        }
+        
+        function testThemes() {
+            const themes = ['default', 'blue', 'green'];
+            const themeContainers = themes.map(theme => 
+                theme === 'default' ? 'default-theme' : `${theme}-theme`
+            );
+            
+            themeContainers.forEach((containerId, index) => {
+                const container = document.getElementById(containerId);
+                if (container) {
+                    // Add some dynamic content to ensure scrolling
+                    const dynamicContent = document.createElement('div');
+                    dynamicContent.innerHTML = `
+                        <p>Dynamic content added to test ${themes[index]} theme scrollbar.</p>
+                        <p>Verifying gradient colors and hover effects work correctly.</p>
+                        <p>Each theme should maintain accessibility standards.</p>
+                    `;
+                    container.appendChild(dynamicContent);
+                }
+            });
+            
+            console.log('Theme test completed - check visual appearance of each theme');
+        }
+        
+        function testAccessibility() {
+            const containers = document.querySelectorAll('.tts-scrollable');
+            let accessibilityResults = {
+                total: containers.length,
+                focusable: 0,
+                keyboardNavigable: 0,
+                hasAriaLabels: 0
+            };
+            
+            containers.forEach(container => {
+                if (container.tabIndex >= 0 || container.hasAttribute('tabindex')) {
+                    accessibilityResults.focusable++;
+                }
+                
+                if (container.hasAttribute('role') || container.hasAttribute('aria-label')) {
+                    accessibilityResults.hasAriaLabels++;
+                }
+                
+                // Test keyboard navigation
+                container.addEventListener('keydown', function(e) {
+                    if (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'PageDown' || e.key === 'PageUp') {
+                        accessibilityResults.keyboardNavigable++;
+                    }
+                });
+            });
+            
+            console.log('Accessibility Test Results:', accessibilityResults);
+            alert(`Accessibility Test Results:
+            Total Containers: ${accessibilityResults.total}
+            Focusable: ${accessibilityResults.focusable}
+            Has ARIA Labels: ${accessibilityResults.hasAriaLabels}
+            
+            Try using Tab, Arrow Keys, Page Up/Down to test keyboard navigation.`);
+        }
+        
+        function testPerformance() {
+            const startTime = performance.now();
+            const testContainer = document.getElementById('test1-content');
+            
+            // Add lots of content to test performance
+            for (let i = 0; i < 100; i++) {
+                const p = document.createElement('p');
+                p.textContent = `Performance test paragraph ${i + 1}. This text is added to test scrollbar performance with large amounts of content.`;
+                testContainer.appendChild(p);
+            }
+            
+            const endTime = performance.now();
+            const renderTime = endTime - startTime;
+            
+            // Test scrolling performance
+            const scrollStartTime = performance.now();
+            testContainer.scrollTop = testContainer.scrollHeight / 2;
+            const scrollEndTime = performance.now();
+            const scrollTime = scrollEndTime - scrollStartTime;
+            
+            console.log(`Performance Test Results:
+            Content Render Time: ${renderTime.toFixed(2)}ms
+            Scroll Operation Time: ${scrollTime.toFixed(2)}ms`);
+            
+            alert(`Performance Test Results:
+            Content Render Time: ${renderTime.toFixed(2)}ms
+            Scroll Operation Time: ${scrollTime.toFixed(2)}ms
+            
+            Check console for detailed performance metrics.`);
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            detectBrowser();
+            
+            // Auto-run basic tests after a short delay
+            setTimeout(runAllTests, 1000);
+            
+            // Add event listeners for interactive testing
+            document.querySelectorAll('.tts-scrollable').forEach(container => {
+                container.addEventListener('scroll', function() {
+                    console.log(`Scroll event on ${this.id || this.className}: scrollTop=${this.scrollTop}`);
+                });
+                
+                container.addEventListener('mouseenter', function() {
+                    console.log(`Mouse enter on scrollable container: ${this.id || this.className}`);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

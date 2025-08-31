@@ -166,6 +166,14 @@ class TTSService {
       this.synthesis.cancel();
       this.currentUtterance = null;
     }
+    
+    // Clear fallback timer if running
+    if (this.fallbackTimer) {
+      clearInterval(this.fallbackTimer);
+      this.fallbackTimer = null;
+    }
+    
+    console.log('🛑 TTS stopped and highlighting timers cleared');
   }
 
   /**
@@ -415,29 +423,43 @@ class TTSService {
    * Set up event listeners for utterance
    */
   setupUtteranceEvents(utterance) {
+    // Enhanced boundary event handling with fallback support
     utterance.onboundary = (event) => {
       // Word/sentence boundaries - used for text highlighting
-      console.log('🔍 TTS boundary event:', event.name, 'at', event.charIndex, 'callbacks:', {
-        word: !!this.onWordBoundary,
-        sentence: !!this.onSentenceBoundary
+      console.log('🔍 TTS boundary event:', {
+        name: event.name, 
+        charIndex: event.charIndex,
+        text: event.text ? event.text.substring(0, 50) + '...' : 'undefined',
+        callbacks: {
+          word: !!this.onWordBoundary,
+          sentence: !!this.onSentenceBoundary
+        }
       });
       
       if (event.name === 'word' && this.onWordBoundary) {
-        console.log('📍 Calling word boundary callback');
+        console.log('📍 Calling word boundary callback with charIndex:', event.charIndex);
         this.onWordBoundary({
           charIndex: event.charIndex,
           text: utterance.text,
-          name: event.name
+          name: event.name,
+          event: event
         });
       } else if (event.name === 'sentence' && this.onSentenceBoundary) {
-        console.log('📍 Calling sentence boundary callback');
+        console.log('📍 Calling sentence boundary callback with charIndex:', event.charIndex);
         this.onSentenceBoundary({
           charIndex: event.charIndex,
           text: utterance.text,
-          name: event.name
+          name: event.name,
+          event: event
         });
       }
     };
+
+    // Fallback for browsers that don't support onboundary events
+    if (!utterance.onboundary) {
+      console.warn('⚠️ Browser does not support onboundary events - using timer-based fallback');
+      this.setupFallbackHighlighting(utterance);
+    }
     
     utterance.onmark = (event) => {
       // SSML marks - for advanced speech control
@@ -591,14 +613,63 @@ class TTSService {
    */
   setSentenceBoundaryCallback(callback) {
     this.onSentenceBoundary = callback;
+    console.log('📋 Sentence boundary callback set:', !!callback);
+  }
+
+  /**
+   * Setup fallback highlighting for browsers without onboundary support
+   */
+  setupFallbackHighlighting(utterance) {
+    if (!this.onWordBoundary && !this.onSentenceBoundary) {
+      return;
+    }
+
+    console.log('⏰ Setting up timer-based highlighting fallback');
+    
+    const words = utterance.text.split(/\s+/);
+    const estimatedWordsPerSecond = this.rate * 3; // Approximate words per second
+    const wordInterval = 1000 / estimatedWordsPerSecond;
+    
+    let wordIndex = 0;
+    let charIndex = 0;
+    
+    const highlightTimer = setInterval(() => {
+      if (!this.isPlaying || wordIndex >= words.length) {
+        clearInterval(highlightTimer);
+        return;
+      }
+      
+      const currentWord = words[wordIndex];
+      if (currentWord && this.onWordBoundary) {
+        this.onWordBoundary({
+          charIndex: charIndex,
+          text: utterance.text,
+          name: 'word',
+          fallback: true
+        });
+      }
+      
+      charIndex += currentWord.length + 1; // +1 for space
+      wordIndex++;
+    }, wordInterval);
+
+    // Store timer reference for cleanup
+    this.fallbackTimer = highlightTimer;
   }
 
   /**
    * Remove highlighting callbacks
    */
   clearHighlightCallbacks() {
+    console.log('🧹 Clearing highlight callbacks');
     this.onWordBoundary = null;
     this.onSentenceBoundary = null;
+    
+    // Clear fallback timer if running
+    if (this.fallbackTimer) {
+      clearInterval(this.fallbackTimer);
+      this.fallbackTimer = null;
+    }
   }
 }
 

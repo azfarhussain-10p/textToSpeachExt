@@ -1,0 +1,399 @@
+/**
+ * Custom Scrollbar Styles for Intelligent TTS Extension
+ * 
+ * Modern gradient scrollbars with accessibility and cross-browser support
+ * Implements purple/violet gradient design with floating thumb effect
+ * 
+ * @author Intelligent TTS Extension Team
+ * @version 1.0.0
+ */
+
+/* CSS Custom Properties for easy theming */
+:root {
+  /* Primary scrollbar colors - Purple/Violet gradient */
+  --tts-scrollbar-thumb-start: #7c3aed;
+  --tts-scrollbar-thumb-end: #a855f7;
+  --tts-scrollbar-thumb-hover-start: #6d28d9;
+  --tts-scrollbar-thumb-hover-end: #9333ea;
+  --tts-scrollbar-thumb-active-start: #5b21b6;
+  --tts-scrollbar-thumb-active-end: #7e22ce;
+  
+  /* Track colors */
+  --tts-scrollbar-track-bg: #f0f0f0;
+  --tts-scrollbar-track-border: #e5e5e5;
+  
+  /* Dark theme colors */
+  --tts-scrollbar-track-bg-dark: #2d2d2d;
+  --tts-scrollbar-track-border-dark: #404040;
+  
+  /* Dimensions */
+  --tts-scrollbar-width: 12px;
+  --tts-scrollbar-border-radius: 10px;
+  --tts-scrollbar-thumb-min-height: 30px;
+  
+  /* Animation timing */
+  --tts-scrollbar-transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+/* Base scrollable container styles */
+.tts-scrollable {
+  /* Essential scrollbar setup */
+  overflow-y: auto;
+  overflow-x: hidden;
+  
+  /* Prevent layout shifts */
+  scrollbar-gutter: stable;
+  
+  /* Smooth scrolling */
+  scroll-behavior: smooth;
+  
+  /* Firefox fallback support */
+  scrollbar-width: thin;
+  scrollbar-color: var(--tts-scrollbar-thumb-start) var(--tts-scrollbar-track-bg);
+}
+
+/* Webkit browsers (Chrome, Safari, Edge, Opera) */
+.tts-scrollable::-webkit-scrollbar {
+  width: var(--tts-scrollbar-width);
+  height: var(--tts-scrollbar-width);
+}
+
+.tts-scrollable::-webkit-scrollbar-track {
+  background: var(--tts-scrollbar-track-bg);
+  border-radius: var(--tts-scrollbar-border-radius);
+  border: 1px solid var(--tts-scrollbar-track-border);
+  margin: 2px;
+}
+
+.tts-scrollable::-webkit-scrollbar-thumb {
+  /* Modern gradient background */
+  background: linear-gradient(
+    135deg,
+    var(--tts-scrollbar-thumb-start) 0%,
+    var(--tts-scrollbar-thumb-end) 100%
+  );
+  
+  /* Floating effect using background-clip technique */
+  border: 2px solid transparent;
+  background-clip: content-box;
+  border-radius: var(--tts-scrollbar-border-radius);
+  
+  /* Minimum size for accessibility */
+  min-height: var(--tts-scrollbar-thumb-min-height);
+  
+  /* Smooth transitions */
+  transition: var(--tts-scrollbar-transition);
+  
+  /* Box shadow for depth */
+  box-shadow: 
+    0 2px 6px rgba(124, 58, 237, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.tts-scrollable::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    135deg,
+    var(--tts-scrollbar-thumb-hover-start) 0%,
+    var(--tts-scrollbar-thumb-hover-end) 100%
+  );
+  
+  /* Enhanced shadow on hover */
+  box-shadow: 
+    0 4px 12px rgba(124, 58, 237, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  
+  /* Subtle scale effect */
+  transform: scaleX(1.05);
+}
+
+.tts-scrollable::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(
+    135deg,
+    var(--tts-scrollbar-thumb-active-start) 0%,
+    var(--tts-scrollbar-thumb-active-end) 100%
+  );
+  
+  /* Pressed state shadow */
+  box-shadow: 
+    0 1px 3px rgba(124, 58, 237, 0.4),
+    inset 0 1px 2px rgba(0, 0, 0, 0.2);
+  
+  transform: scaleX(0.95);
+}
+
+/* Corner styling when both scrollbars are present */
+.tts-scrollable::-webkit-scrollbar-corner {
+  background: var(--tts-scrollbar-track-bg);
+  border: 1px solid var(--tts-scrollbar-track-border);
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --tts-scrollbar-track-bg: var(--tts-scrollbar-track-bg-dark);
+    --tts-scrollbar-track-border: var(--tts-scrollbar-track-border-dark);
+  }
+  
+  /* Firefox dark theme */
+  .tts-scrollable {
+    scrollbar-color: var(--tts-scrollbar-thumb-start) var(--tts-scrollbar-track-bg-dark);
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .tts-scrollable::-webkit-scrollbar-thumb {
+    background: #000000;
+    border: 2px solid #ffffff;
+    box-shadow: none;
+  }
+  
+  .tts-scrollable::-webkit-scrollbar-thumb:hover,
+  .tts-scrollable::-webkit-scrollbar-thumb:active {
+    background: #333333;
+    box-shadow: none;
+    transform: none;
+  }
+  
+  .tts-scrollable::-webkit-scrollbar-track {
+    background: #ffffff;
+    border: 2px solid #000000;
+  }
+  
+  /* Firefox high contrast */
+  .tts-scrollable {
+    scrollbar-color: #000000 #ffffff;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .tts-scrollable {
+    scroll-behavior: auto;
+  }
+  
+  .tts-scrollable::-webkit-scrollbar-thumb {
+    transition: none;
+  }
+  
+  .tts-scrollable::-webkit-scrollbar-thumb:hover,
+  .tts-scrollable::-webkit-scrollbar-thumb:active {
+    transform: none;
+  }
+}
+
+/* Thin variant for compact interfaces */
+.tts-scrollable-thin {
+  --tts-scrollbar-width: 8px;
+  --tts-scrollbar-thumb-min-height: 24px;
+}
+
+.tts-scrollable-thin {
+  scrollbar-width: thin;
+}
+
+/* Wide variant for better accessibility */
+.tts-scrollable-wide {
+  --tts-scrollbar-width: 16px;
+  --tts-scrollbar-thumb-min-height: 36px;
+}
+
+/* Auto-hide variant that appears on hover/focus */
+.tts-scrollable-auto-hide::-webkit-scrollbar {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.tts-scrollable-auto-hide:hover::-webkit-scrollbar,
+.tts-scrollable-auto-hide:focus-within::-webkit-scrollbar {
+  opacity: 1;
+}
+
+/* Horizontal scrollbar support */
+.tts-scrollable-horizontal {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.tts-scrollable-horizontal::-webkit-scrollbar:horizontal {
+  height: var(--tts-scrollbar-width);
+}
+
+/* Focus indicators for keyboard navigation */
+.tts-scrollable:focus {
+  outline: 2px solid var(--tts-scrollbar-thumb-start);
+  outline-offset: 2px;
+}
+
+.tts-scrollable:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Specific container styles for TTS Extension components */
+
+/* Popup activity list */
+.tts-popup-activity-list {
+  max-height: 200px;
+}
+
+/* Overlay explanation content */
+.tts-explanation-content {
+  max-height: 300px;
+  resize: vertical;
+}
+
+/* Settings content areas */
+.tts-settings-content,
+.tts-shortcuts-list {
+  max-height: 250px;
+}
+
+/* Text preview areas */
+.tts-text-preview {
+  max-height: 400px;
+  resize: vertical;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  :root {
+    --tts-scrollbar-width: 8px;
+    --tts-scrollbar-thumb-min-height: 24px;
+  }
+  
+  /* Thinner scrollbars on mobile for better touch experience */
+  .tts-scrollable {
+    scrollbar-width: thin;
+  }
+}
+
+@media (max-width: 320px) {
+  :root {
+    --tts-scrollbar-width: 6px;
+    --tts-scrollbar-thumb-min-height: 20px;
+  }
+}
+
+/* RTL language support */
+[dir="rtl"] .tts-scrollable {
+  scroll-behavior: smooth;
+}
+
+[dir="rtl"] .tts-scrollable::-webkit-scrollbar {
+  left: 0;
+  right: auto;
+}
+
+/* Performance optimizations */
+.tts-scrollable {
+  /* Enable hardware acceleration for smooth scrolling */
+  will-change: scroll-position;
+  
+  /* CSS containment for better performance */
+  contain: layout style paint;
+}
+
+/* Custom theme variants */
+.tts-theme-blue {
+  --tts-scrollbar-thumb-start: #2563eb;
+  --tts-scrollbar-thumb-end: #3b82f6;
+  --tts-scrollbar-thumb-hover-start: #1d4ed8;
+  --tts-scrollbar-thumb-hover-end: #2563eb;
+  --tts-scrollbar-thumb-active-start: #1e40af;
+  --tts-scrollbar-thumb-active-end: #1d4ed8;
+}
+
+.tts-theme-green {
+  --tts-scrollbar-thumb-start: #059669;
+  --tts-scrollbar-thumb-end: #10b981;
+  --tts-scrollbar-thumb-hover-start: #047857;
+  --tts-scrollbar-thumb-hover-end: #059669;
+  --tts-scrollbar-thumb-active-start: #065f46;
+  --tts-scrollbar-thumb-active-end: #047857;
+}
+
+.tts-theme-red {
+  --tts-scrollbar-thumb-start: #dc2626;
+  --tts-scrollbar-thumb-end: #ef4444;
+  --tts-scrollbar-thumb-hover-start: #b91c1c;
+  --tts-scrollbar-thumb-hover-end: #dc2626;
+  --tts-scrollbar-thumb-active-start: #991b1b;
+  --tts-scrollbar-thumb-active-end: #b91c1c;
+}
+
+/* Accessibility: Ensure sufficient contrast ratios */
+@media (prefers-contrast: more) {
+  .tts-scrollable::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+      135deg,
+      #5b21b6 0%,
+      #7e22ce 100%
+    );
+    border: 3px solid transparent;
+  }
+  
+  .tts-scrollable::-webkit-scrollbar-track {
+    background: #ffffff;
+    border: 2px solid #000000;
+  }
+}
+
+/* Print styles - hide scrollbars when printing */
+@media print {
+  .tts-scrollable {
+    overflow: visible !important;
+    scrollbar-width: none;
+  }
+  
+  .tts-scrollable::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Focus management for screen readers */
+.tts-scrollable[aria-busy="true"]::-webkit-scrollbar-thumb {
+  animation: tts-scrollbar-loading 1s ease-in-out infinite alternate;
+}
+
+@keyframes tts-scrollbar-loading {
+  from {
+    opacity: 0.7;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Container-specific max heights for better UX */
+.tts-scrollable.popup-container {
+  max-height: 600px;
+}
+
+.tts-scrollable.overlay-container {
+  max-height: 95vh;
+}
+
+.tts-scrollable.settings-panel {
+  max-height: 400px;
+}
+
+.tts-scrollable.shortcuts-panel {
+  max-height: 300px;
+}
+
+/* Ensure scrollbars don't interfere with content layout */
+.tts-scrollable {
+  box-sizing: border-box;
+}
+
+/* Support for nested scrollable containers */
+.tts-scrollable .tts-scrollable {
+  --tts-scrollbar-width: 8px;
+  margin-right: 4px;
+}
+
+/* Focus trap support for modal scrollable areas */
+.tts-scrollable[role="dialog"] {
+  scroll-padding-top: 20px;
+  scroll-padding-bottom: 20px;
+}
