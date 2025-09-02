@@ -84,7 +84,46 @@ claude-code invoke api-planner "I need to integrate Groq API for text explanatio
 claude-code invoke documentation-manager "Updated TTS service with new voice selection features"
 ```
 
-### 3. ✅ Validation Gates Agent (`validation-gates.md`)
+### 3. 🧪 Expert Automation Engineer Agent (`expert-automation-engineer.md`)
+
+**Purpose**: Comprehensive E2E Test Automation Systems Specialist
+
+**Specialization**:
+- Design and implement complete E2E testing frameworks using Playwright and Allure reporting
+- Set up CI/CD pipelines with automated test execution and reporting
+- Create comprehensive test suites including smoke, sanity, regression, and integration tests
+- Generate realistic test data and organize test automation architecture
+
+**Key Capabilities**:
+- ✅ **Framework Design**: Creates scalable Playwright test frameworks from scratch
+- ✅ **Advanced Reporting**: Implements Allure reporting with detailed test analytics
+- ✅ **CI/CD Integration**: Sets up GitHub Actions workflows for automated testing
+- ✅ **Test Architecture**: Organizes tests with proper Page Object Model patterns
+- ✅ **Data Management**: Generates realistic test data and fixtures
+- ✅ **Cross-Browser Testing**: Configures multi-browser test execution
+- ✅ **Performance Testing**: Integrates performance metrics and monitoring
+
+**Testing Capabilities**:
+- End-to-end browser automation for extension testing
+- Visual regression testing for UI components
+- API testing integration for TTS services
+- Accessibility testing automation (WCAG 2.1 AA compliance)
+- Mobile responsiveness testing for overlay components
+
+**When to Use**:
+- Setting up comprehensive E2E testing for browser extensions
+- Creating test automation frameworks for TTS functionality
+- Implementing CI/CD pipelines with test automation
+- Enhancing existing test coverage with advanced scenarios
+- Setting up performance monitoring and test analytics
+
+**Example Invocation**:
+```bash
+# Setting up E2E testing framework
+claude-code invoke expert-automation-engineer "Create a comprehensive E2E testing framework for my text-to-speech extension with Playwright and Allure reporting"
+```
+
+### 4. ✅ Validation Gates Agent (`validation-gates.md`)
 
 **Purpose**: Testing and validation specialist ensuring code quality through comprehensive validation
 
@@ -153,10 +192,13 @@ claude-code invoke api-planner "Add Groq API for content explanations"
 # Step 2: Implement based on agent's plan
 # ... implementation code ...
 
-# Step 3: Update documentation
+# Step 3: Set up comprehensive testing
+claude-code invoke expert-automation-engineer "Create E2E tests for AI explanation feature with API mocking and error scenarios"
+
+# Step 4: Update documentation
 claude-code invoke documentation-manager "Added AI explanation service with Groq integration"
 
-# Step 4: Validate implementation
+# Step 5: Validate implementation
 claude-code invoke validation-gates "AI explanation feature with secure API key management and rate limiting"
 ```
 
@@ -168,10 +210,13 @@ claude-code invoke api-planner "Ensure TTS service works on Safari with speech s
 # Step 2: Implement cross-browser solution
 # ... implementation code ...
 
-# Step 3: Update compatibility documentation
+# Step 3: Set up cross-browser testing
+claude-code invoke expert-automation-engineer "Create cross-browser E2E tests for TTS functionality on Chrome, Firefox, Safari, and Edge"
+
+# Step 4: Update compatibility documentation
 claude-code invoke documentation-manager "Updated TTS service for Safari compatibility and mobile support"
 
-# Step 4: Validate across all browsers
+# Step 5: Validate across all browsers
 claude-code invoke validation-gates "Cross-browser TTS implementation with Safari-specific voice loading"
 ```
 
@@ -192,6 +237,7 @@ Each agent is configured with:
 |-------|------|-------|------|-----------|------|------|------|-----------|
 | **api-planner** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **documentation-manager** | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ❌ |
+| **expert-automation-engineer** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **validation-gates** | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 ## 🎨 Agent Customization
@@ -279,6 +325,7 @@ All agents follow TTS extension security requirements:
 ```bash
 # Test each agent with sample prompts
 claude-code invoke api-planner "Test API integration planning"
+claude-code invoke expert-automation-engineer "Test E2E framework setup"
 claude-code invoke documentation-manager "Test documentation updates"
 claude-code invoke validation-gates "Test validation workflow"
 ```

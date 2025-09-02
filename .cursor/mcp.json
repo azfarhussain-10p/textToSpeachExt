@@ -1,0 +1,17 @@
+{
+  "servers": {
+    "sequential-thinking": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ]
+    },
+    "browser-mcp": {
+      "command": "npx",
+      "args": [
+        "@agent-infra/mcp-server-browser@latest"
+      ]
+    }
+  }
+}

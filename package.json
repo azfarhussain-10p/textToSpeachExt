@@ -104,6 +104,8 @@
     "npm": ">=8.0.0"
   },
   "dependencies": {
+    "@agent-infra/mcp-server-browser": "^1.2.20",
+    "@modelcontextprotocol/server-sequential-thinking": "^2025.7.1",
     "webextension-polyfill": "^0.10.0"
   },
   "devDependencies": {
@@ -116,6 +118,7 @@
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "babel-loader": "^10.0.0",
+    "chrome-webstore-upload-cli": "^3.3.2",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^13.0.1",
     "css-loader": "^7.1.2",
@@ -143,13 +146,12 @@
     "web-ext": "^8.9.0",
     "webpack": "^5.101.3",
     "webpack-bundle-analyzer": "^4.10.2",
-    "webpack-cli": "^6.0.1",
-    "chrome-webstore-upload-cli": "^3.3.2"
+    "webpack-cli": "^6.0.1"
   },
   "optionalDependencies": {
+    "@playwright/test": "^1.36.0",
     "playwright": "^1.36.0",
-    "selenium-webdriver": "^4.11.0",
-    "@playwright/test": "^1.36.0"
+    "selenium-webdriver": "^4.11.0"
   },
   "browserslist": [
     "Chrome >= 88",

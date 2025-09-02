@@ -14,7 +14,12 @@
       "Bash(npm run build:chrome:*)",
       "mcp__serena__check_onboarding_performed",
       "Bash(grep:*)",
-      "mcp__serena__insert_after_symbol"
+      "mcp__serena__insert_after_symbol",
+      "WebSearch",
+      "Bash(npm install:*)",
+      "Bash(npx @modelcontextprotocol/server-sequential-thinking:*)",
+      "Bash(npx @agent-infra/mcp-server-browser:*)",
+      "mcp__serena__find_file"
     ],
     "deny": [],
     "ask": [],
