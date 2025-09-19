@@ -670,18 +670,12 @@ body::-webkit-scrollbar-thumb:active {
   background: #f8f9fa;
 }
 
-.tts-spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid #e9ecef;
-  border-top: 2px solid #007bff;
-  border-radius: 50%;
-  animation: tts-spin 1s linear infinite;
-}
-
-@keyframes tts-spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.tts-process-gif {
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  vertical-align: middle;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
 }
 
 .tts-loading-text {
@@ -779,6 +773,36 @@ body::-webkit-scrollbar-thumb:active {
   font-style: normal;
   display: inline-block;
   font-size: 14px;
+}
+
+.tts-icon-img {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 6px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+}
+
+/* Voice container with select and test button */
+.tts-voice-container {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.tts-voice-container .tts-select {
+  flex: 1;
+  min-width: 0;
+}
+
+.tts-test-voice-btn {
+  flex-shrink: 0;
+  white-space: nowrap;
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.tts-test-voice-btn .tts-icon-img {
+  margin-right: 4px;
 }
 
 /* Responsive design */

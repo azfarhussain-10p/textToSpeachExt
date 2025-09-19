@@ -13,7 +13,7 @@
         <!-- Header with title and close button -->
         <div class="tts-header">
             <h3 id="tts-title" class="tts-title">
-                <span class="tts-icon">🔊</span>
+                <img src="../assets/icons/volume.png" alt="TTS" class="tts-icon-img" width="20" height="20">
                 Text-to-Speech
             </h3>
             <button id="tts-close" class="tts-close-btn" aria-label="Close TTS overlay" title="Close (Esc)">
@@ -42,9 +42,15 @@
             <div class="tts-settings-content tts-scrollable tts-settings-content" id="tts-settings-content" hidden>
                 <div class="tts-setting-group">
                     <label for="tts-voice" class="tts-setting-label">Voice:</label>
-                    <select id="tts-voice" class="tts-select" aria-describedby="tts-voice-help">
-                        <option value="">Loading voices...</option>
-                    </select>
+                    <div class="tts-voice-container">
+                        <select id="tts-voice" class="tts-select" aria-describedby="tts-voice-help">
+                            <option value="">Loading voices...</option>
+                        </select>
+                        <button id="tts-test-voice" class="tts-btn tts-btn-small tts-test-voice-btn" title="Test Voice">
+                            <img src="../assets/icons/microphone.png" alt="Test Voice" class="tts-icon-img" width="16" height="16">
+                            <span class="tts-btn-text">Test Voice</span>
+                        </button>
+                    </div>
                     <div id="tts-voice-help" class="tts-setting-help">Choose the voice for speech synthesis</div>
                 </div>
 
@@ -117,7 +123,7 @@
         <div class="tts-status" id="tts-status" role="status" aria-live="polite"></div>
         
         <div class="tts-loading" id="tts-loading" hidden>
-            <div class="tts-spinner"></div>
+            <img src="../assets/icons/process.gif" alt="Loading" class="tts-process-gif" width="24" height="24">
             <span class="tts-loading-text" id="tts-loading-text">Processing...</span>
         </div>
 
@@ -156,9 +162,9 @@
         <!-- Main control buttons - fixed at bottom -->
         <div class="tts-controls">
             <div class="tts-control-group tts-playback-controls" role="group" aria-label="Playback controls">
-                <button id="tts-play" class="tts-btn tts-btn-primary" aria-label="Play text" title="Play (Ctrl+Shift+S)">
-                    <span class="tts-icon">▶</span>
-                    <span class="tts-btn-text">Play</span>
+                <button id="tts-play" class="tts-btn tts-btn-primary" aria-label="Speak Selection" title="Speak Selection (Ctrl+Shift+S)">
+                    <img src="../assets/icons/volume.png" alt="Speak" class="tts-icon-img" width="16" height="16">
+                    <span class="tts-btn-text">Speak Selection</span>
                 </button>
                 <button id="tts-pause" class="tts-btn tts-btn-secondary" aria-label="Pause speech" title="Pause" disabled>
                     <span class="tts-icon">⏸</span>

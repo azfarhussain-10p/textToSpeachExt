@@ -257,6 +257,12 @@ class TTSService {
    * Stop current speech
    */
   stop() {
+    // Clear highlight timers from current utterance before stopping
+    if (this.currentUtterance && this.currentUtterance._highlightTimer) {
+      clearInterval(this.currentUtterance._highlightTimer);
+      this.currentUtterance._highlightTimer = null;
+    }
+
     if (this.synthesis) {
       this.synthesis.cancel();
       this.currentUtterance = null;
@@ -264,7 +270,7 @@ class TTSService {
 
     // Clear fallback timer if running
     if (this.fallbackTimer) {
-      clearInterval(this.fallbackTimer);
+      clearTimeout(this.fallbackTimer);
       this.fallbackTimer = null;
     }
   }
@@ -517,7 +523,18 @@ class TTSService {
    */
   setupUtteranceEvents(utterance) {
     // Enhanced boundary event handling with fallback support
+    let boundaryEventReceived = false;
+    let fallbackTimer = null;
+
     utterance.onboundary = (event) => {
+      boundaryEventReceived = true;
+
+      // Clear fallback timer since native events are working
+      if (fallbackTimer) {
+        clearTimeout(fallbackTimer);
+        fallbackTimer = null;
+      }
+
       // Call our speech progress callback for completion detection
       if (this.speechProgressCallback) {
         this.speechProgressCallback(event);
@@ -528,22 +545,38 @@ class TTSService {
           charIndex: event.charIndex,
           text: utterance.text,
           name: event.name,
-          event: event
+          event: event,
+          native: true
         });
       } else if (event.name === 'sentence' && this.onSentenceBoundary) {
         this.onSentenceBoundary({
           charIndex: event.charIndex,
           text: utterance.text,
           name: event.name,
-          event: event
+          event: event,
+          native: true
         });
       }
     };
 
-    // Fallback for browsers that don't support onboundary events
-    if (!utterance.onboundary) {
-      this.setupFallbackHighlighting(utterance);
-    }
+    // Set up a fallback detection timer
+    fallbackTimer = setTimeout(() => {
+      if (!boundaryEventReceived && (this.onWordBoundary || this.onSentenceBoundary)) {
+        console.warn('⚠️ No boundary events received, activating fallback highlighting');
+        this.setupFallbackHighlighting(utterance);
+      }
+    }, 500); // Wait 500ms for boundary events
+
+    // Store the timer for cleanup
+    this.fallbackTimer = fallbackTimer;
+
+    // Store reference to utterance for cleanup
+    this.currentUtterance = utterance;
+
+    // Test onboundary support after a short delay to allow voice to load
+    setTimeout(() => {
+      this.testAndSetupHighlighting(utterance);
+    }, 100);
 
     utterance.onmark = (event) => {
       // SSML marks - for advanced speech control
@@ -673,6 +706,51 @@ class TTSService {
   }
 
   /**
+   * Test onboundary support and setup appropriate highlighting
+   */
+  testAndSetupHighlighting(utterance) {
+    // Check if highlighting callbacks are set
+    if (!this.onWordBoundary && !this.onSentenceBoundary) {
+      console.warn('🔍 No highlighting callbacks set, skipping highlighting setup');
+      return;
+    }
+
+    // Test if the current voice/browser combination supports onboundary
+    const supportsOnBoundary = this.testOnBoundarySupport(utterance);
+
+    if (!supportsOnBoundary) {
+      console.warn('⚠️ onboundary not supported with current voice, using fallback highlighting');
+      this.setupFallbackHighlighting(utterance);
+    } else {
+      console.warn('✅ onboundary supported, using native highlighting');
+    }
+  }
+
+  /**
+   * Test if onboundary events are supported with current voice
+   */
+  testOnBoundarySupport(utterance) {
+    // Basic check - if onboundary property doesn't exist, definitely not supported
+    if (typeof utterance.onboundary === 'undefined') {
+      return false;
+    }
+
+    // Check voice-specific support
+    if (utterance.voice) {
+      // Some voices (especially remote/cloud voices) might not support onboundary
+      const isLocalVoice = utterance.voice.localService !== false;
+
+      // Prefer local voices for onboundary support
+      if (!isLocalVoice) {
+        console.warn(`🌐 Remote voice detected (${utterance.voice.name}), may have limited onboundary support`);
+        // Don't return false immediately, let the fallback detection handle it
+      }
+    }
+
+    return true; // Assume supported, fallback will kick in if needed
+  }
+
+  /**
    * Setup fallback highlighting for browsers without onboundary support
    */
   setupFallbackHighlighting(utterance) {
@@ -683,16 +761,45 @@ class TTSService {
     console.warn('⏰ Setting up timer-based highlighting fallback');
 
     const words = utterance.text.split(/\s+/);
-    const estimatedWordsPerSecond = this.rate * 3; // Approximate words per second
-    const wordInterval = 1000 / estimatedWordsPerSecond;
+    const currentRate = utterance.rate || 1.0;
+
+    // Improved timing calculation based on voice characteristics
+    const voiceTimingFactor = this.getVoiceTimingFactor(utterance.voice);
+    const languageTimingFactor = this.getLanguageTimingFactor(utterance.lang || utterance.voice?.lang);
+
+    // Base timing: 2.5 words per second for English, adjusted for rate, voice, and language
+    const baseWordsPerSecond = 2.5;
+    const adjustedWordsPerSecond = baseWordsPerSecond * currentRate * voiceTimingFactor * languageTimingFactor;
+    const wordInterval = 1000 / adjustedWordsPerSecond;
+
+    console.warn(`📊 Timing calculation - Rate: ${currentRate}, Voice Factor: ${voiceTimingFactor}, Lang Factor: ${languageTimingFactor}, Final WPS: ${adjustedWordsPerSecond.toFixed(2)}, Interval: ${wordInterval.toFixed(0)}ms`);
 
     let wordIndex = 0;
     let charIndex = 0;
+    const startTime = Date.now();
+    let lastHighlightTime = startTime;
 
     const highlightTimer = setInterval(() => {
-      if (!this.isPlaying || wordIndex >= words.length) {
+      if (!this.currentUtterance || this.currentUtterance !== utterance || wordIndex >= words.length) {
         clearInterval(highlightTimer);
         return;
+      }
+
+      // Add adaptive timing adjustment based on actual speech progress
+      const currentTime = Date.now();
+      const elapsedTime = currentTime - startTime;
+      const expectedWordIndex = Math.floor((elapsedTime / 1000) * adjustedWordsPerSecond);
+
+      // If we're significantly ahead or behind, adjust
+      if (Math.abs(expectedWordIndex - wordIndex) > 2 && wordIndex > 5) {
+        console.warn(`🔄 Adjusting timing - Expected: ${expectedWordIndex}, Current: ${wordIndex}`);
+        wordIndex = Math.max(0, Math.min(expectedWordIndex, words.length - 1));
+
+        // Recalculate charIndex for the adjusted position
+        charIndex = 0;
+        for (let i = 0; i < wordIndex; i++) {
+          charIndex += words[i].length + 1; // +1 for space
+        }
       }
 
       const currentWord = words[wordIndex];
@@ -701,16 +808,125 @@ class TTSService {
           charIndex: charIndex,
           text: utterance.text,
           name: 'word',
-          fallback: true
+          fallback: true,
+          wordIndex: wordIndex,
+          totalWords: words.length,
+          actualTiming: currentTime - lastHighlightTime
         });
       }
 
       charIndex += currentWord.length + 1; // +1 for space
       wordIndex++;
+      lastHighlightTime = currentTime;
     }, wordInterval);
 
     // Store timer reference for cleanup
-    this.fallbackTimer = highlightTimer;
+    utterance._highlightTimer = highlightTimer;
+  }
+
+  /**
+   * Get timing factor based on voice characteristics
+   */
+  getVoiceTimingFactor(voice) {
+    if (!voice) {return 1.0;}
+
+    const voiceName = voice.name.toLowerCase();
+
+    // Voice-specific timing adjustments based on observed speech patterns
+    if (voiceName.includes('google')) {
+      if (voiceName.includes('uk') || voiceName.includes('british')) {
+        return 0.85; // British voices tend to speak slower
+      }
+      if (voiceName.includes('us') || voiceName.includes('american')) {
+        return 1.0; // Standard timing
+      }
+      if (voiceName.includes('australian')) {
+        return 0.9; // Slightly slower
+      }
+      return 0.95; // Google voices generally slightly slower
+    }
+
+    if (voiceName.includes('microsoft') || voiceName.includes('edge')) {
+      return 1.1; // Microsoft voices tend to be faster
+    }
+
+    if (voiceName.includes('apple') || voiceName.includes('system')) {
+      return 0.9; // Apple system voices tend to be slower
+    }
+
+    // Default for unknown voices
+    return 1.0;
+  }
+
+  /**
+   * Get timing factor based on language characteristics
+   */
+  getLanguageTimingFactor(language) {
+    if (!language) {return 1.0;}
+
+    const lang = language.toLowerCase();
+
+    // Language-specific timing adjustments based on typical speaking rates
+    if (lang.startsWith('en')) {
+      if (lang.includes('gb') || lang.includes('uk')) {
+        return 0.85; // British English slower
+      }
+      if (lang.includes('au')) {
+        return 0.9; // Australian English
+      }
+      return 1.0; // Standard English (US)
+    }
+
+    if (lang.startsWith('es')) {
+      return 1.2; // Spanish typically faster
+    }
+
+    if (lang.startsWith('fr')) {
+      return 1.1; // French slightly faster
+    }
+
+    if (lang.startsWith('de')) {
+      return 0.9; // German slightly slower
+    }
+
+    if (lang.startsWith('it')) {
+      return 1.15; // Italian faster
+    }
+
+    if (lang.startsWith('pt')) {
+      return 1.1; // Portuguese faster
+    }
+
+    if (lang.startsWith('ru')) {
+      return 0.95; // Russian slightly slower
+    }
+
+    if (lang.startsWith('ja')) {
+      return 0.8; // Japanese slower
+    }
+
+    if (lang.startsWith('ko')) {
+      return 0.85; // Korean slower
+    }
+
+    if (lang.startsWith('zh')) {
+      return 0.9; // Chinese slightly slower
+    }
+
+    if (lang.startsWith('hi')) {
+      return 0.95; // Hindi slightly slower
+    }
+
+    if (lang.startsWith('ar')) {
+      return 0.9; // Arabic slower
+    }
+
+    if (lang.startsWith('ur')) {
+      return 0.9; // Urdu slower
+    }
+
+    // Default for unknown languages
+    return 1.0;
   }
 
   /**
@@ -723,8 +939,14 @@ class TTSService {
 
     // Clear fallback timer if running
     if (this.fallbackTimer) {
-      clearInterval(this.fallbackTimer);
+      clearTimeout(this.fallbackTimer);
       this.fallbackTimer = null;
+    }
+
+    // Clear highlight timers from current utterance
+    if (this.currentUtterance && this.currentUtterance._highlightTimer) {
+      clearInterval(this.currentUtterance._highlightTimer);
+      this.currentUtterance._highlightTimer = null;
     }
   }
 }

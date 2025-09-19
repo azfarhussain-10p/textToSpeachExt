@@ -86,6 +86,7 @@
       settingsToggle: '#tts-settings-toggle',
       settingsContent: '#tts-settings-content',
       voiceSelect: '#tts-voice',
+      testVoiceBtn: '#tts-test-voice',
       rateSlider: '#tts-rate',
       pitchSlider: '#tts-pitch',
       volumeSlider: '#tts-volume',
@@ -141,6 +142,7 @@
     // Settings controls
     elements.settingsToggle?.addEventListener('click', toggleSettings);
     elements.voiceSelect?.addEventListener('change', handleVoiceChange);
+    elements.testVoiceBtn?.addEventListener('click', handleTestVoice);
 
     // Range sliders with real-time updates
     elements.rateSlider?.addEventListener('input', handleRateChange);
@@ -649,6 +651,42 @@
   function handleVoiceChange(event) {
     overlayState.currentSettings.voice = event.target.value;
     saveSettings();
+  }
+
+  /**
+   * Handle test voice button click
+   */
+  function handleTestVoice() {
+    const testText = 'This is a test of the selected voice. The quick brown fox jumps over the lazy dog.';
+
+    if (overlayState.services.tts) {
+      try {
+        // Stop any current speech
+        overlayState.services.tts.stop();
+
+        // Speak the test text with current settings
+        overlayState.services.tts.speak(testText, {
+          voice: overlayState.currentSettings.voice,
+          rate: overlayState.currentSettings.rate,
+          pitch: overlayState.currentSettings.pitch,
+          volume: overlayState.currentSettings.volume
+        });
+
+        // Update status
+        updateStatus('Testing voice...', 'info');
+
+        // Clear status after a delay
+        setTimeout(() => {
+          updateStatus('', 'info');
+        }, 3000);
+
+      } catch (error) {
+        console.warn('Failed to test voice:', error);
+        updateStatus('Failed to test voice', 'error');
+      }
+    } else {
+      updateStatus('TTS service not available', 'error');
+    }
   }
 
   /**
