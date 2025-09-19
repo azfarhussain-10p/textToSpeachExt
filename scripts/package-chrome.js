@@ -118,7 +118,7 @@ try {
     if (fileLines.length > 10) {
       console.log(`   ... and ${fileLines.length - 10} more files`);
     }
-  } catch (error) {
+  } catch {
     console.log('   (Could not list package contents)');
   }
 

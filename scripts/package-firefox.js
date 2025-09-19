@@ -145,7 +145,7 @@ try {
       execSync('web-ext lint --pretty', { stdio: 'inherit' });
       console.log('✅ Firefox compatibility checks passed');
       process.chdir('../..');
-    } catch (error) {
+    } catch {
       console.warn('⚠️  Firefox compatibility warnings detected');
       process.chdir('../..');
     }

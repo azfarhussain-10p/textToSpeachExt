@@ -162,9 +162,13 @@ docs/build/
 docs/.docusaurus/
 _site/
 
-# Miscellaneous
+# ESLint and Linting
 .eslintcache
 .stylelintcache
+eslint-report.html
+eslint-report.json
+
+# Miscellaneous
 *.tgz
 *.tar.gz
 
@@ -243,11 +247,17 @@ INSTALLATION-STATUS.md
 # TypeScript
 *.tsbuildinfo
 
-# Jest
+# Testing and Coverage (Enhanced)
 .jest/
+jest-html-reporters-attach/
+coverage-final.json
+coverage.json
+test-report.html
+test-results.json
 
-# Webpack
+# Webpack and Build Tools
 .webpack/
+webpack-stats.json
 
 # Bundle analyzer
 bundle-analyzer-report.html
@@ -255,3 +265,42 @@ bundle-analyzer-report.html
 # Local development files
 local-config.json
 dev-config.json
+
+# ESLint Configuration Artifacts
+# Note: eslint.config.js is tracked but ignore any generated variants
+eslint.config.*.js
+.eslintrc.*.js
+.eslintrc.*.json
+.eslintrc.local.*
+
+# Code Quality Reports
+code-quality-report.html
+lint-results.xml
+quality-gate-report.json
+
+# Development and Debug Files Added During Refactoring
+*.debug.js
+*.debug.json
+debug-output/
+refactor-logs/
+
+# Package Scripts Output
+packaging-results.json
+build-summary.json
+extension-validation-report.json
+
+# Node.js Module Resolution Cache
+.module-cache/
+.npm-cache/
+
+# Editor Specific (Enhanced)
+.vscode/launch.json
+.vscode/tasks.json
+.vscode/c_cpp_properties.json
+.idea/workspace.xml
+.idea/tasks.xml
+
+# Git-related temporary files
+*.orig
+*.rej
+.git/hooks/pre-commit.sample

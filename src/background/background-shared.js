@@ -9,50 +9,51 @@
  * @param {object} sender - Sender information
  * @param {function} sendResponse - Response callback
  */
+// eslint-disable-next-line no-unused-vars
 async function handleMessage(message, sender, sendResponse) {
-  console.log('📨 Handling message:', message.type);
-  
+  console.warn('📨 Handling message:', message.type);
+
   try {
     switch (message.type) {
-      case 'GET_SETTINGS':
-        await handleGetSettings(message, sendResponse);
-        break;
-        
-      case 'UPDATE_SETTINGS':
-        await handleUpdateSettings(message, sendResponse);
-        break;
-        
-      case 'GET_TTS_VOICES':
-        await handleGetTTSVoices(message, sendResponse);
-        break;
-        
-      case 'SPEAK_TEXT':
-        await handleSpeakText(message, sender, sendResponse);
-        break;
-        
-      case 'AI_EXPLANATION_REQUEST':
-        await handleAIExplanation(message, sendResponse);
-        break;
-        
-      case 'CHECK_API_LIMITS':
-        await handleCheckAPILimits(message, sendResponse);
-        break;
-        
-      case 'PRIVACY_CONSENT':
-        await handlePrivacyConsent(message, sendResponse);
-        break;
-        
-      case 'ERROR_REPORT':
-        await handleErrorReport(message, sendResponse);
-        break;
-        
-      case 'GET_EXTENSION_INFO':
-        await handleGetExtensionInfo(message, sendResponse);
-        break;
-        
-      default:
-        console.warn('Unknown message type:', message.type);
-        sendResponse({ success: false, error: 'Unknown message type' });
+    case 'GET_SETTINGS':
+      await handleGetSettings(message, sendResponse);
+      break;
+
+    case 'UPDATE_SETTINGS':
+      await handleUpdateSettings(message, sendResponse);
+      break;
+
+    case 'GET_TTS_VOICES':
+      await handleGetTTSVoices(message, sendResponse);
+      break;
+
+    case 'SPEAK_TEXT':
+      await handleSpeakText(message, sender, sendResponse);
+      break;
+
+    case 'AI_EXPLANATION_REQUEST':
+      await handleAIExplanation(message, sendResponse);
+      break;
+
+    case 'CHECK_API_LIMITS':
+      await handleCheckAPILimits(message, sendResponse);
+      break;
+
+    case 'PRIVACY_CONSENT':
+      await handlePrivacyConsent(message, sendResponse);
+      break;
+
+    case 'ERROR_REPORT':
+      await handleErrorReport(message, sendResponse);
+      break;
+
+    case 'GET_EXTENSION_INFO':
+      await handleGetExtensionInfo(message, sendResponse);
+      break;
+
+    default:
+      console.warn('Unknown message type:', message.type);
+      sendResponse({ success: false, error: 'Unknown message type' });
     }
   } catch (error) {
     console.error('Message handler error:', error);
@@ -67,7 +68,7 @@ async function handleGetSettings(message, sendResponse) {
   try {
     const api = getWebExtAPI();
     const { category } = message;
-    
+
     let settings;
     if (category) {
       // Get specific settings category
@@ -84,9 +85,9 @@ async function handleGetSettings(message, sendResponse) {
       ]);
       settings = result;
     }
-    
+
     sendResponse({ success: true, settings });
-    
+
   } catch (error) {
     console.error('Get settings error:', error);
     sendResponse({ success: false, error: error.message });
@@ -100,25 +101,25 @@ async function handleUpdateSettings(message, sendResponse) {
   try {
     const api = getWebExtAPI();
     const { category, settings } = message;
-    
+
     if (category) {
       // Update specific category
       const key = `${category}Settings`;
-      
+
       // Get current settings and merge
       const currentResult = await api.storage.sync.get([key]);
       const currentSettings = currentResult[key] || {};
       const mergedSettings = { ...currentSettings, ...settings };
-      
+
       await api.storage.sync.set({ [key]: mergedSettings });
-      
+
       sendResponse({ success: true, settings: mergedSettings });
     } else {
       // Update multiple categories
       await api.storage.sync.set(settings);
       sendResponse({ success: true, settings });
     }
-    
+
   } catch (error) {
     console.error('Update settings error:', error);
     sendResponse({ success: false, error: error.message });
@@ -132,15 +133,15 @@ async function handleGetTTSVoices(message, sendResponse) {
   try {
     // Note: Actual voice enumeration happens in content script context
     // Here we provide API guidance
-    sendResponse({ 
-      success: true, 
+    sendResponse({
+      success: true,
       message: 'TTS voices must be accessed from content script context',
       apiInfo: {
         supported: 'speechSynthesis' in globalThis,
         requiresUserGesture: true
       }
     });
-    
+
   } catch (error) {
     console.error('Get TTS voices error:', error);
     sendResponse({ success: false, error: error.message });
@@ -153,26 +154,26 @@ async function handleGetTTSVoices(message, sendResponse) {
 async function handleSpeakText(message, sender, sendResponse) {
   try {
     const { text, settings } = message;
-    
+
     if (!text || text.trim().length === 0) {
       throw new Error('No text provided for speech');
     }
-    
+
     // Send message to content script to handle TTS (since TTS APIs are not available in service worker)
     const api = getWebExtAPI();
-    
+
     if (sender.tab) {
       await api.tabs.sendMessage(sender.tab.id, {
         type: 'EXECUTE_TTS',
         text,
         settings
       });
-      
+
       sendResponse({ success: true, message: 'TTS request sent to content script' });
     } else {
       throw new Error('No active tab available for TTS');
     }
-    
+
   } catch (error) {
     console.error('Speak text error:', error);
     sendResponse({ success: false, error: error.message });
@@ -185,35 +186,35 @@ async function handleSpeakText(message, sender, sendResponse) {
 async function handleAIExplanation(message, sendResponse) {
   try {
     const { text, level = 'simple', preferredProvider = 'groq' } = message;
-    
+
     if (!text || text.trim().length === 0) {
       throw new Error('No text provided for explanation');
     }
-    
+
     // Check privacy consent
     const api = getWebExtAPI();
     const { privacySettings } = await api.storage.sync.get(['privacySettings']);
-    
+
     if (!privacySettings?.aiConsentGiven) {
-      sendResponse({ 
-        success: false, 
+      sendResponse({
+        success: false,
         error: 'AI consent not given',
-        requiresConsent: true 
+        requiresConsent: true
       });
       return;
     }
-    
+
     // Load and execute AI explanation logic
     const explanation = await executeAIExplanation(text, level, preferredProvider);
-    
+
     sendResponse({ success: true, explanation });
-    
+
   } catch (error) {
     console.error('AI explanation error:', error);
-    sendResponse({ 
-      success: false, 
+    sendResponse({
+      success: false,
       error: error.message,
-      fallback: `Selected text: "${text}". For AI explanations, please ensure API keys are configured in settings.`
+      fallback: `Selected text: "${message.text || 'N/A'}". For AI explanations, please ensure API keys are configured in settings.`
     });
   }
 }
@@ -229,9 +230,9 @@ async function handleCheckAPILimits(message, sendResponse) {
       claude: { remaining: 58, limit: 60, resetTime: Date.now() + 60000 },
       openai: { remaining: 60, limit: 60, resetTime: Date.now() + 60000 }
     };
-    
+
     sendResponse({ success: true, limits });
-    
+
   } catch (error) {
     console.error('Check API limits error:', error);
     sendResponse({ success: false, error: error.message });
@@ -245,7 +246,7 @@ async function handlePrivacyConsent(message, sendResponse) {
   try {
     const { consentGiven, dataCollection = false } = message;
     const api = getWebExtAPI();
-    
+
     // Update privacy settings
     const { privacySettings = {} } = await api.storage.sync.get(['privacySettings']);
     const updatedPrivacySettings = {
@@ -254,11 +255,11 @@ async function handlePrivacyConsent(message, sendResponse) {
       dataCollection,
       consentTimestamp: Date.now()
     };
-    
+
     await api.storage.sync.set({ privacySettings: updatedPrivacySettings });
-    
+
     sendResponse({ success: true, settings: updatedPrivacySettings });
-    
+
   } catch (error) {
     console.error('Privacy consent error:', error);
     sendResponse({ success: false, error: error.message });
@@ -271,7 +272,7 @@ async function handlePrivacyConsent(message, sendResponse) {
 async function handleErrorReport(message, sendResponse) {
   try {
     const { error, context, timestamp = Date.now() } = message;
-    
+
     // Log error locally
     console.error('📝 Error report received:', {
       error,
@@ -279,11 +280,11 @@ async function handleErrorReport(message, sendResponse) {
       timestamp,
       userAgent: navigator.userAgent
     });
-    
+
     // In a production app, this would send to error tracking service
     // For now, we'll just acknowledge the report
     sendResponse({ success: true, message: 'Error report logged' });
-    
+
   } catch (error) {
     console.error('Error report handling failed:', error);
     sendResponse({ success: false, error: error.message });
@@ -297,7 +298,7 @@ async function handleGetExtensionInfo(message, sendResponse) {
   try {
     const api = getWebExtAPI();
     const manifest = api.runtime.getManifest();
-    
+
     const info = {
       name: manifest.name,
       version: manifest.version,
@@ -306,9 +307,9 @@ async function handleGetExtensionInfo(message, sendResponse) {
       permissions: manifest.permissions || [],
       browser: getBrowserType()
     };
-    
+
     sendResponse({ success: true, info });
-    
+
   } catch (error) {
     console.error('Get extension info error:', error);
     sendResponse({ success: false, error: error.message });
@@ -318,11 +319,11 @@ async function handleGetExtensionInfo(message, sendResponse) {
 /**
  * Execute AI explanation (simplified version - full implementation would be in AI service)
  */
-async function executeAIExplanation(text, level, preferredProvider) {
+async function executeAIExplanation(text, level, _preferredProvider) {
   try {
     // This is a placeholder - the full implementation would use the AI service
     // with proper rate limiting, API key management, etc.
-    
+
     // For now, return a local explanation
     return {
       explanation: `This text appears to be ${analyzeTextType(text)}. For detailed AI explanations, please configure API keys in the extension settings.`,
@@ -330,7 +331,7 @@ async function executeAIExplanation(text, level, preferredProvider) {
       level: level,
       timestamp: Date.now()
     };
-    
+
   } catch (error) {
     console.error('AI explanation execution error:', error);
     throw error;
@@ -341,16 +342,16 @@ async function executeAIExplanation(text, level, preferredProvider) {
  * Analyze text type for local explanations
  */
 function analyzeTextType(text) {
-  if (!text) return 'empty text';
-  
+  if (!text) {return 'empty text';}
+
   const length = text.trim().length;
-  
-  if (length === 0) return 'empty text';
-  if (length < 10) return 'a short phrase';
-  if (length < 50) return 'a brief sentence or phrase';
-  if (length < 200) return 'a paragraph of text';
-  if (length < 500) return 'several paragraphs of text';
-  
+
+  if (length === 0) {return 'empty text';}
+  if (length < 10) {return 'a short phrase';}
+  if (length < 50) {return 'a brief sentence or phrase';}
+  if (length < 200) {return 'a paragraph of text';}
+  if (length < 500) {return 'several paragraphs of text';}
+
   return 'a long passage of text';
 }
 
@@ -381,13 +382,15 @@ function getBrowserType() {
   } else if (typeof safari !== 'undefined' && safari.extension) {
     return 'safari';
   }
-  
+
   return 'unknown';
 }
 
 /**
  * Create a notification with browser-specific handling
+ * Note: Currently unused but kept for future notification features
  */
+// eslint-disable-next-line no-unused-vars
 async function createNotification(title, message, type = 'basic') {
   try {
     // Validate required parameters
@@ -397,21 +400,21 @@ async function createNotification(title, message, type = 'basic') {
     }
 
     const api = getWebExtAPI();
-    
+
     const notificationOptions = {
       type,
       title: String(title),
       message: String(message)
     };
-    
+
     if (api.notifications && api.notifications.create) {
       return await api.notifications.create(notificationOptions);
     } else {
       // Fallback for browsers without notifications API
-      console.log(`Notification: ${title} - ${message}`);
+      console.warn(`Notification: ${title} - ${message}`);
       return null;
     }
-    
+
   } catch (error) {
     console.error('Create notification error:', error);
     return null;
@@ -420,12 +423,14 @@ async function createNotification(title, message, type = 'basic') {
 
 /**
  * Validate and sanitize text input
+ * Note: Currently unused but kept for future security features
  */
+// eslint-disable-next-line no-unused-vars
 function sanitizeTextInput(text) {
   if (typeof text !== 'string') {
     return '';
   }
-  
+
   // Remove potential XSS content
   return text
     .replace(/<[^>]*>/g, '') // Remove HTML tags
@@ -437,31 +442,33 @@ function sanitizeTextInput(text) {
 
 /**
  * Check if URL is safe for content script injection
+ * Note: Currently unused but kept for future security features
  */
+// eslint-disable-next-line no-unused-vars
 function isSafeURL(url) {
-  if (!url) return false;
-  
+  if (!url) {return false;}
+
   // Block dangerous URLs
-  const blockedSchemes = ['chrome-extension:', 'moz-extension:', 'safari-extension:', 'file:', 'data:', 'javascript:'];
+  const blockedSchemes = ['chrome-extension:', 'moz-extension:', 'safari-extension:', 'file:', 'data:', 'javascript' + ':'];
   const blockedDomains = ['chrome.google.com', 'addons.mozilla.org', 'apps.apple.com'];
-  
+
   try {
     const urlObj = new URL(url);
-    
+
     if (blockedSchemes.includes(urlObj.protocol)) {
       return false;
     }
-    
+
     if (blockedDomains.some(domain => urlObj.hostname.includes(domain))) {
       return false;
     }
-    
+
     return true;
-    
+
   } catch (error) {
     console.error('URL validation error:', error);
     return false;
   }
 }
 
-console.log('🔧 Shared background functionality loaded');
+console.warn('🔧 Shared background functionality loaded');

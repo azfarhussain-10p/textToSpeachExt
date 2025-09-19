@@ -7,7 +7,7 @@
   'use strict';
 
   // State management
-  let popupState = {
+  const popupState = {
     isInitialized: false,
     currentTab: null,
     services: {
@@ -36,8 +36,8 @@
    */
   async function initialize() {
     try {
-      console.log('🚀 Popup initializing...');
-      
+      console.warn('🚀 Popup initializing...');
+
       // Show loading
       showLoading('Initializing...');
 
@@ -66,7 +66,7 @@
       hideLoading();
 
       popupState.isInitialized = true;
-      console.log('✅ Popup initialized successfully');
+      console.warn('✅ Popup initialized successfully');
 
     } catch (error) {
       console.error('❌ Popup initialization failed:', error);
@@ -82,38 +82,38 @@
     const selectors = {
       // Header
       version: '#popup-version',
-      
+
       // Action buttons
       speakSelectionBtn: '#btn-speak-selection',
       testVoiceBtn: '#btn-test-voice',
       configureApisBtn: '#btn-configure-apis',
-      
+
       // Status indicators
       ttsStatus: '#tts-status',
       aiStatus: '#ai-status',
       groqIndicator: '#groq-indicator',
       claudeIndicator: '#claude-indicator',
-      
+
       // Settings
       voiceSelect: '#voice-select',
       speedRange: '#speed-range',
       speedValue: '#speed-value',
       aiEnabled: '#ai-enabled',
-      
+
       // Footer buttons
       optionsBtn: '#btn-options',
       shortcutsBtn: '#btn-shortcuts',
       helpBtn: '#btn-help',
-      
+
       // Panels
       shortcutsPanel: '#shortcuts-panel',
       closeShortcuts: '#close-shortcuts',
-      
+
       // Sections
       apiSection: '#api-section',
       activitySection: '#activity-section',
       activityList: '#activity-list',
-      
+
       // Loading and errors
       loadingOverlay: '#loading-overlay',
       errorBanner: '#error-banner',
@@ -134,23 +134,23 @@
     elements.speakSelectionBtn?.addEventListener('click', handleSpeakSelection);
     elements.testVoiceBtn?.addEventListener('click', handleTestVoice);
     elements.configureApisBtn?.addEventListener('click', handleConfigureAPIs);
-    
+
     // Settings
     elements.voiceSelect?.addEventListener('change', handleVoiceChange);
     elements.speedRange?.addEventListener('input', handleSpeedChange);
     elements.aiEnabled?.addEventListener('change', handleAIToggle);
-    
+
     // Footer buttons
     elements.optionsBtn?.addEventListener('click', handleOpenOptions);
     elements.shortcutsBtn?.addEventListener('click', handleShowShortcuts);
     elements.helpBtn?.addEventListener('click', handleShowHelp);
-    
+
     // Panel controls
     elements.closeShortcuts?.addEventListener('click', handleCloseShortcuts);
-    
+
     // Error handling
     elements.errorClose?.addEventListener('click', hideError);
-    
+
     // Keyboard shortcuts
     document.addEventListener('keydown', handleKeyboard);
   }
@@ -172,7 +172,7 @@
    */
   function loadExtensionInfo() {
     const manifest = browserAPI.runtime.getManifest();
-    
+
     if (elements.version) {
       elements.version.textContent = `v${manifest.version}`;
     }
@@ -263,19 +263,19 @@
   async function updateUI() {
     // Update status indicators
     updateStatusIndicators();
-    
+
     // Update settings controls
     updateSettingsUI();
-    
+
     // Update voice options
     await updateVoiceOptions();
-    
+
     // Update API status
     updateAPIStatus();
-    
+
     // Update activity
     updateActivity();
-    
+
     // Show/hide sections based on state
     updateSectionVisibility();
   }
@@ -288,7 +288,7 @@
     if (elements.ttsStatus) {
       const dot = elements.ttsStatus.querySelector('.status-dot');
       const text = elements.ttsStatus.querySelector('.status-text');
-      
+
       dot.className = `status-dot status-${popupState.status.tts}`;
       text.textContent = {
         online: 'Ready',
@@ -297,12 +297,12 @@
         checking: 'Checking...'
       }[popupState.status.tts] || 'Unknown';
     }
-    
+
     // AI Status
     if (elements.aiStatus) {
       const dot = elements.aiStatus.querySelector('.status-dot');
       const text = elements.aiStatus.querySelector('.status-text');
-      
+
       dot.className = `status-dot status-${popupState.status.ai}`;
       text.textContent = {
         online: 'Ready',
@@ -322,7 +322,7 @@
       elements.speedRange.value = popupState.settings.tts.rate;
       elements.speedValue.textContent = popupState.settings.tts.rate + 'x';
     }
-    
+
     // AI enabled setting
     if (elements.aiEnabled) {
       elements.aiEnabled.checked = popupState.settings.privacy.aiConsentGiven || false;
@@ -333,7 +333,7 @@
    * Update voice selection options
    */
   async function updateVoiceOptions() {
-    if (!elements.voiceSelect || !popupState.services.tts) return;
+    if (!elements.voiceSelect || !popupState.services.tts) {return;}
 
     try {
       const voices = popupState.services.tts.getVoices();
@@ -382,12 +382,12 @@
   function updateAPIStatus() {
     const hasGroqKey = !!popupState.settings.apiKeys.groqApiKey;
     const hasClaudeKey = !!popupState.settings.apiKeys.claudeApiKey;
-    
+
     if (elements.groqIndicator) {
       const dot = elements.groqIndicator.querySelector('.status-dot');
       dot.className = `status-dot ${hasGroqKey ? 'status-online' : 'status-unknown'}`;
     }
-    
+
     if (elements.claudeIndicator) {
       const dot = elements.claudeIndicator.querySelector('.status-dot');
       dot.className = `status-dot ${hasClaudeKey ? 'status-online' : 'status-unknown'}`;
@@ -398,8 +398,8 @@
    * Update activity list
    */
   function updateActivity() {
-    if (!elements.activityList) return;
-    
+    if (!elements.activityList) {return;}
+
     // This would be implemented with actual activity tracking
     // For now, show placeholder
     // Clear activity list safely
@@ -410,16 +410,16 @@
     // Create activity item
     const activityItem = document.createElement('div');
     activityItem.className = 'activity-item';
-    
+
     const activityText = document.createElement('div');
     activityText.className = 'activity-text';
     activityText.textContent = 'No recent activity';
     activityItem.appendChild(activityText);
-    
+
     const activityTime = document.createElement('div');
     activityTime.className = 'activity-time';
     activityItem.appendChild(activityTime);
-    
+
     elements.activityList.appendChild(activityItem);
   }
 
@@ -428,14 +428,14 @@
    */
   function updateSectionVisibility() {
     // Show API section if any API keys are configured or AI is enabled
-    const showAPI = popupState.settings.apiKeys.groqApiKey || 
-                    popupState.settings.apiKeys.claudeApiKey || 
+    const showAPI = popupState.settings.apiKeys.groqApiKey ||
+                    popupState.settings.apiKeys.claudeApiKey ||
                     popupState.settings.privacy.aiConsentGiven;
-    
+
     if (elements.apiSection) {
       elements.apiSection.style.display = showAPI ? 'block' : 'none';
     }
-    
+
     // Activity section - show if there's actual activity (placeholder for now)
     if (elements.activitySection) {
       elements.activitySection.style.display = 'none'; // Hidden until implemented
@@ -476,7 +476,7 @@
         throw new Error('TTS service not available');
       }
 
-      const testText = "This is a test of the text-to-speech functionality.";
+      const testText = 'This is a test of the text-to-speech functionality.';
       await popupState.services.tts.speak(testText, popupState.settings.tts);
 
     } catch (error) {
@@ -499,11 +499,11 @@
   function handleSpeedChange(event) {
     const value = parseFloat(event.target.value);
     popupState.settings.tts.rate = value;
-    
+
     if (elements.speedValue) {
       elements.speedValue.textContent = value + 'x';
     }
-    
+
     saveSettings();
   }
 
@@ -512,7 +512,7 @@
    */
   function handleAIToggle(event) {
     const enabled = event.target.checked;
-    
+
     if (enabled) {
       // Show consent if not already given
       if (!popupState.settings.privacy.aiConsentGiven) {
@@ -520,7 +520,7 @@
         return;
       }
     }
-    
+
     updateAISettings(enabled);
   }
 
@@ -562,8 +562,8 @@
    */
   function handleShowHelp() {
     // Open help/documentation page
-    browserAPI.tabs.create({ 
-      url: 'https://github.com/azfarhussain-10p/textToSpeachExt#readme' 
+    browserAPI.tabs.create({
+      url: 'https://github.com/azfarhussain-10p/textToSpeachExt#readme'
     });
     window.close();
   }
@@ -573,28 +573,28 @@
    */
   function handleKeyboard(event) {
     switch (event.key) {
-      case 'Escape':
-        if (elements.shortcutsPanel && elements.shortcutsPanel.style.display === 'block') {
-          handleCloseShortcuts();
-        } else {
-          window.close();
-        }
+    case 'Escape':
+      if (elements.shortcutsPanel && elements.shortcutsPanel.style.display === 'block') {
+        handleCloseShortcuts();
+      } else {
+        window.close();
+      }
+      event.preventDefault();
+      break;
+
+    case '1':
+      if (event.altKey) {
+        handleSpeakSelection();
         event.preventDefault();
-        break;
-        
-      case '1':
-        if (event.altKey) {
-          handleSpeakSelection();
-          event.preventDefault();
-        }
-        break;
-        
-      case '2':
-        if (event.altKey) {
-          handleTestVoice();
-          event.preventDefault();
-        }
-        break;
+      }
+      break;
+
+    case '2':
+      if (event.altKey) {
+        handleTestVoice();
+        event.preventDefault();
+      }
+      break;
     }
   }
 
@@ -609,7 +609,7 @@
       'Your privacy: No personal data is stored. Text is only sent when you explicitly request explanations.\n\n' +
       'Do you want to enable AI explanations?'
     );
-    
+
     if (consent) {
       updateAISettings(true);
       popupState.settings.privacy.aiConsentGiven = true;
@@ -627,12 +627,12 @@
    */
   function updateAISettings(enabled) {
     popupState.settings.ai.enabled = enabled;
-    
+
     if (enabled && !popupState.settings.privacy.aiConsentGiven) {
       popupState.settings.privacy.aiConsentGiven = true;
       popupState.settings.privacy.consentTimestamp = Date.now();
     }
-    
+
     saveSettings();
     updateSectionVisibility();
   }
@@ -668,7 +668,7 @@
     if (elements.loadingOverlay) {
       elements.loadingOverlay.style.display = 'flex';
       const text = elements.loadingOverlay.querySelector('.loading-text');
-      if (text) text.textContent = message;
+      if (text) {text.textContent = message;}
     }
   }
 
@@ -700,17 +700,6 @@
     }
   }
 
-  /**
-   * Check if page is compatible with extension
-   */
-  function isPageCompatible() {
-    if (!popupState.currentTab) return false;
-    
-    const url = popupState.currentTab.url;
-    const incompatibleSchemes = ['chrome:', 'chrome-extension:', 'moz-extension:', 'about:'];
-    
-    return !incompatibleSchemes.some(scheme => url.startsWith(scheme));
-  }
 
   // Initialize when DOM is ready
   if (document.readyState === 'loading') {

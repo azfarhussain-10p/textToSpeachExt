@@ -15,14 +15,14 @@ class RateLimiter {
     this.windowMs = windowMs;
     this.identifier = identifier;
     this.storageKey = `rateLimiter_${identifier}`;
-    
+
     // Initialize bucket state
     this.bucket = {
       tokens: maxRequests,
       lastRefill: Date.now(),
       requests: []
     };
-    
+
     // Load persisted state
     this.loadState();
   }
@@ -33,14 +33,14 @@ class RateLimiter {
    */
   async checkLimit() {
     await this.refillBucket();
-    
+
     if (this.bucket.tokens > 0) {
       this.bucket.tokens--;
       this.bucket.requests.push(Date.now());
       await this.saveState();
       return true;
     }
-    
+
     return false;
   }
 
@@ -50,15 +50,15 @@ class RateLimiter {
    */
   async getStatus() {
     await this.refillBucket();
-    
+
     const now = Date.now();
     const recentRequests = this.bucket.requests.filter(
       timestamp => now - timestamp < this.windowMs
     );
-    
+
     const nextResetTime = this.bucket.lastRefill + this.windowMs;
     const timeUntilReset = Math.max(0, nextResetTime - now);
-    
+
     return {
       identifier: this.identifier,
       tokensRemaining: this.bucket.tokens,
@@ -78,24 +78,24 @@ class RateLimiter {
    */
   async waitForAvailability(maxWaitMs = 60000) {
     const startTime = Date.now();
-    
+
     while (Date.now() - startTime < maxWaitMs) {
       if (await this.checkLimit()) {
         return true;
       }
-      
+
       const status = await this.getStatus();
       const waitTime = Math.min(
         status.timeUntilReset,
         maxWaitMs - (Date.now() - startTime),
         5000 // Maximum 5 second intervals
       );
-      
+
       if (waitTime > 0) {
         await this.sleep(waitTime);
       }
     }
-    
+
     return false;
   }
 
@@ -109,7 +109,7 @@ class RateLimiter {
       lastRefill: Date.now(),
       requests: []
     };
-    
+
     await this.saveState();
   }
 
@@ -128,15 +128,15 @@ class RateLimiter {
    */
   async getTimeUntilNextToken() {
     const status = await this.getStatus();
-    
+
     if (status.tokensRemaining > 0) {
       return 0;
     }
-    
+
     // Calculate when the oldest request will expire
     const oldestRequest = Math.min(...this.bucket.requests);
     const tokenAvailableAt = oldestRequest + this.windowMs;
-    
+
     return Math.max(0, tokenAvailableAt - Date.now());
   }
 
@@ -148,17 +148,16 @@ class RateLimiter {
    */
   async refillBucket() {
     const now = Date.now();
-    const timeSinceLastRefill = now - this.bucket.lastRefill;
-    
+
     // Clean up old requests
     this.bucket.requests = this.bucket.requests.filter(
       timestamp => now - timestamp < this.windowMs
     );
-    
+
     // For sliding window, tokens are based on requests in the window
     const requestsInWindow = this.bucket.requests.length;
     this.bucket.tokens = Math.max(0, this.maxRequests - requestsInWindow);
-    
+
     this.bucket.lastRefill = now;
   }
 
@@ -173,16 +172,16 @@ class RateLimiter {
         const result = await new Promise((resolve) => {
           api.storage.local.get([this.storageKey], resolve);
         });
-        
+
         if (result[this.storageKey]) {
           const saved = result[this.storageKey];
-          
+
           // Validate saved data structure
           if (saved.tokens !== undefined && saved.lastRefill && Array.isArray(saved.requests)) {
             this.bucket = {
               tokens: Math.max(0, Math.min(saved.tokens, this.maxRequests)),
               lastRefill: saved.lastRefill,
-              requests: saved.requests.filter(req => 
+              requests: saved.requests.filter(req =>
                 typeof req === 'number' && req > 0
               )
             };
@@ -190,13 +189,13 @@ class RateLimiter {
         }
       } else if (typeof browser !== 'undefined' && browser.storage) {
         const result = await browser.storage.local.get([this.storageKey]);
-        
+
         if (result[this.storageKey]) {
           const saved = result[this.storageKey];
           this.bucket = {
             tokens: Math.max(0, Math.min(saved.tokens, this.maxRequests)),
             lastRefill: saved.lastRefill,
-            requests: saved.requests.filter(req => 
+            requests: saved.requests.filter(req =>
               typeof req === 'number' && req > 0
             )
           };
@@ -221,7 +220,7 @@ class RateLimiter {
           requests: this.bucket.requests.slice(-this.maxRequests) // Keep only recent requests
         }
       };
-      
+
       if (typeof chrome !== 'undefined' && chrome.storage) {
         const api = chrome;
         await new Promise((resolve, reject) => {
@@ -254,7 +253,7 @@ class RateLimiter {
  * Factory for creating pre-configured rate limiters for common APIs
  */
 class RateLimiterFactory {
-  
+
   /**
    * Create a rate limiter for Groq API (100 requests per hour for free tier)
    * @returns {RateLimiter}
@@ -275,7 +274,7 @@ class RateLimiterFactory {
       tier3: { requests: 2000, window: 60000 }, // 2000 RPM
       tier4: { requests: 4000, window: 60000 }  // 4000 RPM
     };
-    
+
     const limits = tierLimits[tier] || tierLimits.tier1;
     return new RateLimiter(limits.requests, limits.window, `claude_${tier}`);
   }

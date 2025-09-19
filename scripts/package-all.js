@@ -130,7 +130,7 @@ try {
   } else {
     console.log('   (No packages found)');
   }
-} catch (error) {
+} catch {
   console.log('   (Could not list packages)');
 }
 

@@ -11,7 +11,7 @@ class TextHighlighter {
     this.highlightClass = 'tts-highlight-word';
     this.sentenceHighlightClass = 'tts-highlight-sentence';
     this.isHighlighting = false;
-    
+
     // Inject highlighting styles
     this.injectStyles();
   }
@@ -73,8 +73,8 @@ class TextHighlighter {
     // Insert into document head or body
     const target = document.head || document.body;
     target.appendChild(styleElement);
-    
-    console.log('🎨 TTS highlighter styles injected into:', target.tagName);
+
+    console.warn('🎨 TTS highlighter styles injected into:', target.tagName);
   }
 
   /**
@@ -84,17 +84,17 @@ class TextHighlighter {
    */
   initializeHighlighting(element, text) {
     this.cleanup(); // Clear any previous highlighting
-    
+
     this.targetElement = element;
     this.originalText = text;
     this.isHighlighting = true;
-    
+
     // Add container class for styling
     if (element) {
       element.classList.add('tts-highlight-container');
     }
-    
-    console.log('📝 Text highlighting initialized for:', text.substring(0, 50) + '...');
+
+    console.warn('📝 Text highlighting initialized for:', text.substring(0, 50) + '...');
   }
 
   /**
@@ -103,13 +103,13 @@ class TextHighlighter {
    * @param {string} text - Full text being spoken
    */
   highlightWordAt(charIndex, text) {
-    console.log('🟡 highlightWordAt called with:', { charIndex, textLength: text?.length, isHighlighting: this.isHighlighting, hasTargetElement: !!this.targetElement });
-    
+    console.warn('🟡 highlightWordAt called with:', { charIndex, textLength: text?.length, isHighlighting: this.isHighlighting, hasTargetElement: !!this.targetElement });
+
     if (!this.isHighlighting) {
       console.warn('🟡 Highlighting not active - isHighlighting:', this.isHighlighting);
       return;
     }
-    
+
     if (!this.targetElement) {
       console.warn('🟡 No target element for highlighting - targetElement:', this.targetElement);
       return;
@@ -118,24 +118,24 @@ class TextHighlighter {
     try {
       // Clear previous word highlights
       this.clearWordHighlights();
-      
+
       // Find the word boundaries around the character index
-      console.log('🟡 Finding word at charIndex:', charIndex, 'in text:', text?.substring(0, 100));
+      console.warn('🟡 Finding word at charIndex:', charIndex, 'in text:', text?.substring(0, 100));
       const wordBoundaries = this.findWordAt(charIndex, text);
-      console.log('🟡 Word boundaries found:', wordBoundaries);
-      
+      console.warn('🟡 Word boundaries found:', wordBoundaries);
+
       if (!wordBoundaries) {
         console.warn('🟡 No word boundaries found for charIndex:', charIndex);
         return;
       }
 
-      console.log('🟡 About to highlight text range:', wordBoundaries.start, 'to', wordBoundaries.end);
-      
+      console.warn('🟡 About to highlight text range:', wordBoundaries.start, 'to', wordBoundaries.end);
+
       // Create highlight span for the word
       this.highlightTextRange(wordBoundaries.start, wordBoundaries.end, this.highlightClass + ' active');
-      
-      console.log('🟡 Highlighting word completed:', wordBoundaries.word, 'at index', charIndex);
-      
+
+      console.warn('🟡 Highlighting word completed:', wordBoundaries.word, 'at index', charIndex);
+
     } catch (error) {
       console.warn('Failed to highlight word:', error);
     }
@@ -160,9 +160,9 @@ class TextHighlighter {
 
       // Add sentence highlight class to element
       this.targetElement.classList.add(this.sentenceHighlightClass);
-      
-      console.log('🟨 Highlighting sentence at index', charIndex);
-      
+
+      console.warn('🟨 Highlighting sentence at index', charIndex);
+
     } catch (error) {
       console.warn('Failed to highlight sentence:', error);
     }
@@ -175,10 +175,10 @@ class TextHighlighter {
    * @returns {Object|null} Word boundaries {start, end, word}
    */
   findWordAt(charIndex, text) {
-    console.log('🟡 findWordAt called with charIndex:', charIndex, 'text length:', text?.length);
-    
+    console.warn('🟡 findWordAt called with charIndex:', charIndex, 'text length:', text?.length);
+
     if (charIndex < 0 || charIndex >= text.length) {
-      console.log('🟡 charIndex out of bounds:', charIndex, 'text length:', text.length);
+      console.warn('🟡 charIndex out of bounds:', charIndex, 'text length:', text.length);
       return null;
     }
 
@@ -193,13 +193,13 @@ class TextHighlighter {
     while (end < text.length && /\w/.test(text[end])) {
       end++;
     }
-    
+
     const wordText = text.substring(start, end);
-    console.log('🟡 Word boundaries calculated:', { start, end, word: wordText, charAtIndex: text[charIndex] });
+    console.warn('🟡 Word boundaries calculated:', { start, end, word: wordText, charAtIndex: text[charIndex] });
 
     // Ensure we found a valid word
     if (start >= end || !/\w/.test(wordText)) {
-      console.log('🟡 Invalid word found:', { start, end, word: wordText, hasWordChar: /\w/.test(wordText) });
+      console.warn('🟡 Invalid word found:', { start, end, word: wordText, hasWordChar: /\w/.test(wordText) });
       return null;
     }
 
@@ -208,8 +208,8 @@ class TextHighlighter {
       end: end,
       word: wordText
     };
-    
-    console.log('🟡 findWordAt returning:', result);
+
+    console.warn('🟡 findWordAt returning:', result);
     return result;
   }
 
@@ -230,12 +230,12 @@ class TextHighlighter {
       start--;
     }
 
-    // Find sentence end (go forward to find sentence boundary)  
+    // Find sentence end (go forward to find sentence boundary)
     let end = charIndex;
     while (end < text.length && !/[.!?]/.test(text[end])) {
       end++;
     }
-    if (end < text.length) end++; // Include the punctuation
+    if (end < text.length) {end++;} // Include the punctuation
 
     return {
       start: start,
@@ -259,7 +259,7 @@ class TextHighlighter {
     try {
       // Get current text content (handle both plain text and existing highlights)
       const textContent = this.getCleanTextContent();
-      
+
       if (!textContent || startIndex < 0 || endIndex > textContent.length || startIndex >= endIndex) {
         console.warn('Invalid highlight range:', { startIndex, endIndex, textLength: textContent?.length });
         return;
@@ -273,7 +273,7 @@ class TextHighlighter {
       const highlightText = textContent.substring(startIndex, endIndex);
       const afterText = textContent.substring(endIndex);
 
-      console.log('🟡 Highlighting text range:', {
+      console.warn('🟡 Highlighting text range:', {
         startIndex,
         endIndex,
         word: highlightText,
@@ -286,7 +286,7 @@ class TextHighlighter {
       highlightSpan.className = className;
       highlightSpan.textContent = highlightText;
       highlightSpan.setAttribute('data-tts-highlight', 'word');
-      
+
       // Apply inline styles as fallback to ensure visibility
       highlightSpan.style.backgroundColor = '#ff9800';
       highlightSpan.style.color = '#fff';
@@ -298,21 +298,21 @@ class TextHighlighter {
 
       // Rebuild element content with highlighted section
       this.targetElement.textContent = '';
-      
+
       if (beforeText) {
         this.targetElement.appendChild(document.createTextNode(beforeText));
       }
-      
+
       this.targetElement.appendChild(highlightSpan);
       this.highlightedElements.push(highlightSpan);
-      
+
       if (afterText) {
         this.targetElement.appendChild(document.createTextNode(afterText));
       }
 
-      console.log('🟡 Highlight span created:', highlightSpan);
-      console.log('🟡 Target element after highlight:', this.targetElement);
-      console.log('🟡 Highlighted elements count:', this.highlightedElements.length);
+      console.warn('🟡 Highlight span created:', highlightSpan);
+      console.warn('🟡 Target element after highlight:', this.targetElement);
+      console.warn('🟡 Highlighted elements count:', this.highlightedElements.length);
 
       // Scroll highlighted word into view if needed
       this.scrollIntoViewIfNeeded(highlightSpan);
@@ -327,13 +327,13 @@ class TextHighlighter {
    * @returns {string} Clean text content
    */
   getCleanTextContent() {
-    if (!this.targetElement) return '';
-    
+    if (!this.targetElement) {return '';}
+
     // If we have the original text, use it
     if (this.originalText) {
       return this.originalText;
     }
-    
+
     // Otherwise extract text from current element
     return this.targetElement.textContent || this.targetElement.innerText || '';
   }
@@ -365,7 +365,7 @@ class TextHighlighter {
   clearWordHighlights() {
     try {
       // Remove individual word highlight spans
-      this.highlightedElements.forEach((element, index) => {
+      this.highlightedElements.forEach((element, _index) => {
         if (element && element.parentNode && element.className.includes(this.highlightClass)) {
           const parent = element.parentNode;
           const textNode = document.createTextNode(element.textContent);
@@ -373,13 +373,13 @@ class TextHighlighter {
           parent.normalize(); // Merge adjacent text nodes
         }
       });
-      
+
       // Filter out cleared elements
       this.highlightedElements = this.highlightedElements.filter(
         element => element && element.parentNode && !element.className.includes(this.highlightClass)
       );
 
-      console.log('🧹 Cleared word highlights, remaining elements:', this.highlightedElements.length);
+      console.warn('🧹 Cleared word highlights, remaining elements:', this.highlightedElements.length);
     } catch (error) {
       console.warn('Failed to clear word highlights:', error);
       // Reset the array if there's an error
@@ -392,10 +392,10 @@ class TextHighlighter {
    */
   cleanup() {
     try {
-      console.log('🧹 Starting text highlighting cleanup');
+      console.warn('🧹 Starting text highlighting cleanup');
 
       // Remove all highlight spans
-      this.highlightedElements.forEach((element, index) => {
+      this.highlightedElements.forEach((element, _index) => {
         if (element && element.parentNode) {
           const parent = element.parentNode;
           const textNode = document.createTextNode(element.textContent);
@@ -403,12 +403,12 @@ class TextHighlighter {
           parent.normalize();
         }
       });
-      
+
       // Clear highlight classes from target element
       if (this.targetElement) {
         this.targetElement.classList.remove('tts-highlight-container');
         this.targetElement.classList.remove(this.sentenceHighlightClass);
-        
+
         // Restore original text if available
         if (this.originalText && this.targetElement.textContent !== this.originalText) {
           this.targetElement.textContent = this.originalText;
@@ -420,8 +420,8 @@ class TextHighlighter {
       this.targetElement = null;
       this.originalText = '';
       this.isHighlighting = false;
-      
-      console.log('✅ Text highlighting cleaned up successfully');
+
+      console.warn('✅ Text highlighting cleaned up successfully');
     } catch (error) {
       console.warn('Failed to cleanup text highlighting:', error);
       // Force reset state even if cleanup failed
@@ -451,7 +451,7 @@ class TextHighlighter {
     if (settings.sentenceHighlightClass) {
       this.sentenceHighlightClass = settings.sentenceHighlightClass;
     }
-    
+
     // Re-inject styles if settings changed
     if (settings.highlightClass || settings.sentenceHighlightClass) {
       const existingStyles = document.getElementById('tts-highlighter-styles');

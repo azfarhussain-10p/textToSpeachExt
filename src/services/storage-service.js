@@ -4,8 +4,8 @@
  */
 
 // Import browser detection utility
-const BrowserDetection = typeof window !== 'undefined' 
-  ? window.BrowserDetection 
+const BrowserDetection = typeof window !== 'undefined'
+  ? window.BrowserDetection
   : require('../utils/browser-detection.js');
 
 class StorageService {
@@ -13,11 +13,11 @@ class StorageService {
     this.api = BrowserDetection.getAPI();
     this.browserType = BrowserDetection.getBrowser();
     this.config = BrowserDetection.getStorageConfig();
-    
+
     // Initialize storage areas
     this.syncStorage = this.api?.storage?.sync;
     this.localStorage = this.api?.storage?.local;
-    
+
     // Default settings schema
     this.defaultSettings = {
       ttsSettings: {
@@ -64,17 +64,17 @@ class StorageService {
       if (this.config.preferSync && this.syncStorage) {
         return await this._getFromStorage(this.syncStorage, keys);
       }
-      
+
       // Fallback to local storage
       if (this.config.fallbackToLocal && this.localStorage) {
         return await this._getFromStorage(this.localStorage, keys);
       }
-      
+
       throw new Error('No storage API available');
-      
+
     } catch (error) {
       console.error('Storage get error:', error);
-      
+
       // Return default values for requested keys
       if (typeof keys === 'string') {
         return { [keys]: this.defaultSettings[keys] || null };
@@ -87,7 +87,7 @@ class StorageService {
       } else if (typeof keys === 'object') {
         return keys; // Return the default values object
       }
-      
+
       return {};
     }
   }
@@ -103,25 +103,25 @@ class StorageService {
       const dataSize = JSON.stringify(data).length;
       if (dataSize > this.config.quotaLimit) {
         console.warn('Data size exceeds quota limit:', dataSize, 'vs', this.config.quotaLimit);
-        
+
         // Try to clean up old data or compress
         await this._cleanupStorage();
       }
-      
+
       // Try sync storage first
       if (this.config.preferSync && this.syncStorage) {
         await this._setInStorage(this.syncStorage, data);
         return true;
       }
-      
+
       // Fallback to local storage
       if (this.config.fallbackToLocal && this.localStorage) {
         await this._setInStorage(this.localStorage, data);
         return true;
       }
-      
+
       throw new Error('No storage API available');
-      
+
     } catch (error) {
       console.error('Storage set error:', error);
       return false;
@@ -136,18 +136,18 @@ class StorageService {
   async remove(keys) {
     try {
       const removePromises = [];
-      
+
       if (this.syncStorage) {
         removePromises.push(this._removeFromStorage(this.syncStorage, keys));
       }
-      
+
       if (this.localStorage && this.config.fallbackToLocal) {
         removePromises.push(this._removeFromStorage(this.localStorage, keys));
       }
-      
+
       await Promise.allSettled(removePromises);
       return true;
-      
+
     } catch (error) {
       console.error('Storage remove error:', error);
       return false;
@@ -161,18 +161,18 @@ class StorageService {
   async clear() {
     try {
       const clearPromises = [];
-      
+
       if (this.syncStorage) {
         clearPromises.push(this._clearStorage(this.syncStorage));
       }
-      
+
       if (this.localStorage) {
         clearPromises.push(this._clearStorage(this.localStorage));
       }
-      
+
       await Promise.allSettled(clearPromises);
       return true;
-      
+
     } catch (error) {
       console.error('Storage clear error:', error);
       return false;
@@ -187,21 +187,21 @@ class StorageService {
     try {
       const existingData = await this.get(Object.keys(this.defaultSettings));
       const initData = {};
-      
+
       // Only set defaults for missing keys
       Object.keys(this.defaultSettings).forEach(key => {
         if (!existingData[key]) {
           initData[key] = this.defaultSettings[key];
         }
       });
-      
+
       if (Object.keys(initData).length > 0) {
         await this.set(initData);
-        console.log('Storage initialized with defaults:', Object.keys(initData));
+        console.warn('Storage initialized with defaults:', Object.keys(initData));
       }
-      
+
       return true;
-      
+
     } catch (error) {
       console.error('Storage initialization error:', error);
       return false;
@@ -229,7 +229,7 @@ class StorageService {
     const key = `${category}Settings`;
     const currentSettings = await this.getSettings(category);
     const mergedSettings = { ...currentSettings, ...newSettings };
-    
+
     return await this.set({ [key]: mergedSettings });
   }
 
@@ -249,7 +249,7 @@ class StorageService {
     };
 
     this.api.storage.onChanged.addListener(listener);
-    
+
     return () => {
       this.api.storage.onChanged.removeListener(listener);
     };
@@ -347,7 +347,7 @@ class StorageService {
     try {
       // Remove old temporary data, cache, etc.
       await this.remove(['tempData', 'cache', 'oldSettings']);
-      console.log('Storage cleanup completed');
+      console.warn('Storage cleanup completed');
     } catch (error) {
       console.error('Storage cleanup error:', error);
     }

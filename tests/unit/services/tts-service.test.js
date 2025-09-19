@@ -5,12 +5,11 @@
 
 describe('TTS Service', () => {
   let TTSService;
-  
-  beforeEach(async () => {
+
+  beforeEach(() => {
     // Import the service fresh for each test
     jest.resetModules();
-    const module = await import('../../../src/services/tts-service.js');
-    TTSService = module.default || module.TTSService;
+    TTSService = require('../../../src/services/tts-service.js');
   });
 
   describe('Initialization', () => {
@@ -81,10 +80,10 @@ describe('TTS Service', () => {
         pitch: 1.1,
         volume: 0.8
       };
-      
+
       await tts.speak('Hello world', options);
       expect(speechSynthesis.speak).toHaveBeenCalled();
-      
+
       const utterance = speechSynthesis.speak.mock.calls[0][0];
       expect(utterance.text).toBe('Hello world');
       expect(utterance.rate).toBe(1.2);
@@ -140,7 +139,7 @@ describe('TTS Service', () => {
     test('should report speaking status', () => {
       speechSynthesis.speaking = true;
       expect(tts.isSpeaking()).toBe(true);
-      
+
       speechSynthesis.speaking = false;
       expect(tts.isSpeaking()).toBe(false);
     });
@@ -148,7 +147,7 @@ describe('TTS Service', () => {
     test('should report paused status', () => {
       speechSynthesis.paused = true;
       expect(tts.isPaused()).toBe(true);
-      
+
       speechSynthesis.paused = false;
       expect(tts.isPaused()).toBe(false);
     });
@@ -165,20 +164,20 @@ describe('TTS Service', () => {
     test('should register event listeners', () => {
       const onStart = jest.fn();
       const onEnd = jest.fn();
-      
+
       tts.on('start', onStart);
       tts.on('end', onEnd);
-      
+
       expect(tts.eventListeners.start).toContain(onStart);
       expect(tts.eventListeners.end).toContain(onEnd);
     });
 
     test('should remove event listeners', () => {
       const onStart = jest.fn();
-      
+
       tts.on('start', onStart);
       expect(tts.eventListeners.start).toContain(onStart);
-      
+
       tts.off('start', onStart);
       expect(tts.eventListeners.start).not.toContain(onStart);
     });
@@ -186,23 +185,23 @@ describe('TTS Service', () => {
     test('should trigger events during speech', async () => {
       const onStart = jest.fn();
       const onEnd = jest.fn();
-      
+
       tts.on('start', onStart);
       tts.on('end', onEnd);
-      
+
       // Mock successful speech
       speechSynthesis.speak.mockImplementation((utterance) => {
         setTimeout(() => {
-          if (utterance.onstart) utterance.onstart();
+          if (utterance.onstart) {utterance.onstart();}
           setTimeout(() => {
-            if (utterance.onend) utterance.onend();
+            if (utterance.onend) {utterance.onend();}
           }, 10);
         }, 10);
       });
-      
+
       await tts.speak('Hello world');
       await testUtils.waitFor(50);
-      
+
       expect(onStart).toHaveBeenCalled();
       expect(onEnd).toHaveBeenCalled();
     });
@@ -223,7 +222,7 @@ describe('TTS Service', () => {
         pitch: 0.8,
         volume: 0.9
       };
-      
+
       tts.updateSettings(newSettings);
       expect(tts.getSettings()).toMatchObject(newSettings);
     });
@@ -234,10 +233,10 @@ describe('TTS Service', () => {
         pitch: -1, // Invalid: too low
         volume: 2  // Invalid: too high
       };
-      
+
       tts.updateSettings(invalidSettings);
       const settings = tts.getSettings();
-      
+
       expect(settings.rate).toBeLessThanOrEqual(3.0);
       expect(settings.pitch).toBeGreaterThanOrEqual(0);
       expect(settings.volume).toBeLessThanOrEqual(1.0);
@@ -260,10 +259,10 @@ describe('TTS Service', () => {
 
     test('should handle voice loading errors', async () => {
       speechSynthesis.getVoices.mockReturnValue([]);
-      
+
       const newTTS = new TTSService();
       await newTTS.initialize();
-      
+
       const voices = newTTS.getVoices();
       expect(voices).toHaveLength(0);
     });

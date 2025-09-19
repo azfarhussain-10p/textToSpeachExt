@@ -11,11 +11,11 @@ class TTSService {
     this.isInitialized = false;
     this.voiceLoadRetries = 0;
     this.maxVoiceLoadRetries = 5;
-    
+
     // Browser-specific configuration
     this.browserType = this.detectBrowser();
     this.config = this.getBrowserConfig();
-    
+
     // Event callbacks
     this.onSpeakStart = null;
     this.onSpeakEnd = null;
@@ -24,7 +24,7 @@ class TTSService {
     this.onSpeakResume = null;
     this.onWordBoundary = null;  // New: for text highlighting
     this.onSentenceBoundary = null; // New: for sentence highlighting
-    
+
     // Initialize TTS
     this.initialize();
   }
@@ -37,14 +37,14 @@ class TTSService {
       if (!this.isWebSpeechSupported()) {
         throw new Error('Web Speech API is not supported in this browser');
       }
-      
+
       this.synthesis = window.speechSynthesis;
-      
+
       // Load voices with browser-specific handling
       await this.loadVoices();
-      
+
       this.isInitialized = true;
-      
+
     } catch (error) {
       console.error('TTS Service initialization failed:', error);
       this.isInitialized = false;
@@ -69,16 +69,16 @@ class TTSService {
     return new Promise((resolve, reject) => {
       const loadVoicesAttempt = () => {
         this.voices = this.synthesis.getVoices();
-        
+
         if (this.voices.length > 0) {
           resolve(this.voices);
           return;
         }
-        
+
         // Handle browser-specific voice loading
         if (this.voiceLoadRetries < this.maxVoiceLoadRetries) {
           this.voiceLoadRetries++;
-          
+
           if (this.config.requiresEventListener) {
             // Firefox and Safari may need the voiceschanged event
             this.synthesis.onvoiceschanged = () => {
@@ -93,7 +93,7 @@ class TTSService {
           reject(new Error('Failed to load voices after maximum retries'));
         }
       };
-      
+
       loadVoicesAttempt();
     });
   }
@@ -105,24 +105,24 @@ class TTSService {
     if (!this.isInitialized) {
       throw new Error('TTS Service not initialized');
     }
-    
+
     if (!text || text.trim().length === 0) {
       throw new Error('No text provided for speech');
     }
-    
+
     // Stop any current speech
     this.stop();
-    
+
     try {
       // Create utterance
       const utterance = new SpeechSynthesisUtterance(text.trim());
-      
+
       // Apply settings
       await this.applySettings(utterance, options);
-      
+
       // Set up event listeners
       this.setupUtteranceEvents(utterance);
-      
+
       // Start speech
       return new Promise((resolve, reject) => {
         let hasEnded = false;
@@ -131,73 +131,73 @@ class TTSService {
         let stagnationCount = 0;
         const maxStagnation = 10;
         const startTime = Date.now();
-        
+
         // Calculate word count for completion detection
         const words = text.trim().split(/\s+/).filter(w => w.length > 0);
         const totalWords = words.length;
-        
+
         const handleEnd = () => {
-          if (hasEnded) return;
+          if (hasEnded) {return;}
           hasEnded = true;
-          
+
           this.currentUtterance = null;
-          
+
           if (endCallbackTimer) {
             clearTimeout(endCallbackTimer);
             endCallbackTimer = null;
           }
-          
+
           if (this.onSpeakEnd) {
             this.onSpeakEnd();
           }
           resolve();
         };
-        
+
         // Completion detection polling
         const checkSpeechStatus = () => {
-          if (hasEnded) return;
-          
+          if (hasEnded) {return;}
+
           // Check if synthesis reports not speaking
           const isActuallySpeaking = this.synthesis && this.synthesis.speaking;
           const isActuallyPaused = this.synthesis && this.synthesis.paused;
-          
+
           if (!isActuallySpeaking && !isActuallyPaused) {
             handleEnd();
             return;
           }
-          
+
           // Aggressive check after last word
           if (reachedLastWord) {
             stagnationCount++;
-            
+
             if (stagnationCount >= maxStagnation || !isActuallySpeaking) {
               handleEnd();
               return;
             }
           }
-          
+
           // Timeout fallback
           const estimatedDuration = (totalWords / 2.5) * 1000;
           const maxDuration = Math.max(estimatedDuration * 2, 15000);
-          
+
           if (Date.now() - startTime > maxDuration) {
             handleEnd();
             return;
           }
-          
+
           // Schedule next check
           const nextCheckInterval = reachedLastWord ? 100 : 200;
           endCallbackTimer = setTimeout(checkSpeechStatus, nextCheckInterval);
         };
-        
+
         // Track word progress for last word detection
         this.speechProgressCallback = (event) => {
-          if (hasEnded || event.name !== 'word' || event.charIndex === undefined) return;
-          
+          if (hasEnded || event.name !== 'word' || event.charIndex === undefined) {return;}
+
           // Calculate current word index
           let currentWordIndex = 0;
           let charCount = 0;
-          
+
           for (let i = 0; i < words.length; i++) {
             if (charCount + words[i].length > event.charIndex) {
               currentWordIndex = i;
@@ -205,48 +205,48 @@ class TTSService {
             }
             charCount += words[i].length + 1;
           }
-          
+
           // Activate aggressive detection on last word
           if (currentWordIndex >= totalWords - 1 && !reachedLastWord) {
             reachedLastWord = true;
             stagnationCount = 0;
-            
+
             // Immediate check after last word
             setTimeout(() => {
-              if (!hasEnded) checkSpeechStatus();
+              if (!hasEnded) {checkSpeechStatus();}
             }, 500);
           }
         };
-        
+
         utterance.onend = handleEnd;
-        
+
         utterance.onerror = (event) => {
           hasEnded = true;
           this.currentUtterance = null;
-          
+
           if (endCallbackTimer) {
             clearTimeout(endCallbackTimer);
             endCallbackTimer = null;
           }
-          
-          if (this.onSpeakError) this.onSpeakError(event);
+
+          if (this.onSpeakError) {this.onSpeakError(event);}
           reject(new Error(`TTS failed: ${event.error}`));
         };
-        
+
         utterance.onstart = () => {
-          if (this.onSpeakStart) this.onSpeakStart();
-          
+          if (this.onSpeakStart) {this.onSpeakStart();}
+
           // Start completion detection
           endCallbackTimer = setTimeout(checkSpeechStatus, 1000);
         };
-        
+
         this.currentUtterance = utterance;
         this.synthesis.speak(utterance);
-        
+
         // Handle potential browser timeout issues
         this.handleBrowserTimeouts(utterance);
       });
-      
+
     } catch (error) {
       console.error('Speak error:', error);
       throw error;
@@ -261,7 +261,7 @@ class TTSService {
       this.synthesis.cancel();
       this.currentUtterance = null;
     }
-    
+
     // Clear fallback timer if running
     if (this.fallbackTimer) {
       clearInterval(this.fallbackTimer);
@@ -275,7 +275,7 @@ class TTSService {
   pause() {
     if (this.synthesis && this.currentUtterance) {
       this.synthesis.pause();
-      if (this.onSpeakPause) this.onSpeakPause();
+      if (this.onSpeakPause) {this.onSpeakPause();}
     }
   }
 
@@ -285,7 +285,7 @@ class TTSService {
   resume() {
     if (this.synthesis && this.currentUtterance) {
       this.synthesis.resume();
-      if (this.onSpeakResume) this.onSpeakResume();
+      if (this.onSpeakResume) {this.onSpeakResume();}
     }
   }
 
@@ -314,7 +314,7 @@ class TTSService {
    * Get voices filtered by language
    */
   getVoicesByLanguage(language) {
-    return this.voices.filter(voice => 
+    return this.voices.filter(voice =>
       voice.lang.toLowerCase().startsWith(language.toLowerCase())
     );
   }
@@ -324,13 +324,13 @@ class TTSService {
    */
   getDefaultVoice(language = 'en') {
     const languageVoices = this.getVoicesByLanguage(language);
-    
+
     if (languageVoices.length > 0) {
       // Prefer default voice
       const defaultVoice = languageVoices.find(voice => voice.default);
       return defaultVoice || languageVoices[0];
     }
-    
+
     // Fallback to first available voice
     return this.voices[0] || null;
   }
@@ -342,8 +342,8 @@ class TTSService {
     if (!name || name === 'default') {
       return this.getDefaultVoice();
     }
-    
-    return this.voices.find(voice => 
+
+    return this.voices.find(voice =>
       voice.name === name || voice.name.toLowerCase().includes(name.toLowerCase())
     ) || this.getDefaultVoice();
   }
@@ -366,7 +366,7 @@ class TTSService {
    */
   detectBrowser() {
     const userAgent = navigator.userAgent.toLowerCase();
-    
+
     if (userAgent.includes('chrome') && !userAgent.includes('edg')) {
       return 'chrome';
     } else if (userAgent.includes('firefox')) {
@@ -376,7 +376,7 @@ class TTSService {
     } else if (userAgent.includes('edg')) {
       return 'edge';
     }
-    
+
     return 'unknown';
   }
 
@@ -385,38 +385,38 @@ class TTSService {
    */
   getBrowserConfig() {
     switch (this.browserType) {
-      case 'chrome':
-      case 'edge':
-        return {
-          requiresEventListener: false,
-          loadDelay: 100,
-          maxSegmentLength: 200, // Chrome has limits on utterance length
-          resumeWorkaround: true // Chrome needs workaround for resume
-        };
-        
-      case 'firefox':
-        return {
-          requiresEventListener: true,
-          loadDelay: 0,
-          maxSegmentLength: 500,
-          resumeWorkaround: false
-        };
-        
-      case 'safari':
-        return {
-          requiresEventListener: true,
-          loadDelay: 0,
-          maxSegmentLength: 300,
-          resumeWorkaround: false
-        };
-        
-      default:
-        return {
-          requiresEventListener: true,
-          loadDelay: 100,
-          maxSegmentLength: 200,
-          resumeWorkaround: true
-        };
+    case 'chrome':
+    case 'edge':
+      return {
+        requiresEventListener: false,
+        loadDelay: 100,
+        maxSegmentLength: 200, // Chrome has limits on utterance length
+        resumeWorkaround: true // Chrome needs workaround for resume
+      };
+
+    case 'firefox':
+      return {
+        requiresEventListener: true,
+        loadDelay: 0,
+        maxSegmentLength: 500,
+        resumeWorkaround: false
+      };
+
+    case 'safari':
+      return {
+        requiresEventListener: true,
+        loadDelay: 0,
+        maxSegmentLength: 300,
+        resumeWorkaround: false
+      };
+
+    default:
+      return {
+        requiresEventListener: true,
+        loadDelay: 100,
+        maxSegmentLength: 200,
+        resumeWorkaround: true
+      };
     }
   }
 
@@ -427,7 +427,7 @@ class TTSService {
     // Get user settings from storage or use defaults
     const settings = await this.getUserSettings();
     const finalOptions = { ...settings, ...options };
-    
+
     // Set voice
     if (finalOptions.voice) {
       const voice = this.getVoiceByName(finalOptions.voice);
@@ -435,22 +435,22 @@ class TTSService {
         utterance.voice = voice;
       }
     }
-    
+
     // Set rate (0.1 to 10, default 1)
     if (finalOptions.rate !== undefined) {
       utterance.rate = Math.max(0.1, Math.min(10, finalOptions.rate));
     }
-    
+
     // Set pitch (0 to 2, default 1)
     if (finalOptions.pitch !== undefined) {
       utterance.pitch = Math.max(0, Math.min(2, finalOptions.pitch));
     }
-    
+
     // Set volume (0 to 1, default 1)
     if (finalOptions.volume !== undefined) {
       utterance.volume = Math.max(0, Math.min(1, finalOptions.volume));
     }
-    
+
     // Set language
     if (finalOptions.lang) {
       utterance.lang = finalOptions.lang;
@@ -463,11 +463,11 @@ class TTSService {
   async getUserSettings() {
     try {
       const api = this.getStorageAPI();
-      if (!api) return this.getDefaultSettings();
-      
+      if (!api) {return this.getDefaultSettings();}
+
       const result = await this.getStorageData(api, ['ttsSettings']);
       return result.ttsSettings || this.getDefaultSettings();
-      
+
     } catch (error) {
       console.error('Failed to load TTS settings:', error);
       return this.getDefaultSettings();
@@ -522,7 +522,7 @@ class TTSService {
       if (this.speechProgressCallback) {
         this.speechProgressCallback(event);
       }
-      
+
       if (event.name === 'word' && this.onWordBoundary) {
         this.onWordBoundary({
           charIndex: event.charIndex,
@@ -544,16 +544,16 @@ class TTSService {
     if (!utterance.onboundary) {
       this.setupFallbackHighlighting(utterance);
     }
-    
+
     utterance.onmark = (event) => {
       // SSML marks - for advanced speech control
-      console.log('TTS mark:', event.name);
+      console.warn('TTS mark:', event.name);
     };
 
     // Test if boundary events are supported
     const originalOnStart = utterance.onstart;
     utterance.onstart = () => {
-      if (originalOnStart) originalOnStart();
+      if (originalOnStart) {originalOnStart();}
     };
   }
 
@@ -564,7 +564,7 @@ class TTSService {
     if (this.browserType === 'chrome' || this.browserType === 'edge') {
       // Chrome has issues with long utterances - implement resume workaround
       let timeout;
-      
+
       const resetTimeout = () => {
         clearTimeout(timeout);
         timeout = setTimeout(() => {
@@ -578,14 +578,14 @@ class TTSService {
           }
         }, 14000); // Resume every 14 seconds to prevent Chrome timeout
       };
-      
+
       utterance.onstart = resetTimeout;
       utterance.onresume = resetTimeout;
-      
+
       utterance.onend = () => {
         clearTimeout(timeout);
       };
-      
+
       utterance.onerror = () => {
         clearTimeout(timeout);
       };
@@ -597,15 +597,15 @@ class TTSService {
    */
   splitTextIntoChunks(text, maxLength = null) {
     const chunkLength = maxLength || this.config.maxSegmentLength;
-    
+
     if (text.length <= chunkLength) {
       return [text];
     }
-    
+
     const chunks = [];
     const sentences = text.split(/[.!?]+/);
     let currentChunk = '';
-    
+
     for (const sentence of sentences) {
       if (currentChunk.length + sentence.length <= chunkLength) {
         currentChunk += sentence + '. ';
@@ -616,11 +616,11 @@ class TTSService {
         currentChunk = sentence + '. ';
       }
     }
-    
+
     if (currentChunk) {
       chunks.push(currentChunk.trim());
     }
-    
+
     return chunks;
   }
 
@@ -629,12 +629,12 @@ class TTSService {
    */
   async speakLongText(text, options = {}) {
     const chunks = this.splitTextIntoChunks(text);
-    
+
     for (let i = 0; i < chunks.length; i++) {
-      if (!this.isInitialized) break;
-      
+      if (!this.isInitialized) {break;}
+
       await this.speak(chunks[i], options);
-      
+
       // Small delay between chunks
       if (i < chunks.length - 1) {
         await new Promise(resolve => setTimeout(resolve, 100));
@@ -680,21 +680,21 @@ class TTSService {
       return;
     }
 
-    console.log('⏰ Setting up timer-based highlighting fallback');
-    
+    console.warn('⏰ Setting up timer-based highlighting fallback');
+
     const words = utterance.text.split(/\s+/);
     const estimatedWordsPerSecond = this.rate * 3; // Approximate words per second
     const wordInterval = 1000 / estimatedWordsPerSecond;
-    
+
     let wordIndex = 0;
     let charIndex = 0;
-    
+
     const highlightTimer = setInterval(() => {
       if (!this.isPlaying || wordIndex >= words.length) {
         clearInterval(highlightTimer);
         return;
       }
-      
+
       const currentWord = words[wordIndex];
       if (currentWord && this.onWordBoundary) {
         this.onWordBoundary({
@@ -704,7 +704,7 @@ class TTSService {
           fallback: true
         });
       }
-      
+
       charIndex += currentWord.length + 1; // +1 for space
       wordIndex++;
     }, wordInterval);
@@ -717,10 +717,10 @@ class TTSService {
    * Remove highlighting callbacks
    */
   clearHighlightCallbacks() {
-    console.log('🧹 Clearing highlight callbacks');
+    console.warn('🧹 Clearing highlight callbacks');
     this.onWordBoundary = null;
     this.onSentenceBoundary = null;
-    
+
     // Clear fallback timer if running
     if (this.fallbackTimer) {
       clearInterval(this.fallbackTimer);

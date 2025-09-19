@@ -5,6 +5,7 @@
   "main": "src/background/service-worker.js",
   "scripts": {
     "setup": "npm install && echo 'Setup complete. Configure your .env file with API keys as needed.'",
+    "generate-icons": "node scripts/generate-icons.js",
     "dev": "npm run dev:chrome",
     "dev:chrome": "webpack --config build/webpack.chrome.js --mode development --watch",
     "dev:firefox": "webpack --config build/webpack.firefox.js --mode development --watch",
@@ -116,6 +117,7 @@
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "babel-loader": "^10.0.0",
+    "chrome-webstore-upload-cli": "^3.3.2",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^13.0.1",
     "css-loader": "^7.1.2",
@@ -137,19 +139,19 @@
     "prettier": "^3.6.2",
     "puppeteer": "^24.9.0",
     "rimraf": "^6.0.1",
+    "sharp": "^0.34.4",
     "style-loader": "^4.0.0",
     "terser-webpack-plugin": "^5.3.14",
     "typescript": "^5.9.2",
     "web-ext": "^8.9.0",
     "webpack": "^5.101.3",
     "webpack-bundle-analyzer": "^4.10.2",
-    "webpack-cli": "^6.0.1",
-    "chrome-webstore-upload-cli": "^3.3.2"
+    "webpack-cli": "^6.0.1"
   },
   "optionalDependencies": {
+    "@playwright/test": "^1.36.0",
     "playwright": "^1.36.0",
-    "selenium-webdriver": "^4.11.0",
-    "@playwright/test": "^1.36.0"
+    "selenium-webdriver": "^4.11.0"
   },
   "browserslist": [
     "Chrome >= 88",

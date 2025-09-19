@@ -9,37 +9,37 @@
  * Message handler for communication with content scripts and popup
  */
 async function handleMessage(message, sender, sendResponse) {
-  console.log('📨 Handling message:', message.type);
-  
+  console.warn('📨 Handling message:', message.type);
+
   try {
     switch (message.type) {
-      case 'GET_SETTINGS':
-        await handleGetSettings(message, sendResponse);
-        break;
-        
-      case 'UPDATE_SETTINGS':
-        await handleUpdateSettings(message, sendResponse);
-        break;
-        
-      case 'AI_EXPLANATION_REQUEST':
-        await handleAIExplanation(message, sendResponse);
-        break;
-        
-      case 'PRIVACY_CONSENT':
-        await handlePrivacyConsent(message, sendResponse);
-        break;
-        
-      case 'ERROR_REPORT':
-        await handleErrorReport(message, sendResponse);
-        break;
-        
-      case 'GET_EXTENSION_INFO':
-        await handleGetExtensionInfo(message, sendResponse);
-        break;
-        
-      default:
-        console.warn('Unknown message type:', message.type);
-        sendResponse({ success: false, error: 'Unknown message type' });
+    case 'GET_SETTINGS':
+      await handleGetSettings(message, sendResponse);
+      break;
+
+    case 'UPDATE_SETTINGS':
+      await handleUpdateSettings(message, sendResponse);
+      break;
+
+    case 'AI_EXPLANATION_REQUEST':
+      await handleAIExplanation(message, sendResponse);
+      break;
+
+    case 'PRIVACY_CONSENT':
+      await handlePrivacyConsent(message, sendResponse);
+      break;
+
+    case 'ERROR_REPORT':
+      await handleErrorReport(message, sendResponse);
+      break;
+
+    case 'GET_EXTENSION_INFO':
+      await handleGetExtensionInfo(message, sendResponse);
+      break;
+
+    default:
+      console.warn('Unknown message type:', message.type);
+      sendResponse({ success: false, error: 'Unknown message type' });
     }
   } catch (error) {
     console.error('Message handler error:', error);
@@ -53,7 +53,7 @@ async function handleMessage(message, sender, sendResponse) {
 async function handleGetSettings(message, sendResponse) {
   try {
     const { category } = message;
-    
+
     let settings;
     if (category) {
       const key = `${category}Settings`;
@@ -68,9 +68,9 @@ async function handleGetSettings(message, sendResponse) {
       ]);
       settings = result;
     }
-    
+
     sendResponse({ success: true, settings });
-    
+
   } catch (error) {
     console.error('Get settings error:', error);
     sendResponse({ success: false, error: error.message });
@@ -83,20 +83,20 @@ async function handleGetSettings(message, sendResponse) {
 async function handleUpdateSettings(message, sendResponse) {
   try {
     const { category, settings } = message;
-    
+
     if (category) {
       const key = `${category}Settings`;
       const currentResult = await chrome.storage.sync.get([key]);
       const currentSettings = currentResult[key] || {};
       const mergedSettings = { ...currentSettings, ...settings };
-      
+
       await chrome.storage.sync.set({ [key]: mergedSettings });
       sendResponse({ success: true, settings: mergedSettings });
     } else {
       await chrome.storage.sync.set(settings);
       sendResponse({ success: true, settings });
     }
-    
+
   } catch (error) {
     console.error('Update settings error:', error);
     sendResponse({ success: false, error: error.message });
@@ -109,38 +109,38 @@ async function handleUpdateSettings(message, sendResponse) {
 async function handleAIExplanation(message, sendResponse) {
   try {
     const { text } = message;
-    
+
     if (!text || text.trim().length === 0) {
       throw new Error('No text provided for explanation');
     }
-    
+
     // Check privacy consent
     const { privacySettings } = await chrome.storage.sync.get(['privacySettings']);
-    
+
     if (!privacySettings?.aiConsentGiven) {
-      sendResponse({ 
-        success: false, 
+      sendResponse({
+        success: false,
         error: 'AI consent not given',
-        requiresConsent: true 
+        requiresConsent: true
       });
       return;
     }
-    
+
     // Return placeholder explanation
     const explanation = {
       explanation: `This text appears to be ${analyzeTextType(text)}. For detailed AI explanations, please configure API keys in the extension settings.`,
       provider: 'local',
       timestamp: Date.now()
     };
-    
+
     sendResponse({ success: true, explanation });
-    
+
   } catch (error) {
     console.error('AI explanation error:', error);
-    sendResponse({ 
-      success: false, 
+    sendResponse({
+      success: false,
       error: error.message,
-      fallback: `Selected text: "${text}". For AI explanations, please ensure API keys are configured in settings.`
+      fallback: `Selected text: "${message.text || 'N/A'}". For AI explanations, please ensure API keys are configured in settings.`
     });
   }
 }
@@ -151,7 +151,7 @@ async function handleAIExplanation(message, sendResponse) {
 async function handlePrivacyConsent(message, sendResponse) {
   try {
     const { consentGiven, dataCollection = false } = message;
-    
+
     const { privacySettings = {} } = await chrome.storage.sync.get(['privacySettings']);
     const updatedPrivacySettings = {
       ...privacySettings,
@@ -159,10 +159,10 @@ async function handlePrivacyConsent(message, sendResponse) {
       dataCollection,
       consentTimestamp: Date.now()
     };
-    
+
     await chrome.storage.sync.set({ privacySettings: updatedPrivacySettings });
     sendResponse({ success: true, settings: updatedPrivacySettings });
-    
+
   } catch (error) {
     console.error('Privacy consent error:', error);
     sendResponse({ success: false, error: error.message });
@@ -175,16 +175,16 @@ async function handlePrivacyConsent(message, sendResponse) {
 async function handleErrorReport(message, sendResponse) {
   try {
     const { error, context, timestamp = Date.now() } = message;
-    
+
     console.error('📝 Error report received:', {
       error,
       context,
       timestamp,
       userAgent: navigator.userAgent
     });
-    
+
     sendResponse({ success: true, message: 'Error report logged' });
-    
+
   } catch (error) {
     console.error('Error report handling failed:', error);
     sendResponse({ success: false, error: error.message });
@@ -197,7 +197,7 @@ async function handleErrorReport(message, sendResponse) {
 async function handleGetExtensionInfo(message, sendResponse) {
   try {
     const manifest = chrome.runtime.getManifest();
-    
+
     const info = {
       name: manifest.name,
       version: manifest.version,
@@ -206,9 +206,9 @@ async function handleGetExtensionInfo(message, sendResponse) {
       permissions: manifest.permissions || [],
       browser: 'chrome'
     };
-    
+
     sendResponse({ success: true, info });
-    
+
   } catch (error) {
     console.error('Get extension info error:', error);
     sendResponse({ success: false, error: error.message });
@@ -219,59 +219,59 @@ async function handleGetExtensionInfo(message, sendResponse) {
  * Analyze text type for local explanations
  */
 function analyzeTextType(text) {
-  if (!text) return 'empty text';
-  
+  if (!text) {return 'empty text';}
+
   const length = text.trim().length;
-  
-  if (length === 0) return 'empty text';
-  if (length < 10) return 'a short phrase';
-  if (length < 50) return 'a brief sentence or phrase';
-  if (length < 200) return 'a paragraph of text';
-  if (length < 500) return 'several paragraphs of text';
-  
+
+  if (length === 0) {return 'empty text';}
+  if (length < 10) {return 'a short phrase';}
+  if (length < 50) {return 'a brief sentence or phrase';}
+  if (length < 200) {return 'a paragraph of text';}
+  if (length < 500) {return 'several paragraphs of text';}
+
   return 'a long passage of text';
 }
 
 // Service Worker lifecycle events
-self.addEventListener('install', (event) => {
-  console.log('🔧 TTS Extension Service Worker installing...');
-  
+self.addEventListener('install', (_event) => {
+  console.warn('🔧 TTS Extension Service Worker installing...');
+
   // Skip waiting to activate immediately
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
-  console.log('✅ TTS Extension Service Worker activated');
-  
+  console.warn('✅ TTS Extension Service Worker activated');
+
   event.waitUntil(
     self.clients.claim().then(() => {
-      console.log('📱 Service Worker claimed all clients');
+      console.warn('📱 Service Worker claimed all clients');
     })
   );
 });
 
 // Handle extension installation and updates
 chrome.runtime.onInstalled.addListener(async (details) => {
-  console.log('🚀 Extension installed/updated:', details.reason);
-  
+  console.warn('🚀 Extension installed/updated:', details.reason);
+
   try {
     // Initialize storage with default settings
     await initializeStorage();
-    
+
     // Create context menus
     await setupContextMenus();
-    
+
     // Set up alarms for periodic tasks
     await setupAlarms();
-    
+
     // Show welcome notification on first install (disabled to prevent notification errors)
     if (details.reason === 'install') {
-      console.log('🎉 Extension installed successfully! Welcome notification disabled to prevent errors.');
+      console.warn('🎉 Extension installed successfully! Welcome notification disabled to prevent errors.');
       // Note: Welcome notification temporarily disabled due to Chrome notification API timing issues
     }
-    
-    console.log('✅ Extension initialization completed');
-    
+
+    console.warn('✅ Extension initialization completed');
+
   } catch (error) {
     console.error('❌ Extension initialization failed:', error);
   }
@@ -279,27 +279,27 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 
 // Handle context menu clicks
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
-  console.log('📱 Context menu clicked:', info.menuItemId);
-  
+  console.warn('📱 Context menu clicked:', info.menuItemId);
+
   try {
     switch (info.menuItemId) {
-      case 'tts-speak-selection':
-        await handleSpeakSelection(info, tab);
-        break;
-        
-      case 'tts-explain-selection':
-        await handleExplainSelection(info, tab);
-        break;
-        
-      case 'tts-open-settings':
-        await showNotification(
-          'TTS Settings',
-          'Extension settings: Use right-click context menus or keyboard shortcuts (Ctrl+Shift+T, Ctrl+Shift+S) to access TTS features.'
-        );
-        break;
-        
-      default:
-        console.warn('Unknown context menu item:', info.menuItemId);
+    case 'tts-speak-selection':
+      await handleSpeakSelection(info, tab);
+      break;
+
+    case 'tts-explain-selection':
+      await handleExplainSelection(info, tab);
+      break;
+
+    case 'tts-open-settings':
+      await showNotification(
+        'TTS Settings',
+        'Extension settings: Use right-click context menus or keyboard shortcuts (Ctrl+Shift+T, Ctrl+Shift+S) to access TTS features.'
+      );
+      break;
+
+    default:
+      console.warn('Unknown context menu item:', info.menuItemId);
     }
   } catch (error) {
     console.error('Context menu handler error:', error);
@@ -309,20 +309,20 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
 
 // Handle keyboard commands
 chrome.commands.onCommand.addListener(async (command) => {
-  console.log('⌨️ Keyboard command:', command);
-  
+  console.warn('⌨️ Keyboard command:', command);
+
   try {
     switch (command) {
-      case 'toggle-tts':
-        await handleToggleTTS();
-        break;
-        
-      case 'speak-selection':
-        await handleSpeakSelectionCommand();
-        break;
-        
-      default:
-        console.warn('Unknown command:', command);
+    case 'toggle-tts':
+      await handleToggleTTS();
+      break;
+
+    case 'speak-selection':
+      await handleSpeakSelectionCommand();
+      break;
+
+    default:
+      console.warn('Unknown command:', command);
     }
   } catch (error) {
     console.error('Command handler error:', error);
@@ -331,8 +331,8 @@ chrome.commands.onCommand.addListener(async (command) => {
 
 // Handle messages from content scripts and popup
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log('📨 Message received:', message.type, 'from:', sender);
-  
+  console.warn('📨 Message received:', message.type, 'from:', sender);
+
   // Handle async responses
   handleMessage(message, sender, sendResponse);
   return true; // Keep message channel open for async response
@@ -341,28 +341,28 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 // Handle alarm events for periodic tasks
 if (chrome.alarms && chrome.alarms.onAlarm) {
   chrome.alarms.onAlarm.addListener(async (alarm) => {
-  console.log('⏰ Alarm triggered:', alarm.name);
-  
-  try {
-    switch (alarm.name) {
+    console.warn('⏰ Alarm triggered:', alarm.name);
+
+    try {
+      switch (alarm.name) {
       case 'cleanup-storage':
         await cleanupStorage();
         break;
-        
+
       case 'sync-settings':
         await syncSettings();
         break;
-        
+
       case 'check-api-limits':
         await checkApiLimits();
         break;
-        
+
       default:
         console.warn('Unknown alarm:', alarm.name);
+      }
+    } catch (error) {
+      console.error('Alarm handler error:', error);
     }
-  } catch (error) {
-    console.error('Alarm handler error:', error);
-  }
   });
 } else {
   console.warn('⚠️ Chrome alarms API not available');
@@ -370,22 +370,22 @@ if (chrome.alarms && chrome.alarms.onAlarm) {
 
 // Handle notification clicks
 chrome.notifications.onClicked.addListener((notificationId) => {
-  console.log('🔔 Notification clicked:', notificationId);
-  
+  console.warn('🔔 Notification clicked:', notificationId);
+
   // Handle notification actions
   handleNotificationClick(notificationId);
 });
 
 // Handle service worker suspension
 self.addEventListener('beforeunload', () => {
-  console.log('💤 Service Worker suspending - saving critical state');
+  console.warn('💤 Service Worker suspending - saving critical state');
   // Any critical state saving would go here
 });
 
 // Error handling for unhandled rejections
 self.addEventListener('unhandledrejection', (event) => {
   console.error('🚨 Unhandled promise rejection in service worker:', event.reason);
-  
+
   // Report error to error tracking service if configured
   reportError('unhandled_rejection', event.reason);
 });
@@ -393,7 +393,7 @@ self.addEventListener('unhandledrejection', (event) => {
 // Error handling for unhandled errors
 self.addEventListener('error', (event) => {
   console.error('🚨 Unhandled error in service worker:', event.error);
-  
+
   // Report error to error tracking service if configured
   reportError('unhandled_error', event.error);
 });
@@ -407,13 +407,13 @@ async function initializeStorage() {
   try {
     const existingData = await chrome.storage.sync.get([
       'ttsSettings',
-      'aiSettings', 
+      'aiSettings',
       'uiSettings',
       'privacySettings'
     ]);
-    
+
     const defaultData = {};
-    
+
     // Set defaults only for missing keys
     if (!existingData.ttsSettings) {
       defaultData.ttsSettings = {
@@ -424,7 +424,7 @@ async function initializeStorage() {
         enabled: true
       };
     }
-    
+
     if (!existingData.aiSettings) {
       defaultData.aiSettings = {
         groqEnabled: true,
@@ -433,7 +433,7 @@ async function initializeStorage() {
         autoExplain: false
       };
     }
-    
+
     if (!existingData.uiSettings) {
       defaultData.uiSettings = {
         overlayPosition: 'auto',
@@ -441,19 +441,19 @@ async function initializeStorage() {
         showKeyboardShortcuts: true
       };
     }
-    
+
     if (!existingData.privacySettings) {
       defaultData.privacySettings = {
         aiConsentGiven: false,
         dataCollection: false
       };
     }
-    
+
     if (Object.keys(defaultData).length > 0) {
       await chrome.storage.sync.set(defaultData);
-      console.log('📦 Storage initialized with defaults:', Object.keys(defaultData));
+      console.warn('📦 Storage initialized with defaults:', Object.keys(defaultData));
     }
-    
+
   } catch (error) {
     console.error('Storage initialization error:', error);
     throw error;
@@ -467,7 +467,7 @@ async function setupContextMenus() {
   try {
     // Remove existing context menus
     await chrome.contextMenus.removeAll();
-    
+
     // Create main TTS context menu
     chrome.contextMenus.create({
       id: 'tts-speak-selection',
@@ -475,7 +475,7 @@ async function setupContextMenus() {
       contexts: ['selection'],
       documentUrlPatterns: ['http://*/*', 'https://*/*']
     });
-    
+
     // Create AI explanation context menu
     chrome.contextMenus.create({
       id: 'tts-explain-selection',
@@ -483,7 +483,7 @@ async function setupContextMenus() {
       contexts: ['selection'],
       documentUrlPatterns: ['http://*/*', 'https://*/*']
     });
-    
+
     // Create settings menu
     chrome.contextMenus.create({
       id: 'tts-open-settings',
@@ -491,9 +491,9 @@ async function setupContextMenus() {
       contexts: ['page', 'frame'],
       documentUrlPatterns: ['http://*/*', 'https://*/*']
     });
-    
-    console.log('📋 Context menus created');
-    
+
+    console.warn('📋 Context menus created');
+
   } catch (error) {
     console.error('Context menu setup error:', error);
     throw error;
@@ -509,30 +509,30 @@ async function setupAlarms() {
       console.warn('⚠️ Chrome alarms API not available, skipping alarm setup');
       return;
     }
-    
+
     // Clear existing alarms
     await chrome.alarms.clearAll();
-    
+
     // Storage cleanup alarm (daily)
     chrome.alarms.create('cleanup-storage', {
       delayInMinutes: 60, // First run after 1 hour
       periodInMinutes: 24 * 60 // Then every 24 hours
     });
-    
+
     // Settings sync alarm (every 30 minutes)
     chrome.alarms.create('sync-settings', {
       delayInMinutes: 30,
       periodInMinutes: 30
     });
-    
+
     // API limits check alarm (every 5 minutes)
     chrome.alarms.create('check-api-limits', {
       delayInMinutes: 5,
       periodInMinutes: 5
     });
-    
-    console.log('⏰ Alarms configured');
-    
+
+    console.warn('⏰ Alarms configured');
+
   } catch (error) {
     console.error('Alarm setup error:', error);
     throw error;
@@ -547,7 +547,7 @@ async function handleSpeakSelection(info, tab) {
     await showNotification('No Selection', 'Please select some text first');
     return;
   }
-  
+
   // Send message to content script to show overlay
   await chrome.tabs.sendMessage(tab.id, {
     type: 'SHOW_TTS_OVERLAY',
@@ -564,10 +564,10 @@ async function handleExplainSelection(info, tab) {
     await showNotification('No Selection', 'Please select some text first');
     return;
   }
-  
+
   // Check if AI consent has been given
   const { privacySettings } = await chrome.storage.sync.get(['privacySettings']);
-  
+
   if (!privacySettings?.aiConsentGiven) {
     // Show consent dialog first
     await chrome.tabs.sendMessage(tab.id, {
@@ -576,7 +576,7 @@ async function handleExplainSelection(info, tab) {
     });
     return;
   }
-  
+
   // Send message to content script to get AI explanation
   await chrome.tabs.sendMessage(tab.id, {
     type: 'SHOW_TTS_OVERLAY',
@@ -591,7 +591,7 @@ async function handleExplainSelection(info, tab) {
  */
 async function handleToggleTTS() {
   const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  
+
   if (activeTab) {
     await chrome.tabs.sendMessage(activeTab.id, {
       type: 'TOGGLE_TTS_OVERLAY'
@@ -604,7 +604,7 @@ async function handleToggleTTS() {
  */
 async function handleSpeakSelectionCommand() {
   const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  
+
   if (activeTab) {
     await chrome.tabs.sendMessage(activeTab.id, {
       type: 'SPEAK_CURRENT_SELECTION'
@@ -640,7 +640,7 @@ async function cleanupStorage() {
   try {
     // Remove old cache and temporary data
     await chrome.storage.local.remove(['tempData', 'cache', 'oldLogs']);
-    console.log('🧹 Storage cleanup completed');
+    console.warn('🧹 Storage cleanup completed');
   } catch (error) {
     console.error('Storage cleanup error:', error);
   }
@@ -652,7 +652,7 @@ async function cleanupStorage() {
 async function syncSettings() {
   try {
     // This would implement any cross-device synchronization logic
-    console.log('🔄 Settings sync completed');
+    console.warn('🔄 Settings sync completed');
   } catch (error) {
     console.error('Settings sync error:', error);
   }
@@ -665,7 +665,7 @@ async function checkApiLimits() {
   try {
     // Check rate limiter status for all APIs
     // This could send messages to warn about approaching limits
-    console.log('📊 API limits checked');
+    console.warn('📊 API limits checked');
   } catch (error) {
     console.error('API limits check error:', error);
   }
@@ -693,7 +693,7 @@ async function handleNotificationClick(notificationId) {
  */
 function reportError(type, error) {
   // This would implement error reporting to analytics/monitoring service
-  console.log('📝 Error reported:', type, error);
+  console.warn('📝 Error reported:', type, error);
 }
 
-console.log('🚀 TTS Extension Service Worker loaded and ready');
+console.warn('🚀 TTS Extension Service Worker loaded and ready');

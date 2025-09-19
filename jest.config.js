@@ -20,14 +20,14 @@ module.exports = {
   ],
   
   // Module name mapping for aliases
-  moduleNameMapping: {
+  moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
     '^@services/(.*)$': '<rootDir>/src/services/$1',
     '^@utils/(.*)$': '<rootDir>/src/utils/$1',
     '^@tests/(.*)$': '<rootDir>/tests/$1'
   },
-  
-  // Transform files
+
+  // Transform configuration
   transform: {
     '^.+\\.js$': 'babel-jest'
   },

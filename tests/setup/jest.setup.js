@@ -19,13 +19,13 @@ global.chrome = {
       clear: jest.fn().mockResolvedValue()
     }
   },
-  
+
   tabs: {
     query: jest.fn().mockResolvedValue([]),
     sendMessage: jest.fn().mockResolvedValue(),
     create: jest.fn().mockResolvedValue()
   },
-  
+
   runtime: {
     sendMessage: jest.fn().mockResolvedValue(),
     onMessage: {
@@ -34,7 +34,7 @@ global.chrome = {
     },
     lastError: null
   },
-  
+
   notifications: {
     create: jest.fn().mockResolvedValue(),
     clear: jest.fn().mockResolvedValue()
@@ -72,7 +72,7 @@ global.SpeechSynthesisUtterance = class MockSpeechSynthesisUtterance {
     this.rate = 1;
     this.pitch = 1;
     this.lang = 'en-US';
-    
+
     // Event handlers
     this.onstart = null;
     this.onend = null;
@@ -84,24 +84,103 @@ global.SpeechSynthesisUtterance = class MockSpeechSynthesisUtterance {
   }
 };
 
-// Mock DOM methods
-global.document.createElement = jest.fn((tagName) => ({
-  tagName: tagName.toUpperCase(),
-  className: '',
-  textContent: '',
-  innerHTML: '',
-  style: {},
-  addEventListener: jest.fn(),
-  removeEventListener: jest.fn(),
-  appendChild: jest.fn(),
-  removeChild: jest.fn(),
-  querySelector: jest.fn(),
-  querySelectorAll: jest.fn().mockReturnValue([]),
-  setAttribute: jest.fn(),
-  getAttribute: jest.fn(),
-  remove: jest.fn(),
-  click: jest.fn()
-}));
+// Keep the original createElement but spy on it
+const originalCreateElement = global.document.createElement.bind(document);
+global.document.createElement = jest.fn((tagName) => {
+  const element = originalCreateElement(tagName);
+
+  // Mock key DOM methods while preserving their functionality
+  const originalAppendChild = element.appendChild.bind(element);
+  const originalRemoveChild = element.removeChild.bind(element);
+  const originalSetAttribute = element.setAttribute.bind(element);
+  const originalAddEventListener = element.addEventListener.bind(element);
+
+  element.appendChild = jest.fn((child) => {
+    try {
+      return originalAppendChild(child);
+    } catch {
+      // If appendChild fails, just mock it
+      if (child) child.parentNode = element;
+      return child;
+    }
+  });
+
+  element.removeChild = jest.fn((child) => {
+    try {
+      return originalRemoveChild(child);
+    } catch {
+      // If removeChild fails, just mock it
+      if (child) child.parentNode = null;
+      return child;
+    }
+  });
+
+  element.setAttribute = jest.fn((name, value) => {
+    try {
+      return originalSetAttribute(name, value);
+    } catch {
+      // If setAttribute fails, just mock it
+      element.getAttribute = element.getAttribute || jest.fn(() => value);
+    }
+  });
+
+  element.addEventListener = jest.fn((event, handler, options) => {
+    try {
+      return originalAddEventListener(event, handler, options);
+    } catch {
+      // If addEventListener fails, just mock it
+    }
+  });
+
+  // Add additional mocked methods
+  if (!element.replaceChild) {
+    element.replaceChild = jest.fn((newChild, oldChild) => {
+      if (newChild) newChild.parentNode = element;
+      if (oldChild) oldChild.parentNode = null;
+      return oldChild;
+    });
+  }
+
+  if (!element.normalize) {
+    element.normalize = jest.fn();
+  }
+
+  return element;
+});
+
+// Keep the original createTextNode but spy on it
+const originalCreateTextNode = global.document.createTextNode.bind(document);
+global.document.createTextNode = jest.fn((text) => {
+  try {
+    return originalCreateTextNode(text);
+  } catch {
+    // Fallback mock if createTextNode fails
+    return {
+      nodeType: 3,
+      textContent: text,
+      parentNode: null,
+      remove: jest.fn()
+    };
+  }
+});
+
+// Mock getElementById to allow style injection and tracking
+const originalGetElementById = global.document.getElementById.bind(document);
+global.document.getElementById = jest.fn((id) => {
+  // Try to get the actual element first
+  const element = originalGetElementById(id);
+  if (element) {
+    return element;
+  }
+
+  // For style injection, return null initially to allow injection
+  // But the test should find it after injection
+  if (id === 'tts-highlighter-styles') {
+    return originalGetElementById(id); // Return actual element if it exists
+  }
+
+  return null;
+});
 
 // Mock fetch API
 global.fetch = jest.fn().mockResolvedValue({
@@ -126,10 +205,10 @@ if (process.env.NODE_ENV === 'test') {
 // Custom matchers
 expect.extend({
   toBeValidExtensionMessage(received) {
-    const pass = received && 
-                 typeof received === 'object' && 
+    const pass = received &&
+                 typeof received === 'object' &&
                  typeof received.type === 'string';
-    
+
     if (pass) {
       return {
         message: () => `expected ${received} not to be a valid extension message`,
@@ -153,14 +232,14 @@ global.testUtils = {
     global.chrome.tabs.query.mockClear();
     global.chrome.runtime.sendMessage.mockClear();
   },
-  
+
   // Create mock speech synthesis
   mockSpeechSynthesis: () => {
     global.speechSynthesis.speak.mockClear();
     global.speechSynthesis.cancel.mockClear();
     global.speechSynthesis.getVoices.mockClear();
   },
-  
+
   // Create mock DOM element
   mockDOMElement: (tagName = 'div', props = {}) => ({
     tagName: tagName.toUpperCase(),
@@ -173,7 +252,7 @@ global.testUtils = {
     removeChild: jest.fn(),
     ...props
   }),
-  
+
   // Wait for async operations
   waitFor: (ms = 100) => new Promise(resolve => setTimeout(resolve, ms))
 };

@@ -10,75 +10,75 @@ const path = require('path');
 global.e2eUtils = {
   // Browser instances cache
   browsers: {},
-  
+
   /**
    * Launch browser with extension
    */
   async launchBrowser(browserType = 'chrome', options = {}) {
     const extensionPath = path.resolve(global.EXTENSION_PATH[browserType]);
-    
+
     let browser;
-    
+
     switch (browserType) {
-      case 'chrome':
-        browser = await puppeteer.launch({
-          headless: global.HEADLESS,
-          args: [
-            `--disable-extensions-except=${extensionPath}`,
-            `--load-extension=${extensionPath}`,
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--disable-web-security',
-            '--disable-features=TranslateUI'
-          ],
-          ...options
-        });
-        break;
-        
-      case 'firefox':
-        // Firefox requires different setup
-        browser = await puppeteer.launch({
-          product: 'firefox',
-          headless: global.HEADLESS,
-          args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox'
-          ],
-          ...options
-        });
-        break;
-        
-      default:
-        throw new Error(`Unsupported browser type: ${browserType}`);
+    case 'chrome':
+      browser = await puppeteer.launch({
+        headless: global.HEADLESS,
+        args: [
+          `--disable-extensions-except=${extensionPath}`,
+          `--load-extension=${extensionPath}`,
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-web-security',
+          '--disable-features=TranslateUI'
+        ],
+        ...options
+      });
+      break;
+
+    case 'firefox':
+      // Firefox requires different setup
+      browser = await puppeteer.launch({
+        product: 'firefox',
+        headless: global.HEADLESS,
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox'
+        ],
+        ...options
+      });
+      break;
+
+    default:
+      throw new Error(`Unsupported browser type: ${browserType}`);
     }
-    
+
     this.browsers[browserType] = browser;
     return browser;
   },
-  
+
   /**
    * Get extension page (popup, background, etc.)
    */
-  async getExtensionPage(browser, pageType = 'popup') {
-    const pages = await browser.pages();
-    
+  async getExtensionPage(browser, _pageType = 'popup') {
+    await browser.pages();
+
     // Wait for extension to load
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
+    await new Promise(resolve => global.setTimeout(resolve, 2000));
+
     // Get extension pages
     const targets = await browser.targets();
-    const extensionTarget = targets.find(target => 
+    const extensionTarget = targets.find(target =>
       target.type() === 'page' && target.url().includes('chrome-extension')
     );
-    
+
     if (!extensionTarget) {
       throw new Error('Extension not loaded');
     }
-    
+
     return await extensionTarget.page();
   },
-  
+
   /**
    * Navigate to test page with text content
    */
@@ -89,7 +89,7 @@ global.e2eUtils = {
       <div>Another piece of text for testing various text selection scenarios.</div>
       <span>Short text snippet.</span>
     `;
-    
+
     await page.setContent(`
       <!DOCTYPE html>
       <html>
@@ -105,10 +105,10 @@ global.e2eUtils = {
       </body>
       </html>
     `);
-    
+
     await page.waitForLoadState?.('networkidle') || await page.waitForTimeout(1000);
   },
-  
+
   /**
    * Select text on page
    */
@@ -145,14 +145,14 @@ global.e2eUtils = {
       }, selector);
     }
   },
-  
+
   /**
    * Wait for TTS overlay to appear
    */
   async waitForTTSOverlay(page, timeout = 5000) {
     return await page.waitForSelector('.tts-overlay', { timeout });
   },
-  
+
   /**
    * Wait for extension to inject content script
    */
@@ -162,7 +162,7 @@ global.e2eUtils = {
       { timeout }
     );
   },
-  
+
   /**
    * Clean up browser instances
    */
@@ -174,13 +174,13 @@ global.e2eUtils = {
       }
     }
   },
-  
+
   /**
    * Take screenshot for debugging
    */
   async screenshot(page, name) {
     if (process.env.DEBUG_SCREENSHOTS) {
-      await page.screenshot({ 
+      await page.screenshot({
         path: `tests/screenshots/${name}-${Date.now()}.png`,
         fullPage: true
       });

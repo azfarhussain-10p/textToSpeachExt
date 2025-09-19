@@ -7,7 +7,7 @@
   'use strict';
 
   // Overlay state
-  let overlayState = {
+  const overlayState = {
     text: '',
     isInitialized: false,
     isSpeaking: false,
@@ -36,7 +36,7 @@
    */
   async function initialize() {
     try {
-  
+
       // Cache DOM elements
       cacheDOMElements();
 
@@ -75,13 +75,13 @@
       overlay: '#tts-overlay',
       textContent: '#tts-text-content',
       textStats: '#tts-text-stats',
-      
+
       // Control buttons
       playBtn: '#tts-play',
       pauseBtn: '#tts-pause',
       stopBtn: '#tts-stop',
       closeBtn: '#tts-close',
-      
+
       // Settings
       settingsToggle: '#tts-settings-toggle',
       settingsContent: '#tts-settings-content',
@@ -92,7 +92,7 @@
       rateValue: '#tts-rate-value',
       pitchValue: '#tts-pitch-value',
       volumeValue: '#tts-volume-value',
-      
+
       // AI controls
       explainBtn: '#tts-explain',
       explanationLevel: '#tts-explanation-level',
@@ -101,7 +101,7 @@
       explanationClose: '#tts-explanation-close',
       explanationFooter: '#tts-explanation-footer',
       speakExplanationBtn: '#tts-speak-explanation',
-      
+
       // Progress and status
       progressSection: '#tts-progress-section',
       progressFill: '#tts-progress-fill',
@@ -109,12 +109,12 @@
       status: '#tts-status',
       loading: '#tts-loading',
       loadingText: '#tts-loading-text',
-      
+
       // Error handling
       error: '#tts-error',
       errorMessage: '#tts-error-message',
       errorClose: '#tts-error-close',
-      
+
       // Footer
       shortcutsToggle: '#tts-shortcuts-toggle',
       shortcuts: '#tts-shortcuts'
@@ -141,7 +141,7 @@
     // Settings controls
     elements.settingsToggle?.addEventListener('click', toggleSettings);
     elements.voiceSelect?.addEventListener('change', handleVoiceChange);
-    
+
     // Range sliders with real-time updates
     elements.rateSlider?.addEventListener('input', handleRateChange);
     elements.pitchSlider?.addEventListener('input', handlePitchChange);
@@ -176,7 +176,7 @@
       // Initialize TTS service
       if (typeof TTSService !== 'undefined') {
         overlayState.services.tts = new TTSService();
-        
+
         // Set up TTS event callbacks
         overlayState.services.tts.setEventCallbacks({
           onStart: handleTTSStart,
@@ -192,7 +192,7 @@
 
         await overlayState.services.tts.initialize();
         await populateVoiceOptions();
-        
+
       } else {
         throw new Error('TTSService not available');
       }
@@ -205,7 +205,7 @@
         } else {
           throw new Error('AIService class not available');
         }
-      } catch (error) {
+      } catch {
         overlayState.services.ai = null;
       }
 
@@ -218,7 +218,7 @@
 
       // Update UI based on available services
       updateUIForAvailableServices();
-      
+
 
     } catch (error) {
       console.error('Service initialization error:', error);
@@ -234,17 +234,17 @@
     if (!overlayState.services.ai) {
       const aiSection = document.getElementById('tts-ai-section');
       const explainBtn = document.getElementById('tts-explain');
-      
+
       if (aiSection) {
         aiSection.style.display = 'none';
       }
-      
+
       if (explainBtn) {
         explainBtn.disabled = true;
         explainBtn.title = 'AI service unavailable';
       }
-      
-      console.log('🚫 AI features disabled - service not available');
+
+      console.warn('🚫 AI features disabled - service not available');
     }
   }
 
@@ -309,11 +309,11 @@
    * Populate voice selection dropdown
    */
   async function populateVoiceOptions() {
-    if (!overlayState.services.tts || !elements.voiceSelect) return;
+    if (!overlayState.services.tts || !elements.voiceSelect) {return;}
 
     try {
       const voices = overlayState.services.tts.getVoices();
-      
+
       // Clear existing options safely
       while (elements.voiceSelect.firstChild) {
         elements.voiceSelect.removeChild(elements.voiceSelect.firstChild);
@@ -344,7 +344,7 @@
       Object.keys(voicesByLang).sort().forEach(lang => {
         const optgroup = document.createElement('optgroup');
         optgroup.label = lang;
-        
+
         voicesByLang[lang].forEach(voice => {
           const option = new Option(voice.name, voice.name);
           if (voice.default) {
@@ -352,7 +352,7 @@
           }
           optgroup.appendChild(option);
         });
-        
+
         elements.voiceSelect.appendChild(optgroup);
       });
 
@@ -363,12 +363,12 @@
 
     } catch (error) {
       console.error('Failed to populate voices:', error);
-      
+
       // Clear existing options safely
       while (elements.voiceSelect.firstChild) {
         elements.voiceSelect.removeChild(elements.voiceSelect.firstChild);
       }
-      
+
       const errorOption = document.createElement('option');
       errorOption.value = '';
       errorOption.textContent = 'Error loading voices';
@@ -414,15 +414,15 @@
       }
 
       switch (type) {
-        case 'INIT_OVERLAY':
-          handleInitOverlay(data);
-          break;
+      case 'INIT_OVERLAY':
+        handleInitOverlay(data);
+        break;
 
-        default:
-          // Only warn about extension-related messages
-          if (type.startsWith('TTS_') || type.includes('OVERLAY')) {
-            console.warn('Unknown TTS message type:', type);
-          }
+      default:
+        // Only warn about extension-related messages
+        if (type.startsWith('TTS_') || type.includes('OVERLAY')) {
+          console.warn('Unknown TTS message type:', type);
+        }
       }
     });
   }
@@ -432,7 +432,7 @@
    */
   async function handleInitOverlay(data) {
     const { text, options = {} } = data;
-    
+
     if (!text) {
       showError('No text provided');
       return;
@@ -442,7 +442,7 @@
 
     // Update UI with text
     displayText(text);
-    
+
     // Handle auto-actions (auto-play disabled due to browser restrictions)
     if (options.autoExplain) {
       setTimeout(() => handleExplainRequest(), 500);
@@ -460,10 +460,10 @@
    * Display text in the preview area
    */
   function displayText(text) {
-    if (!elements.textContent) return;
+    if (!elements.textContent) {return;}
 
     elements.textContent.textContent = text;
-    
+
     // Update stats
     if (elements.textStats) {
       const wordCount = text.split(/\s+/).filter(w => w.length > 0).length;
@@ -478,10 +478,10 @@
       // Create stat elements safely
       const wordSpan = document.createElement('span');
       wordSpan.textContent = `${wordCount} words`;
-      
+
       const charSpan = document.createElement('span');
       charSpan.textContent = `${charCount} characters`;
-      
+
       const timeSpan = document.createElement('span');
       timeSpan.textContent = `~${readingTime} min read`;
 
@@ -526,24 +526,24 @@
 
     try {
       showLoading('Preparing speech...');
-      
+
       // Initialize highlighting before starting speech
       if (overlayState.highlighting.enabled && overlayState.highlighting.highlighter && elements.textContent && overlayState.text) {
         // Ensure the text element has the correct content
         if (elements.textContent.textContent !== overlayState.text) {
           elements.textContent.textContent = overlayState.text;
         }
-        
+
         overlayState.highlighting.highlighter.initializeHighlighting(elements.textContent, overlayState.text);
       }
-      
+
       // Set speaking state before TTS starts
       overlayState.isSpeaking = true;
       overlayState.isPaused = false;
       updatePlaybackControls();
-      
+
       await overlayState.services.tts.speak(overlayState.text, overlayState.currentSettings);
-      
+
     } catch (error) {
       console.error('Play error:', error);
       showError('Failed to play text: ' + error.message);
@@ -587,15 +587,15 @@
 
     try {
       overlayState.services.tts.stop();
-      
+
       // Manually trigger TTS end handler to update UI state
       handleTTSEnd();
-      
+
     } catch (error) {
       console.error('Stop error:', error);
       showError('Failed to stop: ' + error.message);
     }
-    
+
     // Clean up text highlighting when manually stopped
     if (overlayState.highlighting.enabled && overlayState.highlighting.highlighter) {
       overlayState.highlighting.highlighter.cleanup();
@@ -610,7 +610,7 @@
     if (overlayState.services.tts) {
       overlayState.services.tts.stop();
     }
-    
+
     sendMessageToParent('CLOSE_OVERLAY');
   }
 
@@ -620,14 +620,14 @@
    */
   function toggleSettings() {
     overlayState.ui.settingsExpanded = !overlayState.ui.settingsExpanded;
-    
+
     if (elements.settingsContent) {
       elements.settingsContent.hidden = !overlayState.ui.settingsExpanded;
     }
-    
+
     if (elements.settingsToggle) {
       elements.settingsToggle.setAttribute('aria-expanded', overlayState.ui.settingsExpanded);
-      
+
       // Update the chevron direction
       const chevron = elements.settingsToggle.querySelector('.tts-chevron');
       if (chevron) {
@@ -692,13 +692,13 @@
 
     try {
       showLoading('Getting AI explanation...');
-      
+
       const level = elements.explanationLevel?.value || 'simple';
       const result = await overlayState.services.ai.explainText(overlayState.text, { level });
-      
+
       displayExplanation(result);
       hideLoading();
-      
+
     } catch (error) {
       console.error('AI explanation error:', error);
       showError('Failed to get explanation: ' + error.message);
@@ -710,14 +710,14 @@
    * Display AI explanation
    */
   function displayExplanation(result) {
-    if (!elements.explanationContent || !elements.explanationContainer) return;
+    if (!elements.explanationContent || !elements.explanationContainer) {return;}
 
     elements.explanationContent.textContent = result.explanation;
-    
+
     if (elements.explanationFooter) {
       elements.explanationFooter.textContent = `Generated by ${result.provider} • ${result.level} level`;
     }
-    
+
     elements.explanationContainer.hidden = false;
     overlayState.ui.explanationVisible = true;
 
@@ -748,10 +748,10 @@
    * Handle speak explanation button
    */
   async function handleSpeakExplanation() {
-    if (!overlayState.services.tts || !elements.explanationContent) return;
+    if (!overlayState.services.tts || !elements.explanationContent) {return;}
 
     const explanationText = elements.explanationContent.textContent;
-    
+
     try {
       await overlayState.services.tts.speak(explanationText, overlayState.currentSettings);
     } catch (error) {
@@ -765,33 +765,33 @@
    */
   function handleKeyboard(event) {
     switch (event.key) {
-      case 'Escape':
-        if (overlayState.ui.explanationVisible) {
-          hideExplanation();
-        } else {
-          handleClose();
-        }
-        event.preventDefault();
-        break;
-        
-      case ' ':
-        if (overlayState.isSpeaking) {
-          if (overlayState.isPaused) {
-            handlePlay();
-          } else {
-            handlePause();
-          }
-        } else {
+    case 'Escape':
+      if (overlayState.ui.explanationVisible) {
+        hideExplanation();
+      } else {
+        handleClose();
+      }
+      event.preventDefault();
+      break;
+
+    case ' ':
+      if (overlayState.isSpeaking) {
+        if (overlayState.isPaused) {
           handlePlay();
+        } else {
+          handlePause();
         }
-        event.preventDefault();
-        break;
-        
-      case 'Enter':
-        if (event.target.matches('button, select, [role="button"]')) {
-          event.target.click();
-        }
-        break;
+      } else {
+        handlePlay();
+      }
+      event.preventDefault();
+      break;
+
+    case 'Enter':
+      if (event.target.matches('button, select, [role="button"]')) {
+        event.target.click();
+      }
+      break;
     }
   }
 
@@ -799,12 +799,12 @@
    * Trap focus within overlay for accessibility
    */
   function trapFocus(event) {
-    if (event.key !== 'Tab') return;
+    if (event.key !== 'Tab') {return;}
 
     const focusableElements = elements.overlay.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
-    
+
     const firstFocusable = focusableElements[0];
     const lastFocusable = focusableElements[focusableElements.length - 1];
 
@@ -837,11 +837,11 @@
    */
   function toggleShortcuts() {
     overlayState.ui.shortcutsVisible = !overlayState.ui.shortcutsVisible;
-    
+
     if (elements.shortcuts) {
       elements.shortcuts.hidden = !overlayState.ui.shortcutsVisible;
     }
-    
+
     if (elements.shortcutsToggle) {
       elements.shortcutsToggle.setAttribute('aria-expanded', overlayState.ui.shortcutsVisible);
     }
@@ -852,7 +852,7 @@
   function handleTTSStart() {
     overlayState.isSpeaking = true;
     overlayState.isPaused = false;
-    
+
     updatePlaybackControls();
     updateStatus('Speaking...');
     hideLoading();
@@ -863,7 +863,7 @@
       if (elements.textContent.textContent !== overlayState.text) {
         elements.textContent.textContent = overlayState.text;
       }
-      
+
       overlayState.highlighting.highlighter.initializeHighlighting(elements.textContent, overlayState.text);
     }
   }
@@ -871,7 +871,7 @@
   function handleTTSEnd() {
     overlayState.isSpeaking = false;
     overlayState.isPaused = false;
-    
+
     updatePlaybackControls();
     updateStatus('Speech completed');
 
@@ -884,14 +884,14 @@
   function handleTTSError(error) {
     overlayState.isSpeaking = false;
     overlayState.isPaused = false;
-    
+
     updatePlaybackControls();
-    
+
     // Clean up text highlighting on error
     if (overlayState.highlighting.enabled && overlayState.highlighting.highlighter) {
       overlayState.highlighting.highlighter.cleanup();
     }
-    
+
     showError('Speech error: ' + error.error);
     hideLoading();
   }
@@ -951,32 +951,32 @@
     const playDisabled = overlayState.isSpeaking && !overlayState.isPaused;
     const pauseDisabled = !overlayState.isSpeaking || overlayState.isPaused;
     const stopDisabled = !overlayState.isSpeaking;
-    
+
     if (elements.playBtn) {
       elements.playBtn.disabled = playDisabled;
-      
+
       // Clear existing content safely
       while (elements.playBtn.firstChild) {
         elements.playBtn.removeChild(elements.playBtn.firstChild);
       }
-      
+
       // Create button content safely
       const iconSpan = document.createElement('span');
       iconSpan.className = 'tts-icon';
       iconSpan.textContent = '▶';
-      
+
       const textSpan = document.createElement('span');
       textSpan.className = 'tts-btn-text';
       textSpan.textContent = overlayState.isPaused ? 'Resume' : 'Play';
-      
+
       elements.playBtn.appendChild(iconSpan);
       elements.playBtn.appendChild(textSpan);
     }
-    
+
     if (elements.pauseBtn) {
       elements.pauseBtn.disabled = pauseDisabled;
     }
-    
+
     if (elements.stopBtn) {
       elements.stopBtn.disabled = stopDisabled;
     }
@@ -989,7 +989,7 @@
     if (elements.loading) {
       elements.loading.hidden = false;
     }
-    
+
     if (elements.loadingText) {
       elements.loadingText.textContent = message;
     }
@@ -1011,7 +1011,7 @@
     if (elements.error) {
       elements.error.hidden = false;
     }
-    
+
     if (elements.errorMessage) {
       elements.errorMessage.textContent = message;
     }
@@ -1064,8 +1064,6 @@
       window.parent.postMessage({ type, data }, '*');
     }
   }
-
-
 
 
   // Initialize when DOM is ready

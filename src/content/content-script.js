@@ -8,8 +8,6 @@
   'use strict';
 
   // State management
-  let isExtensionEnabled = true;
-  let overlayInstance = null;
   let currentSelection = null;
   let ttsService = null;
   let aiService = null;
@@ -37,7 +35,7 @@
    */
   async function initialize() {
     try {
-      console.log('🚀 TTS Content Script initializing...');
+      console.warn('🚀 TTS Content Script initializing...');
 
       // Load user settings
       await loadSettings();
@@ -54,7 +52,7 @@
       // Inject necessary styles
       injectStyles();
 
-      console.log('✅ TTS Content Script initialized successfully');
+      console.warn('✅ TTS Content Script initialized successfully');
 
     } catch (error) {
       console.error('❌ Content Script initialization failed:', error);
@@ -86,23 +84,23 @@
    */
   function handleTextSelection(event) {
     setTimeout(() => {
-      console.log('📝 handleTextSelection triggered by:', event.type);
-      
+      console.warn('📝 handleTextSelection triggered by:', event.type);
+
       const selection = window.getSelection();
       const selectedText = selection.toString().trim();
-      
-      console.log('📝 Selected text:', selectedText.substring(0, 100) + '...');
-      console.log('📝 Text length:', selectedText.length);
+
+      console.warn('📝 Selected text:', selectedText.substring(0, 100) + '...');
+      console.warn('📝 Text length:', selectedText.length);
 
       if (selectedText.length === 0) {
-        console.log('📝 No text selected, hiding tooltip');
+        console.warn('📝 No text selected, hiding tooltip');
         hideSelectionTooltip();
         currentSelection = null;
         return;
       }
 
       if (selectedText.length < CONFIG.minSelectionLength) {
-        console.log('📝 Text too short, minimum length:', CONFIG.minSelectionLength);
+        console.warn('📝 Text too short, minimum length:', CONFIG.minSelectionLength);
         return;
       }
 
@@ -111,7 +109,7 @@
         return;
       }
 
-      console.log('📝 Text selection valid, creating tooltip...');
+      console.warn('📝 Text selection valid, creating tooltip...');
 
       // Update current selection
       currentSelection = {
@@ -120,7 +118,7 @@
         timestamp: Date.now()
       };
 
-      console.log('📝 Current selection updated:', currentSelection.text.substring(0, 50) + '...');
+      console.warn('📝 Current selection updated:', currentSelection.text.substring(0, 50) + '...');
 
       // Show selection tooltip
       showSelectionTooltip(event, selectedText);
@@ -145,15 +143,15 @@
    * Show selection tooltip near the selected text
    */
   function showSelectionTooltip(event, text) {
-    console.log('💬 Creating selection tooltip with text:', text?.substring(0, 50) + '...');
-    
+    console.warn('💬 Creating selection tooltip with text:', text?.substring(0, 50) + '...');
+
     hideSelectionTooltip(); // Remove existing tooltip
 
     const tooltip = document.createElement('div');
     tooltip.className = 'tts-selection-tooltip';
-    
-    console.log('💬 Tooltip element created:', tooltip);
-    
+
+    console.warn('💬 Tooltip element created:', tooltip);
+
     // Create speak button safely
     const speakBtn = document.createElement('button');
     speakBtn.className = 'tts-tooltip-btn tts-speak-btn';
@@ -162,7 +160,7 @@
     speakIcon.className = 'tts-icon';
     speakIcon.textContent = '🔊';
     speakBtn.appendChild(speakIcon);
-    
+
     // Create explain button safely
     const explainBtn = document.createElement('button');
     explainBtn.className = 'tts-tooltip-btn tts-explain-btn';
@@ -171,7 +169,7 @@
     explainIcon.className = 'tts-icon';
     explainIcon.textContent = '🤖';
     explainBtn.appendChild(explainIcon);
-    
+
     // Create more button safely
     const moreBtn = document.createElement('button');
     moreBtn.className = 'tts-tooltip-btn tts-more-btn';
@@ -180,7 +178,7 @@
     moreIcon.className = 'tts-icon';
     moreIcon.textContent = '⚙️';
     moreBtn.appendChild(moreIcon);
-    
+
     // Append buttons to tooltip
     tooltip.appendChild(speakBtn);
     tooltip.appendChild(explainBtn);
@@ -195,16 +193,16 @@
 
     // Add event listeners using the created elements
     speakBtn.addEventListener('click', (event) => {
-      console.log('🔊 Tooltip speak button clicked!');
-      console.log('🔊 Text to speak:', text?.substring(0, 100) + '...');
-      
+      console.warn('🔊 Tooltip speak button clicked!');
+      console.warn('🔊 Text to speak:', text?.substring(0, 100) + '...');
+
       event.preventDefault();
       event.stopPropagation();
-      
+
       try {
         showTTSOverlay(text, { autoPlay: true });
         hideSelectionTooltip();
-        console.log('✅ showTTSOverlay called from tooltip');
+        console.warn('✅ showTTSOverlay called from tooltip');
       } catch (error) {
         console.error('❌ Error calling showTTSOverlay:', error);
       }
@@ -221,16 +219,16 @@
     });
 
     moreBtn.addEventListener('click', (event) => {
-      console.log('⚙️ Tooltip more button clicked!');
-      console.log('⚙️ Text to show in overlay:', text?.substring(0, 100) + '...');
-      
+      console.warn('⚙️ Tooltip more button clicked!');
+      console.warn('⚙️ Text to show in overlay:', text?.substring(0, 100) + '...');
+
       event.preventDefault();
       event.stopPropagation();
-      
+
       try {
         showTTSOverlay(text);
         hideSelectionTooltip();
-        console.log('✅ showTTSOverlay called from more button');
+        console.warn('✅ showTTSOverlay called from more button');
       } catch (error) {
         console.error('❌ Error calling showTTSOverlay from more button:', error);
       }
@@ -238,10 +236,10 @@
 
     document.body.appendChild(tooltip);
     DOM.selectionTooltip = tooltip;
-    
-    console.log('💬 Tooltip added to page, DOM.selectionTooltip:', DOM.selectionTooltip);
-    console.log('💬 Speak button element:', speakBtn);
-    console.log('💬 Tooltip position:', tooltip.style.left, tooltip.style.top);
+
+    console.warn('💬 Tooltip added to page, DOM.selectionTooltip:', DOM.selectionTooltip);
+    console.warn('💬 Speak button element:', speakBtn);
+    console.warn('💬 Tooltip position:', tooltip.style.left, tooltip.style.top);
 
     // Auto-hide after 5 seconds
     setTimeout(hideSelectionTooltip, 5000);
@@ -262,9 +260,9 @@
    */
   function showTTSOverlay(text, options = {}) {
     try {
-      console.log('🚀 showTTSOverlay called with text:', text?.substring(0, 100) + '...');
-      console.log('🚀 Options:', options);
-      
+      console.warn('🚀 showTTSOverlay called with text:', text?.substring(0, 100) + '...');
+      console.warn('🚀 Options:', options);
+
       if (!text || !text.trim()) {
         console.warn('❌ No text provided to showTTSOverlay');
         return;
@@ -285,7 +283,7 @@
       const overlay = document.createElement('iframe');
       overlay.className = 'tts-overlay-iframe';
       overlay.src = chrome.runtime.getURL('overlay/overlay.html');
-      
+
       overlay.style.cssText = `
         position: fixed !important;
         top: 20px !important;
@@ -305,14 +303,14 @@
 
       // Wait for iframe to load then send data
       overlay.onload = () => {
-        console.log('🎬 Overlay iframe loaded, sending init message...');
-        console.log('📤 Sending text:', text.trim().substring(0, 100) + '...');
-        console.log('📤 Sending options:', options);
-        
+        console.warn('🎬 Overlay iframe loaded, sending init message...');
+        console.warn('📤 Sending text:', text.trim().substring(0, 100) + '...');
+        console.warn('📤 Sending options:', options);
+
         // Add small delay to ensure iframe is fully ready
         setTimeout(() => {
-          console.log('📤 Sending INIT_OVERLAY message now...');
-          
+          console.warn('📤 Sending INIT_OVERLAY message now...');
+
           const message = {
             type: 'INIT_OVERLAY',
             data: {
@@ -320,16 +318,16 @@
               options
             }
           };
-          
-          console.log('📤 Message object:', message);
-          
+
+          console.warn('📤 Message object:', message);
+
           overlay.contentWindow.postMessage(message, '*');
-          
-          console.log('✅ Init message sent to overlay');
-          
+
+          console.warn('✅ Init message sent to overlay');
+
           // Retry after 100ms if needed
           setTimeout(() => {
-            console.log('📤 Sending retry message...');
+            console.warn('📤 Sending retry message...');
             overlay.contentWindow.postMessage(message, '*');
           }, 100);
         }, 50);
@@ -364,35 +362,35 @@
       const { type, data } = event.data;
 
       switch (type) {
-        case 'OVERLAY_READY':
-          console.log('📱 Overlay ready');
-          break;
+      case 'OVERLAY_READY':
+        console.warn('📱 Overlay ready');
+        break;
 
-        case 'CLOSE_OVERLAY':
-          closeTTSOverlay();
-          break;
+      case 'CLOSE_OVERLAY':
+        closeTTSOverlay();
+        break;
 
-        case 'SPEAK_TEXT':
-          handleSpeakRequest(data);
-          break;
+      case 'SPEAK_TEXT':
+        handleSpeakRequest(data);
+        break;
 
-        case 'AI_EXPLAIN':
-          handleAIExplainRequest(data);
-          break;
+      case 'AI_EXPLAIN':
+        handleAIExplainRequest(data);
+        break;
 
-        case 'OVERLAY_RESIZE':
-          if (DOM.overlay) {
-            if (data.height) {
-              DOM.overlay.style.height = `${data.height}px`;
-            }
-            if (data.width) {
-              DOM.overlay.style.width = `${data.width}px`;
-            }
+      case 'OVERLAY_RESIZE':
+        if (DOM.overlay) {
+          if (data.height) {
+            DOM.overlay.style.height = `${data.height}px`;
           }
-          break;
+          if (data.width) {
+            DOM.overlay.style.width = `${data.width}px`;
+          }
+        }
+        break;
 
-        default:
-          console.warn('Unknown overlay message:', type);
+      default:
+        console.warn('Unknown overlay message:', type);
       }
     };
 
@@ -437,7 +435,7 @@
 
     } catch (error) {
       console.error('Speak request failed:', error);
-      
+
       if (DOM.overlay) {
         DOM.overlay.contentWindow.postMessage({
           type: 'SPEAK_ERROR',
@@ -457,7 +455,7 @@
       }
 
       const { text, level } = data;
-      
+
       // Send loading state to overlay
       if (DOM.overlay) {
         DOM.overlay.contentWindow.postMessage({
@@ -477,7 +475,7 @@
 
     } catch (error) {
       console.error('AI explanation failed:', error);
-      
+
       if (DOM.overlay) {
         DOM.overlay.contentWindow.postMessage({
           type: 'AI_EXPLAIN_ERROR',
@@ -492,38 +490,38 @@
    */
   function setupMessageListener() {
     const browserAPI = typeof chrome !== 'undefined' ? chrome : browser;
-    
+
     browserAPI.runtime.onMessage.addListener((message, sender, sendResponse) => {
-      console.log('📨 Content script received message:', message.type);
+      console.warn('📨 Content script received message:', message.type);
 
       switch (message.type) {
-        case 'SHOW_TTS_OVERLAY':
-          showTTSOverlay(message.text, message.options || {});
-          sendResponse({ success: true });
-          break;
+      case 'SHOW_TTS_OVERLAY':
+        showTTSOverlay(message.text, message.options || {});
+        sendResponse({ success: true });
+        break;
 
-        case 'TOGGLE_TTS_OVERLAY':
-          toggleTTSOverlay();
-          sendResponse({ success: true });
-          break;
+      case 'TOGGLE_TTS_OVERLAY':
+        toggleTTSOverlay();
+        sendResponse({ success: true });
+        break;
 
-        case 'SPEAK_CURRENT_SELECTION':
-          handleSpeakCurrentSelection();
-          sendResponse({ success: true });
-          break;
+      case 'SPEAK_CURRENT_SELECTION':
+        handleSpeakCurrentSelection();
+        sendResponse({ success: true });
+        break;
 
-        case 'SHOW_AI_CONSENT_DIALOG':
-          showConsentDialog(message.text);
-          sendResponse({ success: true });
-          break;
+      case 'SHOW_AI_CONSENT_DIALOG':
+        showConsentDialog(message.text);
+        sendResponse({ success: true });
+        break;
 
-        case 'EXECUTE_TTS':
-          handleExecuteTTS(message.text, message.settings);
-          sendResponse({ success: true });
-          break;
+      case 'EXECUTE_TTS':
+        handleExecuteTTS(message.text, message.settings);
+        sendResponse({ success: true });
+        break;
 
-        default:
-          sendResponse({ success: false, error: 'Unknown message type' });
+      default:
+        sendResponse({ success: false, error: 'Unknown message type' });
       }
 
       return true; // Keep message channel open
@@ -552,7 +550,7 @@
    */
   async function handleSpeakCurrentSelection() {
     const selectedText = window.getSelection().toString().trim();
-    
+
     if (selectedText) {
       showTTSOverlay(selectedText, { autoPlay: true });
     } else {
@@ -590,7 +588,7 @@
       ].filter(Boolean).join('+');
 
       const action = CONFIG.keyboardShortcuts[key];
-      
+
       if (action) {
         event.preventDefault();
         handleKeyboardShortcut(action);
@@ -603,20 +601,20 @@
    */
   function handleKeyboardShortcut(action) {
     switch (action) {
-      case 'toggle-overlay':
-        toggleTTSOverlay();
-        break;
-        
-      case 'speak-selection':
-        handleSpeakCurrentSelection();
-        break;
-        
-      case 'close-overlay':
-        closeTTSOverlay();
-        break;
-        
-      default:
-        console.warn('Unknown keyboard shortcut action:', action);
+    case 'toggle-overlay':
+      toggleTTSOverlay();
+      break;
+
+    case 'speak-selection':
+      handleSpeakCurrentSelection();
+      break;
+
+    case 'close-overlay':
+      closeTTSOverlay();
+      break;
+
+    default:
+      console.warn('Unknown keyboard shortcut action:', action);
     }
   }
 
@@ -626,7 +624,7 @@
   async function loadSettings() {
     try {
       const browserAPI = typeof chrome !== 'undefined' ? chrome : browser;
-      
+
       const result = await new Promise((resolve) => {
         browserAPI.storage.sync.get(['ttsSettings', 'uiSettings'], resolve);
       });
@@ -637,7 +635,7 @@
       }
 
       if (result.uiSettings) {
-        isExtensionEnabled = result.uiSettings.enabled !== false;
+        // UI settings will be used by overlay components
       }
 
     } catch (error) {
@@ -673,7 +671,7 @@
   async function checkAIConsent() {
     try {
       const browserAPI = typeof chrome !== 'undefined' ? chrome : browser;
-      
+
       const result = await new Promise((resolve) => {
         browserAPI.storage.sync.get(['privacySettings'], resolve);
       });
@@ -696,38 +694,38 @@
     // Create consent content structure safely
     const consentContent = document.createElement('div');
     consentContent.className = 'tts-consent-content';
-    
+
     // Create title
     const title = document.createElement('h3');
     title.textContent = 'AI Explanation Privacy Notice';
     consentContent.appendChild(title);
-    
+
     // Create description paragraphs
     const p1 = document.createElement('p');
     p1.textContent = 'To provide AI explanations, your selected text will be sent to AI services (Groq or Claude). This helps generate intelligent explanations for the content you select.';
     consentContent.appendChild(p1);
-    
+
     const p2 = document.createElement('p');
     const strong = document.createElement('strong');
     strong.textContent = 'Your privacy:';
     p2.appendChild(strong);
     p2.appendChild(document.createTextNode(' No personal data is stored. Text is only sent when you explicitly request explanations.'));
     consentContent.appendChild(p2);
-    
+
     // Create action buttons container
     const actions = document.createElement('div');
     actions.className = 'tts-consent-actions';
-    
+
     const allowBtn = document.createElement('button');
     allowBtn.className = 'tts-consent-allow';
     allowBtn.textContent = 'Allow AI Explanations';
     actions.appendChild(allowBtn);
-    
+
     const denyBtn = document.createElement('button');
     denyBtn.className = 'tts-consent-deny';
     denyBtn.textContent = 'Not Now';
     actions.appendChild(denyBtn);
-    
+
     consentContent.appendChild(actions);
     dialog.appendChild(consentContent);
 
@@ -772,7 +770,7 @@
   async function giveAIConsent() {
     try {
       const browserAPI = typeof chrome !== 'undefined' ? chrome : browser;
-      
+
       await new Promise((resolve, reject) => {
         browserAPI.storage.sync.set({
           privacySettings: {
@@ -916,15 +914,15 @@
     // Create notification content safely
     const notificationContent = document.createElement('div');
     notificationContent.className = 'tts-notification-content';
-    
+
     const titleElement = document.createElement('strong');
     titleElement.textContent = title;
     notificationContent.appendChild(titleElement);
-    
+
     const messageElement = document.createElement('p');
     messageElement.textContent = message;
     notificationContent.appendChild(messageElement);
-    
+
     notification.appendChild(notificationContent);
 
     notification.style.cssText = `
@@ -954,7 +952,7 @@
   function cleanup() {
     closeTTSOverlay();
     hideSelectionTooltip();
-    
+
     if (ttsService) {
       ttsService.stop();
     }

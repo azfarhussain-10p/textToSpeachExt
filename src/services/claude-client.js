@@ -33,31 +33,31 @@ class ClaudeClient {
   async initialize() {
     try {
       const apiKey = await this.loadAPIKey();
-      
+
       if (!apiKey) {
         console.warn('⚠️ Claude API key not found in storage');
         this.isInitialized = false;
         return false;
       }
-      
+
       this.apiKey = apiKey;
-      
+
       // Detect tier and set up rate limiter
       await this.detectTierAndSetupRateLimiter();
-      
+
       // Test the API key with a minimal request
       const isValid = await this.validateAPIKey();
-      
+
       if (isValid) {
         this.isInitialized = true;
-        console.log('✅ Claude client initialized successfully');
+        console.warn('✅ Claude client initialized successfully');
         return true;
       } else {
         console.error('❌ Claude API key validation failed');
         this.isInitialized = false;
         return false;
       }
-      
+
     } catch (error) {
       console.error('❌ Claude client initialization failed:', error);
       this.isInitialized = false;
@@ -89,7 +89,7 @@ class ClaudeClient {
     try {
       const prompt = this.buildExplanationPrompt(text, level);
       const model = options.model || this.defaultModel;
-      
+
       const response = await this.makeRequest('/messages', {
         model,
         max_tokens: options.maxTokens || 500,
@@ -102,7 +102,7 @@ class ClaudeClient {
       });
 
       const explanation = response.content?.[0]?.text;
-      
+
       if (!explanation) {
         throw new Error('No explanation received from Claude API');
       }
@@ -139,7 +139,7 @@ class ClaudeClient {
 
     try {
       const prompt = this.buildSummaryPrompt(text, options.length || 'medium');
-      
+
       const response = await this.makeRequest('/messages', {
         model: options.model || this.defaultModel,
         max_tokens: options.maxTokens || 300,
@@ -177,7 +177,7 @@ class ClaudeClient {
           content: 'Hi'
         }]
       });
-      
+
       return response && response.content && Array.isArray(response.content);
     } catch (error) {
       console.error('Claude API key validation failed:', error);
@@ -206,7 +206,7 @@ class ClaudeClient {
   setTier(tier) {
     this.tier = tier;
     this.rateLimiter = RateLimiterFactory.createClaudeLimiter(tier);
-    console.log(`🔧 Claude rate limiter set to ${tier}`);
+    console.warn(`🔧 Claude rate limiter set to ${tier}`);
   }
 
   /**
@@ -231,16 +231,16 @@ class ClaudeClient {
   async loadAPIKey() {
     try {
       const api = this.getStorageAPI();
-      if (!api) return null;
+      if (!api) {return null;}
 
       const result = await this.getStorageData(api, ['apiKeys', 'claudeSettings']);
       const apiKey = result.apiKeys?.claudeApiKey;
-      
+
       // Also load tier settings if available
       if (result.claudeSettings?.tier) {
         this.tier = result.claudeSettings.tier;
       }
-      
+
       return apiKey || null;
 
     } catch (error) {
@@ -262,12 +262,12 @@ class ClaudeClient {
           this.tier = result.claudeSettings.tier;
         }
       }
-      
+
       // Set up rate limiter based on tier
       this.rateLimiter = RateLimiterFactory.createClaudeLimiter(this.tier);
-      
-      console.log(`🔧 Claude client using ${this.tier} rate limits`);
-      
+
+      console.warn(`🔧 Claude client using ${this.tier} rate limits`);
+
     } catch (error) {
       console.warn('Failed to detect Claude tier, using tier1:', error);
       this.tier = 'tier1';
@@ -316,11 +316,11 @@ class ClaudeClient {
     try {
       // Claude API may include rate limit information in headers
       const rateLimitLimit = headers.get('anthropic-ratelimit-requests-limit');
-      const rateLimitRemaining = headers.get('anthropic-ratelimit-requests-remaining');
-      
+      headers.get('anthropic-ratelimit-requests-remaining');
+
       if (rateLimitLimit) {
         const limit = parseInt(rateLimitLimit);
-        
+
         // Detect tier based on rate limit
         let detectedTier = 'tier1';
         if (limit >= 4000) {
@@ -330,11 +330,11 @@ class ClaudeClient {
         } else if (limit >= 1000) {
           detectedTier = 'tier2';
         }
-        
+
         if (detectedTier !== this.tier) {
-          console.log(`🔄 Detected Claude tier change: ${this.tier} → ${detectedTier}`);
+          console.warn(`🔄 Detected Claude tier change: ${this.tier} → ${detectedTier}`);
           this.setTier(detectedTier);
-          
+
           // Save updated tier to storage
           this.saveTierToStorage(detectedTier);
         }
@@ -350,11 +350,11 @@ class ClaudeClient {
   async saveTierToStorage(tier) {
     try {
       const api = this.getStorageAPI();
-      if (!api) return;
+      if (!api) {return;}
 
       const claudeSettings = { tier };
       await this.setStorageData(api, { claudeSettings });
-      
+
     } catch (error) {
       console.warn('Failed to save Claude tier to storage:', error);
     }
@@ -371,7 +371,7 @@ class ClaudeClient {
     };
 
     const instruction = levelInstructions[level] || levelInstructions.simple;
-    
+
     return `${instruction}\n\nText to explain:\n"${text}"\n\nPlease provide your explanation:`;
   }
 
@@ -386,7 +386,7 @@ class ClaudeClient {
     };
 
     const instruction = lengthInstructions[length] || lengthInstructions.medium;
-    
+
     return `${instruction}\n\nText to summarize:\n"${text}"\n\nSummary:`;
   }
 
@@ -395,7 +395,7 @@ class ClaudeClient {
    */
   handleAPIError(error) {
     const message = error.message || 'Unknown error';
-    
+
     if (message.includes('401') || message.includes('unauthorized')) {
       return new Error('Invalid API key. Please check your Claude API key in settings.');
     } else if (message.includes('429') || message.includes('rate limit')) {
@@ -409,7 +409,7 @@ class ClaudeClient {
     } else if (message.includes('overloaded')) {
       return new Error('Claude is currently overloaded. Please try again in a moment.');
     }
-    
+
     return new Error(`Claude API error: ${message}`);
   }
 

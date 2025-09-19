@@ -30,28 +30,28 @@ class GroqClient {
   async initialize() {
     try {
       const apiKey = await this.loadAPIKey();
-      
+
       if (!apiKey) {
         console.warn('⚠️ Groq API key not found in storage');
         this.isInitialized = false;
         return false;
       }
-      
+
       this.apiKey = apiKey;
-      
+
       // Test the API key with a minimal request
       const isValid = await this.validateAPIKey();
-      
+
       if (isValid) {
         this.isInitialized = true;
-        console.log('✅ Groq client initialized successfully');
+        console.warn('✅ Groq client initialized successfully');
         return true;
       } else {
         console.error('❌ Groq API key validation failed');
         this.isInitialized = false;
         return false;
       }
-      
+
     } catch (error) {
       console.error('❌ Groq client initialization failed:', error);
       this.isInitialized = false;
@@ -83,7 +83,7 @@ class GroqClient {
     try {
       const prompt = this.buildExplanationPrompt(text, level);
       const model = options.model || this.defaultModel;
-      
+
       const response = await this.makeRequest('/chat/completions', {
         model,
         messages: [{
@@ -97,7 +97,7 @@ class GroqClient {
       });
 
       const explanation = response.choices?.[0]?.message?.content;
-      
+
       if (!explanation) {
         throw new Error('No explanation received from Groq API');
       }
@@ -134,7 +134,7 @@ class GroqClient {
 
     try {
       const prompt = this.buildSummaryPrompt(text, options.length || 'medium');
-      
+
       const response = await this.makeRequest('/chat/completions', {
         model: options.model || this.defaultModel,
         messages: [{
@@ -224,7 +224,7 @@ class GroqClient {
   async loadAPIKey() {
     try {
       const api = this.getStorageAPI();
-      if (!api) return null;
+      if (!api) {return null;}
 
       const result = await this.getStorageData(api, ['apiKeys']);
       return result.apiKeys?.groqApiKey || null;
@@ -279,7 +279,7 @@ class GroqClient {
     };
 
     const instruction = levelInstructions[level] || levelInstructions.simple;
-    
+
     return `${instruction}\n\nText to explain:\n"${text}"\n\nExplanation:`;
   }
 
@@ -294,7 +294,7 @@ class GroqClient {
     };
 
     const instruction = lengthInstructions[length] || lengthInstructions.medium;
-    
+
     return `${instruction}\n\nText to summarize:\n"${text}"\n\nSummary:`;
   }
 
@@ -303,7 +303,7 @@ class GroqClient {
    */
   handleAPIError(error) {
     const message = error.message || 'Unknown error';
-    
+
     if (message.includes('401') || message.includes('unauthorized')) {
       return new Error('Invalid API key. Please check your Groq API key in settings.');
     } else if (message.includes('429') || message.includes('rate limit')) {
@@ -315,7 +315,7 @@ class GroqClient {
     } else if (message.includes('503') || message.includes('service unavailable')) {
       return new Error('Groq service temporarily unavailable. Please try again later.');
     }
-    
+
     return new Error(`Groq API error: ${message}`);
   }
 
